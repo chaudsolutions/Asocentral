@@ -32,7 +32,7 @@ export interface NewsCategoryType {
 }
 
 // Form specific type
-export interface INewsFormInput extends Omit<
+export type INewsFormInput = Omit<
     NewsDataType,
     "_id" | "fetched_at" | "isSystem"
-> {}
+>;
