@@ -1,0 +1,10 @@
+export const appName = "Trojan News";
+export const PORT = process.env.PORT;
+export const JWT_SECRET = process.env.JWT_SECRET || "";
+export const DB_URI = process.env.DB_URI || "";
+export const SALT_ROUNDS = 10;
+export const CLIENT_URL = process.env.CLIENT_URL || "";
+export const SECRET_USER = process.env.SECRET_USER || "";
+export const SECRET_PASS = process.env.SECRET_PASS || "";
+export const NEWS_DATA_API_KEY = process.env.NEWS_DATA_API_KEY || "";
+export const NEWS_DATA_API_URL = "https://newsdata.io/api/1/latest";

@@ -1,0 +1,83 @@
+import mongoose, { Schema, Document } from "mongoose";
+
+// Sub-interface for the content array items
+export interface INewsContent {
+    image_url: string;
+    title: string;
+    description: string;
+}
+
+// Main interface for the News document
+export interface INews extends Document {
+    article_id: string;
+    category: string[];
+    content: INewsContent[];
+    country: string[];
+    creator: string[];
+    description: string;
+    fetched_at: Date;
+    image_url: string;
+    keywords: string[];
+    language: string;
+    link: string;
+    pubDate: string;
+    video_url: string | null;
+    isSystem: boolean;
+    active: boolean;
+}
+
+// Define the sub-schema first
+const NewsContentSchema = new Schema<INewsContent>(
+    {
+        image_url: { type: String, required: true },
+        title: { type: String, required: true },
+        description: { type: String, required: true },
+    },
+    { _id: false },
+); // Disable _id for sub-documents to keep it clean
+
+// Define the main schema
+const NewsSchema: Schema = new Schema<INews>(
+    {
+        article_id: {
+            type: String,
+            required: true,
+            unique: true,
+            index: true, // Indexing for faster lookups
+        },
+        category: {
+            type: [String],
+            default: [],
+            index: true, // Critical for your Category page filtering
+        },
+        content: {
+            type: [NewsContentSchema],
+            default: [],
+        },
+        country: { type: [String], default: [] },
+        creator: { type: [String], default: [] },
+        description: { type: String, default: "" },
+        fetched_at: {
+            type: Date,
+            default: Date.now,
+            expires: "6h", // Optional: If you want to auto-delete cached news after 6 hours
+        },
+        image_url: { type: String, required: true },
+        keywords: { type: [String], default: [] },
+        language: { type: String, default: "en" },
+        link: { type: String, required: true },
+        pubDate: { type: String, required: true },
+        video_url: { type: String, default: null },
+        isSystem: { type: Boolean, default: true },
+        active: { type: Boolean, default: true },
+    },
+    {
+        timestamps: true,
+    },
+);
+
+// Export the model
+const NewsModel =
+    mongoose.models.News || mongoose.model<INews>("News", NewsSchema);
+
+export default NewsModel;

@@ -1,0 +1,81 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getNewsCategories } from "./useNewsCategories";
+import { fetchNewsData } from "./useNewsDataApi";
+import { getAdminData, getUserData } from "./useAuthApi";
+import { useAuthContext } from "~/context/AuthContext";
+
+// use query to clear cache for logout
+export const useInvalidateCache = () => {
+    const queryClient = useQueryClient(); // Get the query client
+
+    return { queryClient };
+};
+
+// use news categories data
+export const useNewsCategories = () => {
+    const {
+        data: newsCategories,
+        isLoading: isNewsCategoriesLoading,
+        error: newsCategoriesError,
+        refetch: refetchNewsCategories,
+    } = useQuery({
+        queryKey: ["newsCategories"],
+        queryFn: getNewsCategories,
+    });
+
+    return {
+        newsCategories,
+        isNewsCategoriesLoading,
+        newsCategoriesError,
+        refetchNewsCategories,
+    };
+};
+
+// use news data
+export const useNewsData = () => {
+    const {
+        data: newsData,
+        isLoading: isNewsDataLoading,
+        error: newsDataError,
+        refetch: refetchNewsData,
+    } = useQuery({
+        queryKey: ["newsData"],
+        queryFn: fetchNewsData,
+    });
+
+    return { newsData, isNewsDataLoading, newsDataError, refetchNewsData };
+};
+
+// use admin data
+export const useAdminData = () => {
+    const { user } = useAuthContext();
+    const {
+        data: adminData,
+        isLoading: isAdminDataLoading,
+        error: adminDataError,
+        refetch: refetchAdminData,
+    } = useQuery({
+        queryKey: ["adminData"],
+        queryFn: getAdminData,
+        enabled: !!user,
+    });
+
+    return { adminData, isAdminDataLoading, adminDataError, refetchAdminData };
+};
+
+// use user data
+export const useUserData = () => {
+    const { user } = useAuthContext();
+    const {
+        data: userData,
+        isLoading: isUserDataLoading,
+        error: userDataError,
+        refetch: refetchUserData,
+    } = useQuery({
+        queryKey: ["userData"],
+        queryFn: getUserData,
+        enabled: !!user,
+    });
+
+    return { userData, isUserDataLoading, userDataError, refetchUserData };
+};
