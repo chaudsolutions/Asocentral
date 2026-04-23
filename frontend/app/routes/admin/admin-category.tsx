@@ -70,7 +70,7 @@ export default function AdminCategory() {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
+        <>
             <Box
                 sx={{
                     display: "flex",
@@ -104,6 +104,6 @@ export default function AdminCategory() {
                 refetch={refetchNewsCategories}
                 initialData={selectedCategory}
             />
-        </Box>
+        </>
     );
 }

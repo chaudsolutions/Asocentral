@@ -13,6 +13,7 @@ import PageLoader from "~/components/animations/PageLoader";
 import { useResponsive } from "~/hooks/useTools";
 import { useAdminData } from "~/hooks/useCaching";
 import AdminSideNav from "~/components/custom/navigation/AdminSideNav";
+import { Container } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -84,15 +85,16 @@ export default function AdminLoggedWrapper() {
                     handleDrawerToggle={handleDrawerToggle}
                     drawerWidth={drawerWidth}
                 />
-                <Box
+                <Container
+                    maxWidth="xl"
                     component="main"
                     sx={{
-                        p: 1,
+                        p: { xs: 2, md: 3 },
                         minHeight: "calc(100vh - 5rem)",
                         width: "100%",
                     }}>
                     <Outlet /> {/* Nested route components render here */}
-                </Box>
+                </Container>
             </Box>
         </NoSsr>
     );

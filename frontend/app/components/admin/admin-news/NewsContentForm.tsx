@@ -7,12 +7,12 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FormTextField from "~/components/form-fields/FormTextField";
 import FormTextArea from "~/components/form-fields/FormTextArea";
-import type { INewsFormInput } from "~/types/news";
+import type { NewsFormData } from "./NewsEditorStepper";
 
 export default function NewsContentForm({
     control,
 }: {
-    control: Control<INewsFormInput>;
+    control: Control<NewsFormData>;
 }) {
     const { fields, append, remove } = useFieldArray({
         control,

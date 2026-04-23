@@ -12,11 +12,14 @@ import AppName from "../buttons/AppName";
 import { useNewsCategories } from "~/hooks/useCaching";
 import { NavLink, Link } from "react-router";
 import type { NewsCategoryType } from "~/types/news";
+import { useResponsive } from "~/hooks/useTools";
 
 const MainLayoutHeader = () => {
     const { newsCategories = [], isNewsCategoriesLoading } =
         useNewsCategories();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+    const { isMobile } = useResponsive();
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -38,6 +41,10 @@ const MainLayoutHeader = () => {
         paddingBottom: "4px",
         transition: "color 0.2s",
     });
+
+    const categoriesToDisplay = isMobile
+        ? newsCategories.slice(0, 3)
+        : newsCategories.slice(0, 7);
 
     return (
         <AppBar position="static" sx={{ bgcolor: "white", boxShadow: "none" }}>
@@ -61,17 +68,7 @@ const MainLayoutHeader = () => {
                         ) : (
                             <>
                                 {/* 1. Always Visible (First 3) */}
-                                {newsCategories.slice(0, 3).map((category) => (
-                                    <NavLink
-                                        key={category.slug}
-                                        to={`/category/${category.slug}`}
-                                        style={navLinkStyle}>
-                                        {category.name}
-                                    </NavLink>
-                                ))}
-
-                                {/* 2. Desktop Only (Next 4 categories: index 3 to 7) */}
-                                {newsCategories.slice(3, 7).map((category) => (
+                                {categoriesToDisplay.map((category) => (
                                     <NavLink
                                         key={category.slug}
                                         to={`/category/${category.slug}`}

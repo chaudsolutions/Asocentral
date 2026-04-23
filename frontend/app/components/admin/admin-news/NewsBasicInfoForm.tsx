@@ -5,11 +5,13 @@ import { useNewsCategories } from "~/hooks/useCaching";
 import FormTextField from "~/components/form-fields/FormTextField";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 import FormMultiAutocomplete from "~/components/form-fields/FormMultiAutocomplete";
-import type { INewsFormInput } from "~/types/news";
+import FormImageUpload from "~/components/form-fields/FormImageUpload";
 import type { NewsCategoryType } from "~/types/news";
+import type { NewsFormData } from "./NewsEditorStepper";
+import FormDatePicker from "~/components/form-fields/FormDatePicker";
 
 interface Props {
-    control: Control<INewsFormInput>;
+    control: Control<NewsFormData>;
 }
 
 export default function NewsBasicInfoForm({ control }: Props) {
@@ -17,7 +19,7 @@ export default function NewsBasicInfoForm({ control }: Props) {
 
     return (
         <Box sx={{ display: "grid", gap: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            <Typography variant="h6" sx={{ fontWeight: 800, color: "#003366" }}>
                 General Information
             </Typography>
 
@@ -34,13 +36,6 @@ export default function NewsBasicInfoForm({ control }: Props) {
                     gridTemplateColumns: { md: "1fr 1fr" },
                     gap: 2,
                 }}>
-                <FormTextField
-                    name="article_id"
-                    label="Article ID / Reference"
-                    control={control}
-                    rules={{ required: "Article ID is required" }}
-                />
-
                 <FormMultiAutocomplete
                     name="category"
                     label="Categories"
@@ -48,28 +43,22 @@ export default function NewsBasicInfoForm({ control }: Props) {
                     options={newsCategories}
                     getOptionLabel={(option: NewsCategoryType) => option.name}
                     isEqual={(option, value) => option._id === value._id}
-                    placeholder="Select one or more categories"
+                    placeholder="Select categories"
                 />
             </Box>
 
-            <FormTextField
+            {/* NEW: Automated Image Upload */}
+            <FormImageUpload
                 name="image_url"
-                label="Main Cover Image URL"
+                label="Cover Image"
                 control={control}
-                rules={{ required: "Cover image is required" }}
             />
 
             <FormTextArea
                 name="description"
                 label="Short Summary / Excerpt"
                 control={control}
-                rules={{
-                    required: "Summary is required",
-                    maxLength: {
-                        value: 300,
-                        message: "Summary should be under 300 characters",
-                    },
-                }}
+                rules={{ required: "Summary is required" }}
             />
 
             <Box
@@ -90,11 +79,11 @@ export default function NewsBasicInfoForm({ control }: Props) {
                 />
             </Box>
 
-            <FormTextField
+            {/* NEW: Proper Date Picker */}
+            <FormDatePicker
                 name="pubDate"
-                label="Publication Date String"
+                label="Publication Date"
                 control={control}
-                placeholder="e.g., 2026-04-23 09:00:00"
             />
         </Box>
     );

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Box from "@mui/material/Box";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNewsData } from "~/hooks/useCaching";
 import { appName } from "~/utils/constants";
@@ -43,18 +43,16 @@ export default function AdminNews() {
         return newsData.filter((news) => news.isSystem);
     }, [newsData]);
 
-    const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-        setTabValue(newValue);
-        if (newValue === 0) {
-            setSelectedNews(null);
-            setIsEditMode(false);
-        }
-    };
-
     const handleEdit = (news: NewsDataType) => {
         setSelectedNews(news);
         setIsEditMode(true);
         setTabValue(1);
+    };
+
+    const handleClose = () => {
+        setSelectedNews(null);
+        setIsEditMode(false);
+        setTabValue(0);
     };
 
     const handleView = (news: NewsDataType) => {
@@ -63,26 +61,25 @@ export default function AdminNews() {
     };
 
     return (
-        <Box sx={{ width: "100%" }}>
-            <Box sx={{ borderBottom: 1, borderColor: "divider", px: 3, pt: 2 }}>
-                <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>
-                    News Management
-                </Typography>
-                <Tabs value={tabValue} onChange={handleTabChange}>
-                    <Tab label="All News" sx={{ fontWeight: 700 }} />
-                    <Tab
-                        label={isEditMode ? "Edit News" : "Create News"}
-                        sx={{ fontWeight: 700 }}
-                    />
-                    <Tab
-                        label="News Preview"
-                        sx={{ fontWeight: 700 }}
-                        disabled={!selectedNews}
-                    />
-                </Tabs>
-            </Box>
-
+        <>
             <CustomTabPanel value={tabValue} index={0}>
+                <Stack
+                    direction="row"
+                    sx={{
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    }}>
+                    <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>
+                        News Management
+                    </Typography>
+                    <Button
+                        onClick={() => setTabValue(1)}
+                        color="primary"
+                        size="small"
+                        variant="contained">
+                        Create News
+                    </Button>
+                </Stack>
                 <NewsTable
                     data={systemNewsData}
                     isLoading={isNewsDataLoading}
@@ -96,14 +93,14 @@ export default function AdminNews() {
                     initialData={isEditMode ? selectedNews : null}
                     onSuccess={() => {
                         refetchNewsData();
-                        setTabValue(0);
                     }}
+                    onClose={handleClose}
                 />
             </CustomTabPanel>
 
             <CustomTabPanel value={tabValue} index={2}>
                 {selectedNews && <NewsPreview news={selectedNews} />}
             </CustomTabPanel>
-        </Box>
+        </>
     );
 }
