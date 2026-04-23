@@ -13,7 +13,6 @@ interface NewsDisplayProps {
 }
 
 const NewsDisplay = ({ newsData, isNewsDataLoading }: NewsDisplayProps) => {
-    console.log("newsData", newsData);
     // 1. Manage visible count state
     const [visibleCount, setVisibleCount] = useState(10);
 
