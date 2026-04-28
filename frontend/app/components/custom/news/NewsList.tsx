@@ -52,7 +52,7 @@ const NewsList = ({ news }: { news: NewsDataType }) => {
                 )}
 
                 <Link
-                    to={news.link}
+                    to={news.isSystem ? `/news/${news.article_id}` : news.link}
                     target={news.isSystem ? "_self" : "_blank"}
                     style={{ textDecoration: "none" }}>
                     <Typography

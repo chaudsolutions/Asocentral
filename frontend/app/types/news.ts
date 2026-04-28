@@ -22,6 +22,8 @@ export interface NewsDataType {
     video_url: string | null;
     isSystem: boolean;
     active: boolean;
+    downloads: number;
+    shares: number;
 }
 
 export interface NewsCategoryType {

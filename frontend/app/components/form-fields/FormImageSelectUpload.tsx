@@ -3,7 +3,12 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { Controller, type Control } from "react-hook-form";
+import {
+    Controller,
+    type Control,
+    type FieldValues,
+    type Path,
+} from "react-hook-form";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
@@ -13,23 +18,24 @@ import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 
-interface ImageSelectUploadProps {
-    name: string;
-    control: Control<any>;
+// Use a Generic T for the form data structure
+interface ImageSelectUploadProps<T extends FieldValues> {
+    name: Path<T>; // Path ensures 'name' exists in your form data
+    control: Control<T>;
     label?: string;
-    maxSize?: number; // in bytes
+    maxSize?: number;
     accept?: string;
     uploading?: boolean;
 }
 
-const ImageSelectUpload: React.FC<ImageSelectUploadProps> = ({
+const FormImageSelectUpload = <T extends FieldValues>({
     name,
     control,
     label = "Upload Image",
-    maxSize = 5 * 1024 * 1024, // 5MB default
+    maxSize = 5 * 1024 * 1024,
     accept = "image/*",
     uploading = false,
-}) => {
+}: ImageSelectUploadProps<T>) => {
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -220,4 +226,4 @@ const ImageSelectUpload: React.FC<ImageSelectUploadProps> = ({
     );
 };
 
-export default ImageSelectUpload;
+export default FormImageSelectUpload;

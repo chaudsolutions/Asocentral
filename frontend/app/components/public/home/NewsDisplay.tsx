@@ -16,9 +16,9 @@ const NewsDisplay = ({ newsData, isNewsDataLoading }: NewsDisplayProps) => {
     // 1. Manage visible count state
     const [visibleCount, setVisibleCount] = useState(10);
 
-    // Skip the first 3 (Hero) and slice based on visibleCount
-    const displayNews = newsData?.slice(3, 3 + visibleCount) || [];
-    const hasMore = newsData && 3 + visibleCount < newsData.length;
+    // slice based on visibleCount
+    const displayNews = newsData.slice(0, visibleCount) || [];
+    const hasMore = newsData && visibleCount < newsData.length;
 
     const handleLoadMore = () => {
         setVisibleCount((prev) => prev + 10);

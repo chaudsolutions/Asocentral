@@ -3,6 +3,7 @@ import { getNewsCategories } from "./useNewsCategories";
 import { fetchNewsData } from "./useNewsDataApi";
 import { getAdminData, getUserData } from "./useAuthApi";
 import { useAuthContext } from "~/context/AuthContext";
+import { fetchAllUsers } from "./useUserApi";
 
 // use query to clear cache for logout
 export const useInvalidateCache = () => {
@@ -78,4 +79,19 @@ export const useUserData = () => {
     });
 
     return { userData, isUserDataLoading, userDataError, refetchUserData };
+};
+
+// use fetch all users data
+export const useFetchAllUsers = () => {
+    const {
+        data: allUsers,
+        isLoading: isAllUsersLoading,
+        error: allUsersError,
+        refetch: refetchAllUsers,
+    } = useQuery({
+        queryKey: ["allUsers"],
+        queryFn: fetchAllUsers,
+    });
+
+    return { allUsers, isAllUsersLoading, allUsersError, refetchAllUsers };
 };

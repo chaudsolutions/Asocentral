@@ -19,4 +19,10 @@ adminRoute.post("/news", adminController.createNews);
 adminRoute.put("/news/:newsId", adminController.updateNews);
 adminRoute.delete("/news/:newsId", adminController.deleteNews);
 
+// news status
+adminRoute.patch("/news/:newsId/status", adminController.updateNewsStatus);
+
+// users
+adminRoute.get("/users", adminController.getAllUsers);
+
 export default adminRoute;

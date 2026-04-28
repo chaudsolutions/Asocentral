@@ -1,4 +1,4 @@
-import { type AutocompleteProps } from "@mui/material";
+// FormMultiAutocompleteFreeSolo.tsx - New component for freeSolo
 import {
     Controller,
     type Control,
@@ -8,36 +8,22 @@ import {
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
-interface FormMultiAutocompleteProps<
-    T extends FieldValues,
-    Option,
-> extends Omit<
-    AutocompleteProps<Option, true, false, false>,
-    "renderInput" | "onChange" | "value" | "renderTags"
-> {
+interface FormMultiAutocompleteFreeSoloProps<T extends FieldValues> {
     name: Path<T>;
     label?: string;
     control: Control<T>;
-    getOptionLabel: (option: Option) => string;
     rules?: Record<string, unknown>;
     placeholder?: string;
-    isEqual?: (option: Option, value: Option) => boolean;
-    showSelectedBelow?: boolean;
-    selectedItemRenderer?: (
-        option: Option,
-        onRemove: () => void,
-    ) => React.ReactNode;
+    loading?: boolean;
 }
 
-const FormMultiAutocomplete = <T extends FieldValues, Option>({
+const FormMultiAutocompleteFreeSolo = <T extends FieldValues>({
     name,
     control,
-    getOptionLabel,
     rules,
-    placeholder = "Select options",
-    isEqual = (option, value) => option === value,
-    ...autocompleteProps
-}: FormMultiAutocompleteProps<T, Option>) => {
+    placeholder = "Type and press enter",
+    loading,
+}: FormMultiAutocompleteFreeSoloProps<T>) => {
     return (
         <Controller
             name={name}
@@ -51,16 +37,19 @@ const FormMultiAutocomplete = <T extends FieldValues, Option>({
 
                 return (
                     <Autocomplete
-                        {...autocompleteProps}
                         multiple
+                        freeSolo
                         value={selectedValues}
                         onChange={(_, newValue) => {
                             onChange(newValue);
                         }}
                         size="small"
-                        isOptionEqualToValue={isEqual}
-                        getOptionLabel={getOptionLabel}
-                        // Clear renderTags to remove chips from input
+                        options={[]}
+                        loading={loading}
+                        getOptionLabel={(option) => {
+                            if (typeof option === "string") return option;
+                            return String(option);
+                        }}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -83,4 +72,4 @@ const FormMultiAutocomplete = <T extends FieldValues, Option>({
     );
 };
 
-export default FormMultiAutocomplete;
+export default FormMultiAutocompleteFreeSolo;

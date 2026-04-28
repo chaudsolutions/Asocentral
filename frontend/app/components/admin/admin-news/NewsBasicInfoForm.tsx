@@ -1,90 +1,105 @@
 import { type Control } from "react-hook-form";
-import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import { useNewsCategories } from "~/hooks/useCaching";
 import FormTextField from "~/components/form-fields/FormTextField";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 import FormMultiAutocomplete from "~/components/form-fields/FormMultiAutocomplete";
-import FormImageUpload from "~/components/form-fields/FormImageUpload";
-import type { NewsCategoryType } from "~/types/news";
 import type { NewsFormData } from "./NewsEditorStepper";
 import FormDatePicker from "~/components/form-fields/FormDatePicker";
+import FormImageSelectUpload from "~/components/form-fields/FormImageSelectUpload";
+import FormVideoUpload from "~/components/form-fields/FormVideoUpload";
+import type { NewsCategoryType } from "~/types/news";
 
 interface Props {
     control: Control<NewsFormData>;
+    categories: NewsCategoryType[];
+    isNewsCategoriesLoading: boolean;
 }
 
-export default function NewsBasicInfoForm({ control }: Props) {
-    const { newsCategories = [] } = useNewsCategories();
-
+export default function NewsBasicInfoForm({
+    control,
+    categories,
+    isNewsCategoriesLoading,
+}: Props) {
     return (
-        <Box sx={{ display: "grid", gap: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: "#003366" }}>
-                General Information
-            </Typography>
+        <Grid container spacing={3}>
+            <Grid size={12}>
+                <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 800, color: "#003366" }}>
+                    General Information
+                </Typography>
+            </Grid>
 
-            <FormTextField
-                name="title"
-                label="Article Headline"
-                control={control}
-                rules={{ required: "Headline is required" }}
-            />
+            {/* Compulsory */}
+            <Grid size={12}>
+                <FormTextField
+                    name="title"
+                    label="Article Headline"
+                    control={control}
+                    rules={{ required: "Headline is required" }}
+                />
+            </Grid>
 
-            <Box
-                sx={{
-                    display: "grid",
-                    gridTemplateColumns: { md: "1fr 1fr" },
-                    gap: 2,
-                }}>
+            {/* Compulsory */}
+            <Grid size={12}>
                 <FormMultiAutocomplete
                     name="category"
                     label="Categories"
                     control={control}
-                    options={newsCategories}
-                    getOptionLabel={(option: NewsCategoryType) => option.name}
+                    options={categories}
+                    loading={isNewsCategoriesLoading}
+                    getOptionLabel={(option) => option.name || ""}
                     isEqual={(option, value) => option._id === value._id}
                     placeholder="Select categories"
+                    rules={{ required: "Please select at least one category" }}
                 />
-            </Box>
+            </Grid>
 
-            {/* NEW: Automated Image Upload */}
-            <FormImageUpload
-                name="image_url"
-                label="Cover Image"
-                control={control}
-            />
+            {/* Compulsory */}
+            <Grid size={{ xs: 12, md: 6 }}>
+                <FormImageSelectUpload
+                    name="image_url"
+                    label="Cover Image"
+                    control={control}
+                />
+            </Grid>
+            {/* Replaced with Video Upload */}
+            <Grid size={{ xs: 12, md: 6 }}>
+                <FormVideoUpload
+                    name="video_url"
+                    label="Article Video"
+                    control={control}
+                />
+            </Grid>
 
-            <FormTextArea
-                name="description"
-                label="Short Summary / Excerpt"
-                control={control}
-                rules={{ required: "Summary is required" }}
-            />
+            {/* Compulsory */}
+            <Grid size={12}>
+                <FormTextArea
+                    name="description"
+                    label="Short Summary / Excerpt"
+                    control={control}
+                    rules={{ required: "Summary is required" }}
+                />
+            </Grid>
 
-            <Box
-                sx={{
-                    display: "grid",
-                    gridTemplateColumns: { md: "1fr 1fr" },
-                    gap: 2,
-                }}>
+            <Grid size={{ xs: 12, md: 6 }}>
                 <FormTextField
                     name="link"
                     label="Original Source Link"
                     control={control}
                 />
-                <FormTextField
-                    name="video_url"
-                    label="Video URL (Optional)"
-                    control={control}
-                />
-            </Box>
+            </Grid>
 
-            {/* NEW: Proper Date Picker */}
-            <FormDatePicker
-                name="pubDate"
-                label="Publication Date"
-                control={control}
-            />
-        </Box>
+            {/* Compulsory */}
+            <Grid size={{ xs: 12, md: 6 }}>
+                <FormDatePicker
+                    name="pubDate"
+                    label="Publication Date"
+                    control={control}
+                    rules={{ required: "Publication date is required" }}
+                />
+            </Grid>
+        </Grid>
     );
 }

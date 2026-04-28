@@ -9,6 +9,10 @@ import type { NewsDataType } from "~/types/news";
 import NewsEditorStepper from "~/components/admin/admin-news/NewsEditorStepper";
 import NewsTable from "~/components/admin/admin-news/NewsTable";
 import NewsPreview from "~/components/admin/admin-news/NewsPreview";
+import { useToast } from "~/context/ToastContext";
+import { useConfirmDialog } from "~/context/ConfirmDialogContext";
+import { deleteNewsData, updateNewsStatus } from "~/hooks/useNewsDataApi";
+import { isAxiosError } from "axios";
 
 export function meta() {
     return [{ title: `Admin News | ${appName}` }];
@@ -37,6 +41,10 @@ export default function AdminNews() {
     const [selectedNews, setSelectedNews] = useState<NewsDataType | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
 
+    const { showToast } = useToast();
+
+    const { confirm } = useConfirmDialog();
+
     const { newsData = [], isNewsDataLoading, refetchNewsData } = useNewsData();
 
     const systemNewsData = useMemo(() => {
@@ -60,6 +68,63 @@ export default function AdminNews() {
         setTabValue(2); // Switch to View Tab
     };
 
+    const handleToggleStatus = async (news: NewsDataType) => {
+        const newStatus = !news.active;
+        const actionText = newStatus ? "activate" : "deactivate";
+
+        await confirm({
+            title: `${newStatus ? "Activate" : "Deactivate"} News`,
+            message: `Are you sure you want to ${actionText} "${news.title}"?`,
+            confirmText: newStatus ? "Activate" : "Deactivate",
+            confirmColor: newStatus ? "success" : "warning", // Success for live, Warning for offline
+            onConfirm: async () => {
+                try {
+                    await updateNewsStatus(news._id, newStatus);
+                    showToast(
+                        `News ${newStatus ? "activated" : "deactivated"} successfully`,
+                        "success",
+                    );
+                    refetchNewsData();
+                } catch (error) {
+                    const errorMessage = isAxiosError(error)
+                        ? error.response?.data?.message
+                        : null;
+
+                    showToast(
+                        errorMessage || `Failed to ${actionText} news`,
+                        "error",
+                    );
+                }
+            },
+        });
+    };
+
+    const handleDelete = async (news: NewsDataType) => {
+        await confirm({
+            title: "Delete News",
+            message: `Are you sure you want to delete "${news.title}"? This action cannot be undone.`,
+            confirmText: "Delete",
+            confirmColor: "error",
+            onConfirm: async () => {
+                try {
+                    await deleteNewsData(news._id);
+                    showToast("News deleted successfully", "success");
+                    refetchNewsData();
+                } catch (error) {
+                    if (isAxiosError(error)) {
+                        showToast(
+                            error.response?.data?.message ||
+                                "Failed to delete news",
+                            "error",
+                        );
+                    } else {
+                        showToast("Failed to delete news", "error");
+                    }
+                }
+            },
+        });
+    };
+
     return (
         <>
             <CustomTabPanel value={tabValue} index={0}>
@@ -68,6 +133,7 @@ export default function AdminNews() {
                     sx={{
                         justifyContent: "space-between",
                         alignItems: "center",
+                        mb: 4,
                     }}>
                     <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>
                         News Management
@@ -85,6 +151,8 @@ export default function AdminNews() {
                     isLoading={isNewsDataLoading}
                     onEdit={handleEdit}
                     onView={handleView}
+                    onToggleStatus={handleToggleStatus}
+                    onDelete={handleDelete}
                 />
             </CustomTabPanel>
 
@@ -99,7 +167,9 @@ export default function AdminNews() {
             </CustomTabPanel>
 
             <CustomTabPanel value={tabValue} index={2}>
-                {selectedNews && <NewsPreview news={selectedNews} />}
+                {selectedNews && (
+                    <NewsPreview news={selectedNews} onClose={handleClose} />
+                )}
             </CustomTabPanel>
         </>
     );

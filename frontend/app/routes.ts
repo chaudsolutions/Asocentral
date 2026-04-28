@@ -16,6 +16,12 @@ export default [
         route("category/:categoryName", "routes/public/category.tsx", {
             id: "news-category", // Explicit unique ID
         }),
+        route("news/:newsId", "routes/public/single-news.tsx", {
+            id: "single-news", // Explicit unique ID
+        }),
+
+        // 404 page for unmatched routes
+        route("*", "routes/public/404.tsx"),
     ]),
 
     // admin authentication layout

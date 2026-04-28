@@ -2,12 +2,14 @@ import { useFieldArray, type Control } from "react-hook-form";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FormTextField from "~/components/form-fields/FormTextField";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 import type { NewsFormData } from "./NewsEditorStepper";
+import FormImageSelectUpload from "~/components/form-fields/FormImageSelectUpload";
 
 export default function NewsContentForm({
     control,
@@ -36,23 +38,33 @@ export default function NewsContentForm({
                         Block #{index + 1}
                     </Typography>
 
-                    <Box sx={{ display: "grid", gap: 2 }}>
-                        <FormTextField
-                            name={`content.${index}.title`}
-                            label="Section Title"
-                            control={control}
-                        />
-                        <FormTextField
-                            name={`content.${index}.image_url`}
-                            label="Section Image URL"
-                            control={control}
-                        />
-                        <FormTextArea
-                            name={`content.${index}.description`}
-                            label="Section Body"
-                            control={control}
-                        />
-                    </Box>
+                    <Grid container spacing={3}>
+                        <Grid size={12}>
+                            <FormImageSelectUpload
+                                name={`content.${index}.image_url`}
+                                control={control}
+                            />
+                        </Grid>
+
+                        <Grid size={12}>
+                            <FormTextField
+                                name={`content.${index}.title`}
+                                label="Section Title"
+                                control={control}
+                            />
+                        </Grid>
+
+                        <Grid size={12}>
+                            <FormTextArea
+                                name={`content.${index}.description`}
+                                label="Section Body"
+                                control={control}
+                                rules={{
+                                    required: `Block ${index + 1} description is required`,
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
 
                     {fields.length > 1 && (
                         <Button
@@ -70,7 +82,7 @@ export default function NewsContentForm({
                 startIcon={<AddIcon />}
                 variant="outlined"
                 onClick={() =>
-                    append({ title: "", description: "", image_url: "" })
+                    append({ title: "", description: "", image_url: null })
                 }>
                 Add Content Block
             </Button>

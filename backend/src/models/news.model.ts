@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 // Sub-interface for the content array items
 export interface INewsContent {
@@ -10,10 +10,11 @@ export interface INewsContent {
 // Main interface for the News document
 export interface INews extends Document {
     article_id: string;
+    title: string;
     category: string[];
     content: INewsContent[];
     country: string[];
-    creator: string[];
+    creator: Types.ObjectId[];
     description: string;
     fetched_at: Date;
     image_url: string;
@@ -29,8 +30,8 @@ export interface INews extends Document {
 // Define the sub-schema first
 const NewsContentSchema = new Schema<INewsContent>(
     {
-        image_url: { type: String, required: true },
-        title: { type: String, required: true },
+        image_url: { type: String },
+        title: { type: String },
         description: { type: String, required: true },
     },
     { _id: false },
@@ -45,6 +46,7 @@ const NewsSchema: Schema = new Schema<INews>(
             unique: true,
             index: true, // Indexing for faster lookups
         },
+        title: { type: String, required: true },
         category: {
             type: [String],
             default: [],
@@ -55,7 +57,13 @@ const NewsSchema: Schema = new Schema<INews>(
             default: [],
         },
         country: { type: [String], default: [] },
-        creator: { type: [String], default: [] },
+        creator: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+                default: [],
+            },
+        ],
         description: { type: String, default: "" },
         fetched_at: {
             type: Date,
@@ -65,7 +73,7 @@ const NewsSchema: Schema = new Schema<INews>(
         image_url: { type: String, required: true },
         keywords: { type: [String], default: [] },
         language: { type: String, default: "en" },
-        link: { type: String, required: true },
+        link: { type: String },
         pubDate: { type: String, required: true },
         video_url: { type: String, default: null },
         isSystem: { type: Boolean, default: true },

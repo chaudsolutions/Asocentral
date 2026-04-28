@@ -17,6 +17,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
+import Divider from "@mui/material/Divider";
 
 import type { NewsDataType } from "~/types/news";
 
@@ -25,6 +26,8 @@ interface NewsTableProps {
     isLoading: boolean;
     onEdit: (news: NewsDataType) => void;
     onView: (news: NewsDataType) => void;
+    onToggleStatus: (news: NewsDataType) => void;
+    onDelete: (news: NewsDataType) => void;
 }
 
 export default function NewsTable({
@@ -32,6 +35,8 @@ export default function NewsTable({
     isLoading,
     onEdit,
     onView,
+    onToggleStatus,
+    onDelete,
 }: NewsTableProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [activeRow, setActiveRow] = useState<NewsDataType | null>(null);
@@ -47,6 +52,11 @@ export default function NewsTable({
     const handleMenuClose = () => {
         setAnchorEl(null);
         setActiveRow(null);
+    };
+
+    const handleMenuAction = (action: () => void) => {
+        action();
+        handleMenuClose();
     };
 
     if (isLoading) return <Skeleton variant="rectangular" height={400} />;
@@ -110,26 +120,25 @@ export default function NewsTable({
                 open={Boolean(anchorEl)}
                 onClose={handleMenuClose}>
                 <MenuItem
-                    onClick={() => {
-                        onView(activeRow!);
-                        handleMenuClose();
-                    }}>
+                    onClick={() => handleMenuAction(() => onView(activeRow!))}>
                     <VisibilityIcon fontSize="small" sx={{ mr: 1 }} /> View
                 </MenuItem>
+
                 <MenuItem
-                    onClick={() => {
-                        onEdit(activeRow!);
-                        handleMenuClose();
-                    }}>
+                    onClick={() => handleMenuAction(() => onEdit(activeRow!))}>
                     <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
                 </MenuItem>
-                <MenuItem onClick={handleMenuClose}>
+
+                <MenuItem
+                    onClick={() =>
+                        handleMenuAction(() => onToggleStatus(activeRow!))
+                    }>
                     {activeRow?.active ? (
                         <>
                             <ToggleOffIcon
                                 fontSize="small"
                                 sx={{ mr: 1, color: "warning.main" }}
-                            />{" "}
+                            />
                             Deactivate
                         </>
                     ) : (
@@ -137,13 +146,16 @@ export default function NewsTable({
                             <ToggleOnIcon
                                 fontSize="small"
                                 sx={{ mr: 1, color: "success.main" }}
-                            />{" "}
+                            />
                             Activate
                         </>
                     )}
                 </MenuItem>
+
+                <Divider />
+
                 <MenuItem
-                    onClick={handleMenuClose}
+                    onClick={() => handleMenuAction(() => onDelete(activeRow!))}
                     sx={{ color: "error.main" }}>
                     <DeleteIcon fontSize="small" sx={{ mr: 1 }} /> Delete
                 </MenuItem>

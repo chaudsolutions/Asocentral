@@ -2,11 +2,44 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import IconButton from "@mui/material/IconButton";
 import type { NewsDataType } from "~/types/news";
 
-export default function NewsPreview({ news }: { news: NewsDataType }) {
+export default function NewsPreview({
+    news,
+    onClose,
+}: {
+    news: NewsDataType;
+    onClose: () => void;
+}) {
     return (
-        <Box sx={{ maxWidth: "800px", mx: "auto", py: 4 }}>
+        <>
+            <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                    alignItems: "center",
+                }}>
+                <IconButton
+                    onClick={onClose}
+                    size="small"
+                    color="error"
+                    sx={{
+                        bgcolor: "grey.200",
+                    }}>
+                    <ArrowBackIcon fontSize="small" />
+                </IconButton>
+                <Typography
+                    variant="subtitle1"
+                    sx={{
+                        fontSize: ".8rem",
+                        fontWeight: 600,
+                    }}>
+                    Go Back
+                </Typography>
+            </Stack>
             {/* Header */}
             <Typography
                 variant="h3"
@@ -77,6 +110,6 @@ export default function NewsPreview({ news }: { news: NewsDataType }) {
             <Typography variant="caption" color="text.disabled">
                 Source: {news.link} | Published: {news.pubDate}
             </Typography>
-        </Box>
+        </>
     );
 }
