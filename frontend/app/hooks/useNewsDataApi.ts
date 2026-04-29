@@ -15,6 +15,20 @@ export const fetchNewsData = async (): Promise<NewsDataType[]> => {
     }
 };
 
+// fetch single news data from api
+export const fetchSingleNewsData = async (
+    newsId: string,
+): Promise<NewsDataType> => {
+    try {
+        const response = await axios.get(`${serVer}/app/news/${newsId}`);
+
+        return response.data.newsData;
+    } catch (error) {
+        console.error("Error fetching single news data:", error);
+        throw error;
+    }
+};
+
 // payload
 type NewsPayload = {
     title: string;
@@ -101,5 +115,23 @@ export const updateNewsStatus = async (
     } catch (error) {
         console.error("Error updating news status:", error);
         throw error;
+    }
+};
+
+export const updateNewsMetrics = async (
+    newsId: string,
+    field: "shares" | "downloads",
+): Promise<void> => {
+    const { token } = getUserToken();
+    try {
+        await axios.patch(
+            `${serVer}/app/news/${newsId}/metrics`,
+            { field },
+            {
+                headers: { Authorization: `Bearer ${token}` },
+            },
+        );
+    } catch (error) {
+        console.error(`Error updating ${field}:`, error);
     }
 };

@@ -16,7 +16,7 @@ export default [
         route("category/:categoryName", "routes/public/category.tsx", {
             id: "news-category", // Explicit unique ID
         }),
-        route("news/:newsId", "routes/public/single-news.tsx", {
+        route("news/:articleId", "routes/public/single-news.tsx", {
             id: "single-news", // Explicit unique ID
         }),
 

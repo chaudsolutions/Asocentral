@@ -57,7 +57,10 @@ export const apiController = {
 
             // 2. Handle MongoDB (Always Fresh Logic)
             // We fetch this every time without checking lastFetchTime
-            const systemNews = await NewsModel.find()
+            const systemNews = await NewsModel.find({
+                active: true,
+                isSystem: true,
+            })
                 .sort({ createdAt: -1 }) // Get newest system news first
                 .lean();
 
@@ -81,24 +84,26 @@ export const apiController = {
         }
     },
 
-    // get news data news by url
-    getNewsByUrl: async (req: Request, res: Response): Promise<void> => {
+    getSingleNews: async (req: Request, res: Response): Promise<void> => {
         try {
-            const { url } = req.params;
-            const response = await axios.get(url);
-            const dom = new JSDOM(response.data, { url });
-            const reader = new Readability(dom.window.document);
-            const article = reader.parse();
+            const { articleId } = req.params;
+            const news = await NewsModel.findOne({
+                article_id: articleId,
+            }).lean();
+
+            if (!news) {
+                throw new Error("News not found");
+            }
 
             res.status(200).json({
                 success: true,
-                newsData: article?.textContent || "",
+                newsData: news,
             });
         } catch (error) {
-            console.error("Error fetching news data:", error);
-            res.status(500).json({
+            console.error("Error fetching single news:", error);
+            res.status(404).json({
                 success: false,
-                message: "Failed to load front-page news",
+                message: "News not found",
             });
         }
     },

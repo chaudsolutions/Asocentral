@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNewsCategories } from "./useNewsCategories";
-import { fetchNewsData } from "./useNewsDataApi";
+import { fetchNewsData, fetchSingleNewsData } from "./useNewsDataApi";
 import { getAdminData, getUserData } from "./useAuthApi";
 import { useAuthContext } from "~/context/AuthContext";
 import { fetchAllUsers } from "./useUserApi";
@@ -45,6 +45,27 @@ export const useNewsData = () => {
     });
 
     return { newsData, isNewsDataLoading, newsDataError, refetchNewsData };
+};
+
+// use single news data
+export const useSingleNewsData = (newsId: string) => {
+    const {
+        data: singleNewsData,
+        isLoading: isSingleNewsDataLoading,
+        error: singleNewsDataError,
+        refetch: refetchSingleNewsData,
+    } = useQuery({
+        queryKey: ["singleNewsData", newsId],
+        queryFn: () => fetchSingleNewsData(newsId),
+        enabled: !!newsId, // Only run this query if newsId is provided
+    });
+
+    return {
+        singleNewsData,
+        isSingleNewsDataLoading,
+        singleNewsDataError,
+        refetchSingleNewsData,
+    };
 };
 
 // use admin data

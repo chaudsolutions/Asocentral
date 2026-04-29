@@ -7,6 +7,12 @@ export interface INewsContent {
     description: string;
 }
 
+export interface IComment {
+    user: string;
+    content: string;
+    createdAt: Date;
+}
+
 // Main interface for the News document
 export interface INews extends Document {
     article_id: string;
@@ -25,6 +31,9 @@ export interface INews extends Document {
     video_url: string | null;
     isSystem: boolean;
     active: boolean;
+    shares: number;
+    downloads: number;
+    comments: IComment[];
 }
 
 // Define the sub-schema first
@@ -36,6 +45,15 @@ const NewsContentSchema = new Schema<INewsContent>(
     },
     { _id: false },
 ); // Disable _id for sub-documents to keep it clean
+
+const CommentSchema = new Schema<IComment>(
+    {
+        user: { type: String, required: true },
+        content: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+    },
+    { _id: false },
+);
 
 // Define the main schema
 const NewsSchema: Schema = new Schema<INews>(
@@ -78,6 +96,12 @@ const NewsSchema: Schema = new Schema<INews>(
         video_url: { type: String, default: null },
         isSystem: { type: Boolean, default: true },
         active: { type: Boolean, default: true },
+        shares: { type: Number, default: 0 },
+        downloads: { type: Number, default: 0 },
+        comments: {
+            type: [CommentSchema],
+            default: [],
+        },
     },
     {
         timestamps: true,
