@@ -35,8 +35,8 @@ export default [
             route("dashboard", "routes/admin/admin-dashboard.tsx"),
             route("category", "routes/admin/admin-category.tsx"),
             route("news", "routes/admin/admin-news.tsx"),
+            // admin 404 page for unmatched admin routes
+            route("*", "routes/admin/admin404.tsx"),
         ]),
-        // admin 404 page for unmatched admin routes
-        route("*", "routes/admin/admin404.tsx"),
     ]),
 ] satisfies RouteConfig;
