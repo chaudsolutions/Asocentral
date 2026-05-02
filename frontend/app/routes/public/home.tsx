@@ -77,7 +77,7 @@ export const meta = () => {
 export default function Home() {
     const { newsData = [], isNewsDataLoading } = useNewsData();
 
-    const activeNews = newsData.filter((n) => n.active);
+    const activeNews = newsData.filter((n) => n.active || !n.isSystem);
 
     return (
         <>
