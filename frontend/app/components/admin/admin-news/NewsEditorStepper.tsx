@@ -17,7 +17,11 @@ import type { NewsCategoryType, NewsDataType } from "~/types/news";
 import NewsBasicInfoForm from "./NewsBasicInfoForm";
 import NewsContentForm from "./NewsContentForm";
 import { useConfirmDialog } from "~/context/ConfirmDialogContext";
-import { postNewsData, updateNewsData } from "~/hooks/useNewsDataApi";
+import {
+    postNewsData,
+    updateNewsData,
+    type NewsPayload,
+} from "~/hooks/useNewsDataApi";
 import { isAxiosError } from "axios";
 import { useToast } from "~/context/ToastContext";
 import NewsMetadataForm from "./NewsMetadataForm";
@@ -49,10 +53,18 @@ export default function NewsEditorStepper({
     initialData,
     onSuccess,
     onClose,
+    submitNews,
+    submitLabel = "Submit News",
+    successMessage,
+    showCreators = true,
 }: {
     initialData: NewsDataType | null;
     onSuccess: () => void;
     onClose: () => void;
+    submitNews?: (payload: NewsPayload, newsId?: string) => Promise<void>;
+    submitLabel?: string;
+    successMessage?: string;
+    showCreators?: boolean;
 }) {
     const isEdit = !!initialData;
     const [activeStep, setActiveStep] = useState(0);
@@ -146,7 +158,7 @@ export default function NewsEditorStepper({
 
     const onSubmit: SubmitHandler<NewsFormData> = async (data) => {
         // process images and videos
-        const payload = {
+        const payload: NewsPayload = {
             title: data.title,
             description: data.description,
             category: data.category.map((cat) => cat.name),
@@ -167,15 +179,24 @@ export default function NewsEditorStepper({
 
         try {
             if (isEdit) {
-                await updateNewsData(initialData?._id || "", payload);
+                if (submitNews) {
+                    await submitNews(payload, initialData?._id || "");
+                } else {
+                    await updateNewsData(initialData?._id || "", payload);
+                }
             } else {
-                await postNewsData(payload);
+                if (submitNews) {
+                    await submitNews(payload);
+                } else {
+                    await postNewsData(payload);
+                }
             }
 
             onSuccess();
             onClose();
             showToast(
-                `News ${isEdit ? "updated" : "created"} successfully`,
+                successMessage ||
+                    `News ${isEdit ? "updated" : "created"} successfully`,
                 "success",
             );
         } catch (error) {
@@ -260,6 +281,7 @@ export default function NewsEditorStepper({
                         countries={countries}
                         creators={allUsers}
                         isCreatorsLoading={isAllUsersLoading}
+                        showCreators={showCreators}
                     />
                 )}
 
@@ -276,7 +298,7 @@ export default function NewsEditorStepper({
                                 onClick={handleSubmit(onSubmit)}
                                 loading={isSubmitting}
                                 sx={{ bgcolor: "#003366" }}>
-                                Submit News
+                                {submitLabel}
                             </Button>
                         ) : (
                             <Button

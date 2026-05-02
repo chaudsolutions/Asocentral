@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { NewsDataType } from "~/types/news";
+import type { NewsCommentType, NewsDataType } from "~/types/news";
 import { serVer } from "~/utils/constants";
 import { getUserToken } from "./useTools";
 
@@ -30,7 +30,7 @@ export const fetchSingleNewsData = async (
 };
 
 // payload
-type NewsPayload = {
+export type NewsPayload = {
     title: string;
     description: string;
     category: string[];
@@ -120,18 +120,27 @@ export const updateNewsStatus = async (
 
 export const updateNewsMetrics = async (
     newsId: string,
-    field: "shares" | "downloads",
+    field: "views" | "shares" | "downloads",
 ): Promise<void> => {
-    const { token } = getUserToken();
     try {
-        await axios.patch(
-            `${serVer}/app/news/${newsId}/metrics`,
-            { field },
-            {
-                headers: { Authorization: `Bearer ${token}` },
-            },
-        );
+        await axios.patch(`${serVer}/app/news/${newsId}/metrics`, { field });
     } catch (error) {
         console.error(`Error updating ${field}:`, error);
+    }
+};
+
+export const addNewsComment = async (
+    newsId: string,
+    data: { name?: string; content: string; sessionId: string },
+): Promise<{ message: string; comments: NewsCommentType[] }> => {
+    try {
+        const response = await axios.post(
+            `${serVer}/app/news/${newsId}/comments`,
+            data,
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        throw error;
     }
 };

@@ -4,6 +4,7 @@ import type MessageResponse from "../interfaces/message-response.js";
 import apiRoute from "./routes/api.route.js";
 import adminRoute from "./routes/admin.route.js";
 import authRoute from "./routes/auth.route.js";
+import userRoute from "./routes/user.route.js";
 
 const router = express.Router();
 
@@ -18,5 +19,7 @@ router.use("/app", apiRoute);
 router.use("/auth", authRoute);
 
 router.use("/admin", adminRoute);
+
+router.use("/user", userRoute);
 
 export default router;

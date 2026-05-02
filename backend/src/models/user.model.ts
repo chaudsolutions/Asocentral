@@ -18,6 +18,10 @@ export interface IUser extends Document {
         address: string;
         city: string;
         state: string;
+        country: string;
+        occupation: string;
+        age: number;
+        idCardImage?: string;
         zip: string;
     };
     createdAt: Date;
@@ -42,6 +46,10 @@ const userSchema = new Schema<IUser>(
             address: { type: String },
             city: { type: String },
             state: { type: String },
+            country: { type: String },
+            occupation: { type: String },
+            age: { type: Number },
+            idCardImage: { type: String },
             zip: { type: String },
         },
     },

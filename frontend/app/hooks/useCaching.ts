@@ -3,7 +3,12 @@ import { getNewsCategories } from "./useNewsCategories";
 import { fetchNewsData, fetchSingleNewsData } from "./useNewsDataApi";
 import { getAdminData, getUserData } from "./useAuthApi";
 import { useAuthContext } from "~/context/AuthContext";
-import { fetchAllUsers } from "./useUserApi";
+import {
+    fetchAdminDashboard,
+    fetchAllUsers,
+    fetchMyUnpublishedNews,
+    fetchUserDashboard,
+} from "./useUserApi";
 
 // use query to clear cache for logout
 export const useInvalidateCache = () => {
@@ -115,4 +120,64 @@ export const useFetchAllUsers = () => {
     });
 
     return { allUsers, isAllUsersLoading, allUsersError, refetchAllUsers };
+};
+
+// use admin dashboard data
+export const useAdminDashboard = () => {
+    const {
+        data: adminDashboard,
+        isLoading: isAdminDashboardLoading,
+        error: adminDashboardError,
+        refetch: refetchAdminDashboard,
+    } = useQuery({
+        queryKey: ["adminDashboard"],
+        queryFn: fetchAdminDashboard,
+    });
+
+    return {
+        adminDashboard,
+        isAdminDashboardLoading,
+        adminDashboardError,
+        refetchAdminDashboard,
+    };
+};
+
+// use journalist dashboard data
+export const useUserDashboard = () => {
+    const {
+        data: userDashboard,
+        isLoading: isUserDashboardLoading,
+        error: userDashboardError,
+        refetch: refetchUserDashboard,
+    } = useQuery({
+        queryKey: ["userDashboard"],
+        queryFn: fetchUserDashboard,
+    });
+
+    return {
+        userDashboard,
+        isUserDashboardLoading,
+        userDashboardError,
+        refetchUserDashboard,
+    };
+};
+
+// use fetch journalist submitted news
+export const useMyUnpublishedNews = () => {
+    const {
+        data: myUnpublishedNews,
+        isLoading: isMyUnpublishedNewsLoading,
+        error: myUnpublishedNewsError,
+        refetch: refetchMyUnpublishedNews,
+    } = useQuery({
+        queryKey: ["myUnpublishedNews"],
+        queryFn: fetchMyUnpublishedNews,
+    });
+
+    return {
+        myUnpublishedNews,
+        isMyUnpublishedNewsLoading,
+        myUnpublishedNewsError,
+        refetchMyUnpublishedNews,
+    };
 };

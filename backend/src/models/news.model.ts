@@ -8,6 +8,8 @@ export interface INewsContent {
 }
 
 export interface IComment {
+    sessionId: string;
+    name: string;
     user: string;
     content: string;
     createdAt: Date;
@@ -31,6 +33,7 @@ export interface INews extends Document {
     video_url: string | null;
     isSystem: boolean;
     active: boolean;
+    views: number;
     shares: number;
     downloads: number;
     comments: IComment[];
@@ -48,6 +51,8 @@ const NewsContentSchema = new Schema<INewsContent>(
 
 const CommentSchema = new Schema<IComment>(
     {
+        sessionId: { type: String, required: true },
+        name: { type: String, default: "Anonymous Reader" },
         user: { type: String, required: true },
         content: { type: String, required: true },
         createdAt: { type: Date, default: Date.now },
@@ -96,6 +101,7 @@ const NewsSchema: Schema = new Schema<INews>(
         video_url: { type: String, default: null },
         isSystem: { type: Boolean, default: true },
         active: { type: Boolean, default: true },
+        views: { type: Number, default: 0 },
         shares: { type: Number, default: 0 },
         downloads: { type: Number, default: 0 },
         comments: {

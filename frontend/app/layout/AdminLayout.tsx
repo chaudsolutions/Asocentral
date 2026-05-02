@@ -16,6 +16,7 @@ import AdminSideNav from "~/components/custom/navigation/AdminSideNav";
 import { Container } from "@mui/material";
 
 const drawerWidth = 240;
+const collapsedDrawerWidth = 72;
 
 export default function AdminLoggedWrapper() {
     const { user, isCheckingAuth } = useAuthContext();
@@ -23,6 +24,7 @@ export default function AdminLoggedWrapper() {
     const navigate = useNavigate();
     const { isMobile } = useResponsive();
     const [drawerOpen, setDrawerOpen] = useState(!isMobile);
+    const activeDrawerWidth = drawerOpen ? drawerWidth : collapsedDrawerWidth;
 
     const handleDrawerToggle = () => {
         setDrawerOpen(!drawerOpen);
@@ -46,8 +48,8 @@ export default function AdminLoggedWrapper() {
             <AppBar
                 position="sticky"
                 sx={{
-                    ml: { md: `${drawerWidth}px` },
-                    width: { md: `calc(100% - ${drawerWidth}px)` },
+                    ml: { md: `${activeDrawerWidth}px` },
+                    width: { md: `calc(100% - ${activeDrawerWidth}px)` },
                 }}>
                 <Toolbar>
                     <Box
@@ -62,7 +64,6 @@ export default function AdminLoggedWrapper() {
                             onClick={handleDrawerToggle}
                             sx={{
                                 mr: 1,
-                                display: { xs: "block", md: "none" },
                             }}>
                             <MenuIcon />
                         </IconButton>
@@ -83,7 +84,7 @@ export default function AdminLoggedWrapper() {
                     isMobile={isMobile}
                     drawerOpen={drawerOpen}
                     handleDrawerToggle={handleDrawerToggle}
-                    drawerWidth={drawerWidth}
+                    drawerWidth={isMobile ? drawerWidth : activeDrawerWidth}
                 />
                 <Container
                     maxWidth="xl"

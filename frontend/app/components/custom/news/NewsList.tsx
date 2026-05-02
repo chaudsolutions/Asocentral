@@ -4,6 +4,8 @@ import { Link } from "react-router";
 import type { NewsDataType } from "~/types/news";
 
 const NewsList = ({ news }: { news: NewsDataType }) => {
+    const isLocalNews = !!news._id;
+
     return (
         <Box
             sx={{
@@ -52,8 +54,8 @@ const NewsList = ({ news }: { news: NewsDataType }) => {
                 )}
 
                 <Link
-                    to={news.isSystem ? `/news/${news.article_id}` : news.link}
-                    target={news.isSystem ? "_self" : "_blank"}
+                    to={isLocalNews ? `/news/${news.article_id}` : news.link}
+                    target={isLocalNews ? "_self" : "_blank"}
                     style={{ textDecoration: "none" }}>
                     <Typography
                         variant="h6"

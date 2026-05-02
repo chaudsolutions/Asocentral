@@ -10,7 +10,7 @@ export default function AuthWrapper() {
 
     useEffect(() => {
         if (user) {
-            navigate("/user/profile");
+            navigate("/user/dashboard");
         }
     }, [user, navigate]);
 

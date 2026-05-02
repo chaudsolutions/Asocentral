@@ -156,7 +156,7 @@ const AdminSideNav = ({
                                       }
                                     : {
                                           component: NavLink,
-                                          to: `admin/${item.path}`,
+                                          to: `/admin/${item.path}`,
                                           onClick: isMobile
                                               ? handleDrawerToggle
                                               : () => {},

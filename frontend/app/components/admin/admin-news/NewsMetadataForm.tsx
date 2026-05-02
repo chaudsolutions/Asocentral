@@ -11,6 +11,7 @@ interface Props {
     countries: string[];
     creators: UserType[];
     isCreatorsLoading: boolean;
+    showCreators?: boolean;
 }
 
 export default function NewsMetadataForm({
@@ -18,6 +19,7 @@ export default function NewsMetadataForm({
     countries,
     creators,
     isCreatorsLoading,
+    showCreators = true,
 }: Props) {
     return (
         <Grid container spacing={3}>
@@ -41,18 +43,20 @@ export default function NewsMetadataForm({
                 />
             </Grid>
 
-            <Grid size={12}>
-                <FormMultiAutocomplete
-                    name="creator"
-                    label="Creators / Authors"
-                    control={control}
-                    options={creators}
-                    getOptionLabel={(option) => option?.name || ""}
-                    isEqual={(option, value) => option._id === value._id}
-                    loading={isCreatorsLoading}
-                    placeholder="Select creators"
-                />
-            </Grid>
+            {showCreators && (
+                <Grid size={12}>
+                    <FormMultiAutocomplete
+                        name="creator"
+                        label="Creators / Authors"
+                        control={control}
+                        options={creators}
+                        getOptionLabel={(option) => option?.name || ""}
+                        isEqual={(option, value) => option._id === value._id}
+                        loading={isCreatorsLoading}
+                        placeholder="Select creators"
+                    />
+                </Grid>
+            )}
 
             <Grid size={12}>
                 <FormMultiAutocompleteFreeSolo

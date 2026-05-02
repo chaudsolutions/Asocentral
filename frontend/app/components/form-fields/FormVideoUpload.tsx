@@ -32,12 +32,14 @@ export default function FormVideoUpload<T extends FieldValues>({
             control={control}
             render={({ field: { value, onChange }, fieldState: { error } }) => {
                 useEffect(() => {
-                    if (value instanceof File) {
-                        const objectUrl = URL.createObjectURL(value);
+                    const fieldValue = value as unknown;
+
+                    if (fieldValue instanceof File) {
+                        const objectUrl = URL.createObjectURL(fieldValue);
                         setPreview(objectUrl);
                         return () => URL.revokeObjectURL(objectUrl);
-                    } else if (typeof value === "string") {
-                        setPreview(value);
+                    } else if (typeof fieldValue === "string") {
+                        setPreview(fieldValue);
                     } else {
                         setPreview(null);
                     }

@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -13,18 +13,125 @@ import ShareIcon from "@mui/icons-material/Share";
 import CircularProgress from "@mui/material/CircularProgress";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import TextField from "@mui/material/TextField";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 
 import { useSingleNewsData } from "~/hooks/useCaching";
-import { updateNewsMetrics } from "~/hooks/useNewsDataApi";
+import {
+    addNewsComment,
+    fetchSingleNewsData,
+    updateNewsMetrics,
+} from "~/hooks/useNewsDataApi";
 import { formatDate } from "~/hooks/useTools";
+import type { NewsCommentType, NewsDataType } from "~/types/news";
+import { appName, websiteUrl } from "~/utils/constants";
+
+export async function loader({ params }: { params: { articleId?: string } }) {
+    if (!params.articleId) return { newsData: null };
+
+    try {
+        const newsData = await fetchSingleNewsData(params.articleId);
+        return { newsData };
+    } catch {
+        return { newsData: null };
+    }
+}
+
+export function meta({
+    data,
+}: {
+    data?: { newsData: NewsDataType | null };
+}) {
+    const news = data?.newsData;
+    const title = news ? `${news.title} | ${appName}` : `News | ${appName}`;
+    const description =
+        news?.description ||
+        "Read the latest verified story from Trojan News Network.";
+    const image = news?.image_url;
+    const url = news ? `${websiteUrl}/news/${news.article_id}` : websiteUrl;
+
+    return [
+        { title },
+        { name: "description", content: description },
+        { name: "keywords", content: news?.keywords?.join(", ") || appName },
+        { name: "robots", content: "index, follow" },
+        { tagName: "link", rel: "canonical", href: url },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:image", content: image },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
+        { property: "og:site_name", content: appName },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: image },
+        {
+            type: "application/ld+json",
+            content: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "NewsArticle",
+                headline: news?.title,
+                description,
+                image,
+                datePublished: news?.pubDate,
+                author: {
+                    "@type": "Organization",
+                    name: appName,
+                },
+                publisher: {
+                    "@type": "Organization",
+                    name: appName,
+                },
+            }),
+        },
+    ];
+}
+
+const getBrowserSessionId = () => {
+    const key = "trojan-news-browser-session";
+    const existing = localStorage.getItem(key);
+    if (existing) return existing;
+
+    const sessionId = crypto.randomUUID();
+    localStorage.setItem(key, sessionId);
+    return sessionId;
+};
 
 export default function SingleNews() {
     const { articleId } = useParams();
     const { singleNewsData } = useSingleNewsData(articleId || "");
     const articleRef = useRef<HTMLDivElement>(null);
     const [isExporting, setIsExporting] = useState(false);
+    const [commentName, setCommentName] = useState("");
+    const [commentContent, setCommentContent] = useState("");
+    const [comments, setComments] = useState<NewsCommentType[]>([]);
+    const [isCommenting, setIsCommenting] = useState(false);
+
+    useEffect(() => {
+        setComments(singleNewsData?.comments || []);
+    }, [singleNewsData?.comments]);
+
+    useEffect(() => {
+        if (!singleNewsData?._id) return;
+
+        const storageKey = `trojan-news-viewed-${singleNewsData._id}`;
+        if (sessionStorage.getItem(storageKey)) return;
+
+        sessionStorage.setItem(storageKey, "true");
+
+        if ("requestIdleCallback" in window) {
+            window.requestIdleCallback(() => {
+                updateNewsMetrics(singleNewsData._id, "views");
+            });
+        } else {
+            globalThis.setTimeout(() => {
+                updateNewsMetrics(singleNewsData._id, "views");
+            }, 500);
+        }
+    }, [singleNewsData?._id]);
 
     const handleShare = async () => {
         if (!singleNewsData) return;
@@ -65,6 +172,25 @@ export default function SingleNews() {
             console.error("PDF Export failed", err);
         } finally {
             setIsExporting(false);
+        }
+    };
+
+    const handleComment = async () => {
+        if (!singleNewsData?._id || !commentContent.trim()) return;
+
+        setIsCommenting(true);
+        try {
+            const response = await addNewsComment(singleNewsData._id, {
+                name: commentName,
+                content: commentContent,
+                sessionId: getBrowserSessionId(),
+            });
+            setComments(response.comments);
+            setCommentContent("");
+        } catch (err) {
+            console.error("Comment failed", err);
+        } finally {
+            setIsCommenting(false);
         }
     };
 
@@ -162,6 +288,93 @@ export default function SingleNews() {
                                 </Box>
                             ))}
                         </Stack>
+
+                        <Divider sx={{ my: 5 }} />
+
+                        <Box>
+                            <Typography
+                                variant="h5"
+                                sx={{ fontWeight: 900, mb: 2 }}>
+                                Comments
+                            </Typography>
+                            <Paper
+                                elevation={0}
+                                sx={{
+                                    p: 2,
+                                    border: "1px solid #eee",
+                                    mb: 3,
+                                }}>
+                                <Stack spacing={2}>
+                                    <TextField
+                                        label="Name"
+                                        size="small"
+                                        value={commentName}
+                                        onChange={(event) =>
+                                            setCommentName(event.target.value)
+                                        }
+                                        placeholder="Anonymous Reader"
+                                    />
+                                    <TextField
+                                        label="Comment"
+                                        multiline
+                                        minRows={3}
+                                        value={commentContent}
+                                        onChange={(event) =>
+                                            setCommentContent(event.target.value)
+                                        }
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleComment}
+                                        disabled={
+                                            isCommenting ||
+                                            !commentContent.trim()
+                                        }
+                                        sx={{
+                                            bgcolor: "#003366",
+                                            width: "fit-content",
+                                        }}>
+                                        Post Comment
+                                    </Button>
+                                </Stack>
+                            </Paper>
+
+                            <Stack spacing={2}>
+                                {comments.map((comment, index) => (
+                                    <Paper
+                                        key={`${comment.sessionId}-${index}`}
+                                        elevation={0}
+                                        sx={{
+                                            p: 2,
+                                            border: "1px solid #eee",
+                                        }}>
+                                        <Typography
+                                            variant="subtitle2"
+                                            sx={{ fontWeight: 800 }}>
+                                            {comment.name ||
+                                                "Anonymous Reader"}
+                                        </Typography>
+                                        <Typography
+                                            variant="caption"
+                                            color="text.secondary">
+                                            {formatDate(comment.createdAt)}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ mt: 1 }}>
+                                            {comment.content}
+                                        </Typography>
+                                    </Paper>
+                                ))}
+                                {comments.length === 0 && (
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary">
+                                        Be the first to comment on this story.
+                                    </Typography>
+                                )}
+                            </Stack>
+                        </Box>
                     </Box>
                 </Grid>
 
@@ -256,8 +469,30 @@ export default function SingleNews() {
                                             </strong>{" "}
                                             Downloads
                                         </Typography>
+                                        <Typography variant="body2">
+                                            <strong>
+                                                {singleNewsData?.views || 0}
+                                            </strong>{" "}
+                                            Views
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            <strong>{comments.length}</strong>{" "}
+                                            Comments
+                                        </Typography>
                                     </Stack>
                                 </Box>
+                                <Stack
+                                    direction="row"
+                                    spacing={2}
+                                    sx={{ alignItems: "center" }}>
+                                    <VisibilityIcon color="action" />
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary">
+                                        Views are recorded once per browser
+                                        session.
+                                    </Typography>
+                                </Stack>
                             </Stack>
                         </Paper>
                     </Box>

@@ -4,6 +4,14 @@ export interface NewsContentType {
     description: string;
 }
 
+export interface NewsCommentType {
+    sessionId: string;
+    name: string;
+    user: string;
+    content: string;
+    createdAt: string;
+}
+
 export interface NewsDataType {
     _id: string;
     article_id: string;
@@ -22,8 +30,18 @@ export interface NewsDataType {
     video_url: string | null;
     isSystem: boolean;
     active: boolean;
+    views: number;
     downloads: number;
     shares: number;
+    comments?: NewsCommentType[];
+}
+
+export interface UnpublishedNewsType extends NewsDataType {
+    author: string;
+    posted: boolean;
+    postedAt?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface NewsCategoryType {

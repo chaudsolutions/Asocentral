@@ -8,6 +8,7 @@ adminRoute.use(authenticate);
 
 // admin data
 adminRoute.get("/me", adminController.getAdminData);
+adminRoute.get("/dashboard", adminController.getDashboardData);
 
 // category
 adminRoute.post("/category", adminController.createCategory);
@@ -24,5 +25,16 @@ adminRoute.patch("/news/:newsId/status", adminController.updateNewsStatus);
 
 // users
 adminRoute.get("/users", adminController.getAllUsers);
+adminRoute.post("/users", adminController.createUser);
+adminRoute.get("/users/:userId", adminController.getUserDetails);
+adminRoute.put("/users/:userId", adminController.updateUser);
+adminRoute.delete("/users/:userId", adminController.deleteUser);
+
+// submitted journalist news
+adminRoute.put("/unpublished-news/:newsId", adminController.updateUnpublishedNews);
+adminRoute.post(
+    "/unpublished-news/:newsId/publish",
+    adminController.publishUnpublishedNews,
+);
 
 export default adminRoute;

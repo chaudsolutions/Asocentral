@@ -59,7 +59,6 @@ export const apiController = {
             // We fetch this every time without checking lastFetchTime
             const systemNews = await NewsModel.find({
                 active: true,
-                isSystem: true,
             })
                 .sort({ createdAt: -1 }) // Get newest system news first
                 .lean();
@@ -121,6 +120,92 @@ export const apiController = {
             res.status(500).json({
                 success: false,
                 message: "Failed to load categories",
+            });
+        }
+    },
+
+    updateNewsMetrics: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { newsId } = req.params;
+            const { field } = req.body as {
+                field: "views" | "shares" | "downloads";
+            };
+
+            if (!["views", "shares", "downloads"].includes(field)) {
+                res.status(400).json({
+                    success: false,
+                    message: "Invalid metric field",
+                });
+                return;
+            }
+
+            await NewsModel.updateOne(
+                { _id: newsId },
+                { $inc: { [field]: 1 } },
+            );
+
+            res.status(200).json({
+                success: true,
+                message: "Metric updated successfully",
+            });
+        } catch (error) {
+            console.error("Error updating news metric:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to update news metric",
+            });
+        }
+    },
+
+    addNewsComment: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { newsId } = req.params;
+            const { name, content, sessionId } = req.body as {
+                name?: string;
+                content?: string;
+                sessionId?: string;
+            };
+
+            if (!content?.trim() || !sessionId?.trim()) {
+                res.status(400).json({
+                    success: false,
+                    message: "Comment and browser session are required",
+                });
+                return;
+            }
+
+            const comment = {
+                sessionId: sessionId.trim(),
+                name: name?.trim() || "Anonymous Reader",
+                user: sessionId.trim(),
+                content: content.trim(),
+                createdAt: new Date(),
+            };
+
+            const news = await NewsModel.findByIdAndUpdate(
+                newsId,
+                { $push: { comments: comment } },
+                { new: true },
+            ).select("comments");
+
+            if (!news) {
+                res.status(404).json({
+                    success: false,
+                    message: "News not found",
+                });
+                return;
+            }
+
+            res.status(201).json({
+                success: true,
+                message: "Comment added successfully",
+                comments: news.comments,
+            });
+        } catch (error) {
+            console.error("Error adding news comment:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to add comment",
             });
         }
     },

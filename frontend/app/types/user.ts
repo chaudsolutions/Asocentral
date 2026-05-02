@@ -3,4 +3,22 @@ export interface UserType {
     name: string;
     email: string;
     role: "user" | "admin";
+    kycStatus?: boolean;
+    kycDetails?: {
+        firstName?: string;
+        lastName?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        country?: string;
+        occupation?: string;
+        age?: number;
+        zip?: string;
+        idCardImage?: string;
+    };
+    createdAt?: string;
+    updatedAt?: string;
+    pendingUnpublishedNews?: number;
 }
+
+export type UserRole = UserType["role"];

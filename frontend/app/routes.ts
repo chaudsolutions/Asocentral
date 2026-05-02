@@ -29,14 +29,29 @@ export default [
         route("auth/admin", "routes/auth/admin-auth.tsx"),
     ]),
 
+    // journalist authentication layout
+    layout("layout/UserAuthLayout.tsx", [
+        route("auth/user", "routes/auth/user-auth.tsx"),
+    ]),
+
     // admin layout and protected pages
     layout("layout/AdminLayout.tsx", [
         ...prefix("admin", [
             route("dashboard", "routes/admin/admin-dashboard.tsx"),
+            route("users", "routes/admin/admin-users.tsx"),
             route("category", "routes/admin/admin-category.tsx"),
             route("news", "routes/admin/admin-news.tsx"),
             // admin 404 page for unmatched admin routes
             route("*", "routes/admin/admin404.tsx"),
+        ]),
+    ]),
+
+    // journalist layout and protected pages
+    layout("layout/UserLayout.tsx", [
+        ...prefix("user", [
+            route("dashboard", "routes/user/user-dashboard.tsx"),
+            route("news", "routes/user/user-news.tsx"),
+            route("settings", "routes/user/user-settings.tsx"),
         ]),
     ]),
 ] satisfies RouteConfig;
