@@ -6,11 +6,8 @@ import {
     type Path,
 } from "react-hook-form";
 
-import Typography from "@mui/material/Typography";
-
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 
 interface FormAutocompleteProps<T extends FieldValues, Option> extends Omit<
     AutocompleteProps<Option, false, true, false>,
@@ -70,18 +67,6 @@ const FormAutocomplete = <T extends FieldValues, Option>({
                                 },
                             }}
                         />
-                    )}
-                    renderOption={(props, option) => (
-                        <MenuItem {...props} key={getOptionLabel(option)}>
-                            <Typography
-                                variant="body2"
-                                component="span"
-                                sx={{
-                                    whiteSpace: "normal",
-                                }}>
-                                {getOptionLabel(option)}
-                            </Typography>
-                        </MenuItem>
                     )}
                 />
             )}
