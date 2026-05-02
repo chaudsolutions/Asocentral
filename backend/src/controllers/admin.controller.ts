@@ -619,7 +619,9 @@ export const adminController = {
             });
 
             if (existingUser) {
-                throw new BadRequestError("User with this email already exists");
+                throw new BadRequestError(
+                    "User with this email already exists",
+                );
             }
 
             await UserModel.create({
@@ -682,7 +684,9 @@ export const adminController = {
             });
 
             if (existingUser) {
-                throw new BadRequestError("User with this email already exists");
+                throw new BadRequestError(
+                    "User with this email already exists",
+                );
             }
 
             const updateData: {
@@ -818,14 +822,18 @@ export const adminController = {
             } else {
                 res.status(500).json({
                     success: false,
-                    message: "Internal server error while fetching user details",
+                    message:
+                        "Internal server error while fetching user details",
                 });
             }
         }
     },
 
     // function to update a user's submitted unpublished news
-    updateUnpublishedNews: async (req: NewsCreateRequestBody, res: Response) => {
+    updateUnpublishedNews: async (
+        req: NewsCreateRequestBody,
+        res: Response,
+    ) => {
         try {
             const adminId = req.userId;
             const { newsId } = req.params;
@@ -884,7 +892,9 @@ export const adminController = {
             }
 
             if (unpublishedNews.posted) {
-                throw new BadRequestError("Submitted news has already been posted");
+                throw new BadRequestError(
+                    "Submitted news has already been posted",
+                );
             }
 
             await NewsModel.create({
@@ -900,7 +910,6 @@ export const adminController = {
                 link: unpublishedNews.link,
                 pubDate: unpublishedNews.pubDate,
                 video_url: unpublishedNews.video_url,
-                isSystem: false,
                 active: true,
             });
 
@@ -922,7 +931,8 @@ export const adminController = {
             } else {
                 res.status(500).json({
                     success: false,
-                    message: "Internal server error while posting submitted news",
+                    message:
+                        "Internal server error while posting submitted news",
                 });
             }
         }

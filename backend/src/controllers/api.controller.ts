@@ -57,9 +57,7 @@ export const apiController = {
 
             // 2. Handle MongoDB (Always Fresh Logic)
             // We fetch this every time without checking lastFetchTime
-            const systemNews = await NewsModel.find({
-                active: true,
-            })
+            const systemNews = await NewsModel.find()
                 .sort({ createdAt: -1 }) // Get newest system news first
                 .lean();
 
