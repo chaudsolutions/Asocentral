@@ -41,6 +41,7 @@ const dummyNews = Array.from({ length: 10 }).map((_, i) => ({
     downloads: Math.floor(Math.random() * 50),
     comments: [
         {
+            sessionId: crypto.randomUUID(),
             user: "Reader_1",
             content: "Great insights on this topic!",
             createdAt: new Date(),

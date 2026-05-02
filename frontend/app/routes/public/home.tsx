@@ -77,12 +77,16 @@ export const meta = () => {
 export default function Home() {
     const { newsData = [], isNewsDataLoading } = useNewsData();
 
+    const activeNews = newsData.filter(
+        (n) => (n.active && n.isSystem) || !n._id,
+    );
+
     return (
         <>
-            <Hero newsData={newsData} isNewsDataLoading={isNewsDataLoading} />
+            <Hero newsData={activeNews} isNewsDataLoading={isNewsDataLoading} />
 
             <NewsDisplay
-                newsData={newsData}
+                newsData={activeNews}
                 isNewsDataLoading={isNewsDataLoading}
             />
         </>

@@ -354,13 +354,13 @@ export default function SingleNews() {
                         <Stack
                             direction="row"
                             spacing={1}
-                            flexWrap="wrap"
-                            useFlexGap>
+                            sx={{
+                                flexWrap: "wrap",
+                            }}>
                             {singleNewsData.category.map((cat) => (
                                 <Chip
                                     key={cat}
                                     label={cat}
-                                    size="small"
                                     sx={{
                                         bgcolor: "#003366",
                                         color: "white",
@@ -417,7 +417,9 @@ export default function SingleNews() {
                                 <Stack
                                     direction="row"
                                     spacing={1}
-                                    alignItems="center">
+                                    sx={{
+                                        alignItems: "center",
+                                    }}>
                                     <CalendarMonthIcon
                                         sx={{ color: "#666", fontSize: "1rem" }}
                                     />
@@ -433,7 +435,9 @@ export default function SingleNews() {
                                 <Stack
                                     direction="row"
                                     spacing={1}
-                                    alignItems="center">
+                                    sx={{
+                                        alignItems: "center",
+                                    }}>
                                     <VisibilityIcon
                                         sx={{ color: "#666", fontSize: "1rem" }}
                                     />
@@ -604,8 +608,7 @@ export default function SingleNews() {
                     <Stack
                         direction="row"
                         spacing={2}
-                        alignItems="center"
-                        sx={{ mb: 3 }}>
+                        sx={{ mb: 3, alignItems: "center" }}>
                         <MessageIcon sx={{ color: "#003366" }} />
                         <Typography
                             variant="h4"
@@ -731,8 +734,12 @@ export default function SingleNews() {
                                                     sm: "row",
                                                 }}
                                                 spacing={1}
-                                                alignItems={{ sm: "center" }}
-                                                sx={{ mb: 1 }}>
+                                                sx={{
+                                                    mb: 1,
+                                                    alignItems: {
+                                                        sm: "center",
+                                                    },
+                                                }}>
                                                 <Typography
                                                     variant="subtitle1"
                                                     sx={{ fontWeight: 700 }}>
