@@ -53,20 +53,17 @@ const FloatingCard = () => {
                 position: "sticky",
                 top: 20, // Distance from the top of the screen when scrolling
                 height: "fit-content", // Shrink to fit content
-                maxHeight: "calc(100vh - 40px)", // Ensure it doesn't overflow the screen
+                maxHeight: "70vh", // Ensure it doesn't overflow the screen
                 zIndex: 10,
             }}>
             {/* Logo/Header Section */}
-            <Box sx={{ bgcolor: "#003366", p: 3, textAlign: "center" }}>
-                <AppName />
+            <Box sx={{ bgcolor: "#003366", p: 1, textAlign: "center" }}>
                 <Typography
                     variant="caption"
                     sx={{
                         color: "white",
                         display: "block",
-                        mt: 1,
                         fontWeight: 700,
-                        letterSpacing: 1,
                     }}>
                     LIVE & ON DEMAND
                 </Typography>
