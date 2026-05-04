@@ -22,7 +22,8 @@ export type KycPayload = {
     occupation: string;
     age: number;
     zip?: string;
-    idCardImage?: string;
+    idCardImage: string; // Front of ID card
+    idCardBackImage: string; // Back of ID card
 };
 
 export type AdminDashboardData = {

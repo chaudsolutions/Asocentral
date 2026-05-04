@@ -6,7 +6,6 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
-import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import ShareIcon from "@mui/icons-material/Share";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -114,6 +113,11 @@ export default function SingleNews() {
     const [comments, setComments] = useState<NewsCommentType[]>([]);
     const [isCommenting, setIsCommenting] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [visibleComments, setVisibleComments] = useState(5);
+
+    const handleLoadMore = () => {
+        setVisibleComments((prev) => prev + 5);
+    };
 
     useEffect(() => {
         setComments(singleNewsData?.comments || []);
@@ -379,12 +383,9 @@ export default function SingleNews() {
                                 fontWeight: 800,
                                 color: "#1a1a1a",
                                 fontSize: {
-                                    xs: "1.75rem",
-                                    sm: "2.5rem",
-                                    md: "3.5rem",
+                                    xs: "1.3rem",
+                                    md: "2rem",
                                 },
-                                lineHeight: 1.2,
-                                letterSpacing: "-0.01em",
                             }}>
                             {singleNewsData.title}
                         </Typography>
@@ -395,8 +396,7 @@ export default function SingleNews() {
                             sx={{
                                 color: "#4a4a4a",
                                 fontWeight: 400,
-                                fontSize: { xs: "1rem", sm: "1.25rem" },
-                                lineHeight: 1.4,
+                                fontSize: "1rem",
                             }}>
                             {singleNewsData.description}
                         </Typography>
@@ -430,6 +430,10 @@ export default function SingleNews() {
                                             singleNewsData.pubDate ||
                                                 new Date().toISOString(),
                                         )}
+                                        ,{" "}
+                                        {new Date(
+                                            singleNewsData.pubDate || "",
+                                        ).toLocaleTimeString()}
                                     </Typography>
                                 </Stack>
                                 <Stack
@@ -447,19 +451,6 @@ export default function SingleNews() {
                                         {singleNewsData.views || 0} views
                                     </Typography>
                                 </Stack>
-                            </Stack>
-
-                            <Stack direction="row" spacing={1}>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary">
-                                    By
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: 600 }}>
-                                    {appName} Staff
-                                </Typography>
                             </Stack>
                         </Stack>
                     </Stack>
@@ -480,6 +471,8 @@ export default function SingleNews() {
                             sx={{
                                 width: "100%",
                                 height: "auto",
+                                objectFit: "cover",
+                                maxHeight: 500,
                                 display: "block",
                             }}
                         />
@@ -494,10 +487,7 @@ export default function SingleNews() {
                                         variant="h3"
                                         sx={{
                                             fontWeight: 700,
-                                            fontSize: {
-                                                xs: "1.5rem",
-                                                md: "1.75rem",
-                                            },
+                                            fontSize: "1.4rem",
                                             mb: 2,
                                             color: "#003366",
                                             borderLeft: "4px solid #c00",
@@ -515,16 +505,15 @@ export default function SingleNews() {
                                             width: "100%",
                                             borderRadius: 1,
                                             my: 3,
+                                            objectFit: "cover",
+                                            maxHeight: 500,
                                         }}
                                     />
                                 )}
                                 <Typography
                                     variant="body1"
                                     sx={{
-                                        fontSize: {
-                                            xs: "1rem",
-                                            md: "1.125rem",
-                                        },
+                                        fontSize: ".9rem",
                                         lineHeight: 1.8,
                                         color: "#2c2c2c",
                                         "& p": { mb: 2 },
@@ -536,79 +525,12 @@ export default function SingleNews() {
                     </Stack>
                 </Box>
 
-                {/* Stats Bar */}
-                <Paper
-                    elevation={0}
-                    sx={{
-                        mt: 5,
-                        mb: 4,
-                        p: 3,
-                        bgcolor: "#f8f9fa",
-                        border: "1px solid #e0e0e0",
-                        borderRadius: 2,
-                    }}>
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ textTransform: "uppercase" }}>
-                                Shares
-                            </Typography>
-                            <Typography
-                                variant="h4"
-                                sx={{ fontWeight: 700, color: "#003366" }}>
-                                {singleNewsData.shares || 0}
-                            </Typography>
-                        </Grid>
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ textTransform: "uppercase" }}>
-                                Downloads
-                            </Typography>
-                            <Typography
-                                variant="h4"
-                                sx={{ fontWeight: 700, color: "#003366" }}>
-                                {singleNewsData.downloads || 0}
-                            </Typography>
-                        </Grid>
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ textTransform: "uppercase" }}>
-                                Views
-                            </Typography>
-                            <Typography
-                                variant="h4"
-                                sx={{ fontWeight: 700, color: "#003366" }}>
-                                {singleNewsData.views || 0}
-                            </Typography>
-                        </Grid>
-                        <Grid size={{ xs: 6, sm: 3 }}>
-                            <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ textTransform: "uppercase" }}>
-                                Comments
-                            </Typography>
-                            <Typography
-                                variant="h4"
-                                sx={{ fontWeight: 700, color: "#003366" }}>
-                                {comments.length}
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                </Paper>
-
                 {/* Comments Section */}
                 <Box>
                     <Stack
                         direction="row"
                         spacing={2}
-                        sx={{ mb: 3, alignItems: "center" }}>
+                        sx={{ mt: 10, alignItems: "center" }}>
                         <MessageIcon sx={{ color: "#003366" }} />
                         <Typography
                             variant="h4"
@@ -686,85 +608,130 @@ export default function SingleNews() {
                     </Paper>
 
                     {/* Comments List */}
-                    <Stack spacing={2}>
-                        {comments.length === 0 ? (
-                            <Paper
-                                elevation={0}
+                    <Stack spacing={1.5}>
+                        {comments.length === 0 && (
+                            <Box
                                 sx={{
-                                    p: 4,
                                     textAlign: "center",
-                                    border: "1px solid #e0e0e0",
-                                    borderRadius: 2,
+                                    py: 6,
+                                    color: "#777",
                                 }}>
-                                <MessageIcon
-                                    sx={{ fontSize: 48, color: "#999", mb: 2 }}
-                                />
-                                <Typography
-                                    variant="body1"
-                                    color="text.secondary">
-                                    Be the first to share your thoughts on this
-                                    story.
+                                <MessageIcon sx={{ fontSize: 40, mb: 1 }} />
+                                <Typography variant="body2">
+                                    No comments yet. Be the first to share your
+                                    thoughts.
                                 </Typography>
-                            </Paper>
-                        ) : (
-                            comments.map((comment, index) => (
-                                <Paper
+                            </Box>
+                        )}
+                        {comments
+                            .slice(0, visibleComments)
+                            .map((comment, index) => (
+                                <Box
                                     key={`${comment.sessionId}-${index}`}
-                                    elevation={0}
                                     sx={{
-                                        p: 3,
-                                        border: "1px solid #e0e0e0",
-                                        borderRadius: 2,
-                                        transition: "all 0.2s",
-                                        "&:hover": {
-                                            borderColor: "#003366",
-                                            boxShadow:
-                                                "0 2px 8px rgba(0,0,0,0.05)",
-                                        },
+                                        display: "flex",
+                                        gap: 1.5,
+                                        py: 1.5,
+                                        borderBottom: "1px solid #eee",
                                     }}>
-                                    <Stack direction="row" spacing={2}>
-                                        <Avatar sx={{ bgcolor: "#003366" }}>
-                                            {(comment.name ||
-                                                "A")[0].toUpperCase()}
-                                        </Avatar>
-                                        <Box sx={{ flex: 1 }}>
-                                            <Stack
-                                                direction={{
-                                                    xs: "column",
-                                                    sm: "row",
-                                                }}
-                                                spacing={1}
-                                                sx={{
-                                                    mb: 1,
-                                                    alignItems: {
-                                                        sm: "center",
-                                                    },
-                                                }}>
-                                                <Typography
-                                                    variant="subtitle1"
-                                                    sx={{ fontWeight: 700 }}>
-                                                    {comment.name ||
-                                                        "Anonymous Reader"}
-                                                </Typography>
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary">
-                                                    {formatDate(
-                                                        comment.createdAt,
-                                                    )}
-                                                </Typography>
-                                            </Stack>
+                                    <Avatar
+                                        sx={{
+                                            bgcolor: "#003366",
+                                            width: 32,
+                                            height: 32,
+                                            fontSize: "0.8rem",
+                                        }}>
+                                        {(comment.name || "A")[0].toUpperCase()}
+                                    </Avatar>
+
+                                    <Box sx={{ flex: 1 }}>
+                                        <Stack
+                                            direction="row"
+                                            spacing={1}
+                                            sx={{ alignItems: "center" }}>
                                             <Typography
                                                 variant="body2"
-                                                sx={{ lineHeight: 1.6 }}>
-                                                {comment.content}
+                                                sx={{ fontWeight: 600 }}>
+                                                {comment.name || "Anonymous"}
                                             </Typography>
-                                        </Box>
-                                    </Stack>
-                                </Paper>
-                            ))
+                                            <Typography
+                                                variant="caption"
+                                                color="text.secondary">
+                                                {formatDate(comment.createdAt)}
+                                            </Typography>
+                                        </Stack>
+
+                                        <Typography
+                                            variant="body2"
+                                            sx={{
+                                                mt: 0.5,
+                                                lineHeight: 1.6,
+                                                color: "#333",
+                                            }}>
+                                            {comment.content}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            ))}
+                        {visibleComments < comments.length && (
+                            <Box sx={{ textAlign: "center", mt: 2 }}>
+                                <Button
+                                    onClick={handleLoadMore}
+                                    variant="text"
+                                    sx={{
+                                        color: "#003366",
+                                        fontWeight: 600,
+                                        textTransform: "none",
+                                    }}>
+                                    Load more comments
+                                </Button>
+                            </Box>
                         )}
                     </Stack>
+                </Box>
+
+                {/* Stats Bar */}
+                <Box
+                    sx={{
+                        mt: 4,
+                        py: 2,
+                        px: 2,
+                        borderTop: "1px solid #e0e0e0",
+                        borderBottom: "1px solid #e0e0e0",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                        gap: 2,
+                    }}>
+                    {[
+                        { label: "Views", value: singleNewsData.views || 0 },
+                        { label: "Shares", value: singleNewsData.shares || 0 },
+                        {
+                            label: "Downloads",
+                            value: singleNewsData.downloads || 0,
+                        },
+                        { label: "Comments", value: comments.length },
+                    ].map((stat) => (
+                        <Box key={stat.label}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: "#777",
+                                    textTransform: "uppercase",
+                                    fontSize: "0.65rem",
+                                }}>
+                                {stat.label}
+                            </Typography>
+                            <Typography
+                                sx={{
+                                    fontWeight: 700,
+                                    color: "#003366",
+                                    fontSize: "1rem",
+                                }}>
+                                {stat.value}
+                            </Typography>
+                        </Box>
+                    ))}
                 </Box>
             </Container>
         </Box>

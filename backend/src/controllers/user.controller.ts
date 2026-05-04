@@ -42,6 +42,7 @@ interface KycRequest extends Request {
         age: number;
         zip?: string;
         idCardImage?: string;
+        idCardBackImage?: string;
     };
 }
 
@@ -132,7 +133,10 @@ export const userController = {
         } catch (error) {
             console.error("Error fetching user dashboard:", error);
             if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
             } else {
                 res.status(500).json({
                     success: false,
@@ -157,7 +161,9 @@ export const userController = {
             });
 
             if (existingUser) {
-                throw new BadRequestError("User with this email already exists");
+                throw new BadRequestError(
+                    "User with this email already exists",
+                );
             }
 
             const user = await UserModel.findByIdAndUpdate(
@@ -178,7 +184,10 @@ export const userController = {
         } catch (error) {
             console.error("Error updating user data:", error);
             if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
             } else {
                 res.status(500).json({
                     success: false,
@@ -201,6 +210,7 @@ export const userController = {
                 age,
                 zip,
                 idCardImage,
+                idCardBackImage,
             } = req.body;
 
             if (
@@ -230,6 +240,7 @@ export const userController = {
                         age,
                         zip: zip?.trim(),
                         idCardImage,
+                        idCardBackImage,
                     },
                 },
                 { new: true },
@@ -247,7 +258,10 @@ export const userController = {
         } catch (error) {
             console.error("Error updating KYC:", error);
             if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
             } else {
                 res.status(500).json({
                     success: false,
@@ -290,9 +304,15 @@ export const userController = {
         } catch (error) {
             console.error("Error changing password:", error);
             if (error instanceof UnauthorizedError) {
-                res.status(401).json({ success: false, message: error.message });
+                res.status(401).json({
+                    success: false,
+                    message: error.message,
+                });
             } else if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
             } else {
                 res.status(500).json({
                     success: false,
@@ -349,7 +369,10 @@ export const userController = {
         } catch (error) {
             console.error("Error creating user news:", error);
             if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
             } else {
                 res.status(500).json({
                     success: false,

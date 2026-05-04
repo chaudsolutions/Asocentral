@@ -5,21 +5,33 @@ import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import Skeleton from "@mui/material/Skeleton";
 import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Stack from "@mui/material/Stack";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import AppName from "../buttons/AppName";
 import { useNewsCategories } from "~/hooks/useCaching";
 import { NavLink, Link } from "react-router";
 import type { NewsCategoryType } from "~/types/news";
 import { useResponsive } from "~/hooks/useTools";
+import SearchIcon from "@mui/icons-material/Search";
+import { useNewsData } from "~/hooks/useCaching";
+import SearchDrawer from "../news/SearchDrawer";
 
 const MainLayoutHeader = () => {
     const { newsCategories = [], isNewsCategoriesLoading } =
         useNewsCategories();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const { isMobile } = useResponsive();
+
+    const { newsData = [], isNewsDataLoading } = useNewsData();
+
+    const activeNews = newsData.filter(
+        (n) => (n.active && n.isSystem) || !n._id,
+    );
 
     const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -51,9 +63,34 @@ const MainLayoutHeader = () => {
             {/* Top Branding Bar */}
             <Box sx={{ bgcolor: "#003366", py: 1 }}>
                 <Container maxWidth="xl">
-                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            alignItems: "center",
+                        }}>
                         <AppName />
-                    </Box>
+
+                        <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
+                            <IconButton
+                                onClick={() => setIsSearchOpen(true)}
+                                sx={{ color: "white" }}>
+                                <SearchIcon />
+                            </IconButton>
+
+                            <Button
+                                component={Link}
+                                to="/auth/user"
+                                variant="contained"
+                                sx={{
+                                    bgcolor: "#c00",
+                                    fontWeight: 700,
+                                    textTransform: "none",
+                                    "&:hover": { bgcolor: "#900" },
+                                }}>
+                                Publish News
+                            </Button>
+                        </Box>
+                    </Stack>
                 </Container>
             </Box>
 
@@ -153,6 +190,13 @@ const MainLayoutHeader = () => {
                     </Box>
                 </Container>
             </Toolbar>
+
+            <SearchDrawer
+                open={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                data={activeNews}
+                loading={isNewsDataLoading}
+            />
         </AppBar>
     );
 };

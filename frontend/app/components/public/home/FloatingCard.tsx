@@ -4,7 +4,6 @@ import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Divider from "@mui/material/Divider";
 import Fade from "@mui/material/Fade";
-import AppName from "~/components/custom/buttons/AppName";
 import { useNewsData } from "~/hooks/useCaching";
 
 const FloatingCard = () => {

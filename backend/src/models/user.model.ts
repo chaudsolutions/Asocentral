@@ -22,6 +22,7 @@ export interface IUser extends Document {
         occupation: string;
         age: number;
         idCardImage?: string;
+        idCardBackImage?: string;
         zip: string;
     };
     createdAt: Date;
@@ -50,6 +51,7 @@ const userSchema = new Schema<IUser>(
             occupation: { type: String },
             age: { type: Number },
             idCardImage: { type: String },
+            idCardBackImage: { type: String },
             zip: { type: String },
         },
     },

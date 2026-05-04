@@ -22,6 +22,7 @@ import {
 import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
 import { countriesStatesArray } from "~/utils/countries-states";
+import FormTextArea from "~/components/form-fields/FormTextArea";
 
 export function meta() {
     return [{ title: `Journalist Settings | ${appName}` }];
@@ -69,6 +70,7 @@ export default function UserSettings() {
             age: 18,
             zip: "",
             idCardImage: "",
+            idCardBackImage: "",
         },
     });
     const passwordForm = useForm<PasswordForm>({
@@ -174,7 +176,9 @@ export default function UserSettings() {
                                     name="firstName"
                                     label="First Name"
                                     control={kycForm.control}
-                                    rules={{ required: "First name is required" }}
+                                    rules={{
+                                        required: "First name is required",
+                                    }}
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
@@ -182,18 +186,20 @@ export default function UserSettings() {
                                     name="lastName"
                                     label="Last Name"
                                     control={kycForm.control}
-                                    rules={{ required: "Last name is required" }}
+                                    rules={{
+                                        required: "Last name is required",
+                                    }}
                                 />
                             </Grid>
                             <Grid size={12}>
-                                <FormTextField
+                                <FormTextArea
                                     name="address"
                                     label="Address"
                                     control={kycForm.control}
                                     rules={{ required: "Address is required" }}
                                 />
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <FormAutocomplete<KycPayload, string>
                                     name="country"
                                     label="Country"
@@ -210,7 +216,7 @@ export default function UserSettings() {
                                     }}
                                 />
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <FormAutocomplete<KycPayload, string>
                                     name="state"
                                     label="State"
@@ -255,7 +261,7 @@ export default function UserSettings() {
                                     rules={{ required: "Age is required" }}
                                 />
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <FormTextField
                                     name="zip"
                                     label="Zip / Postal Code"
@@ -267,6 +273,14 @@ export default function UserSettings() {
                                     name="idCardImage"
                                     label="Upload ID Card"
                                     control={kycForm.control}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <FormImageSelectUpload
+                                    name="idCardBackImage"
+                                    control={kycForm.control}
+                                    label="ID Card Back"
+                                    accept={"image/*"}
                                 />
                             </Grid>
                         </Grid>

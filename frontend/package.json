@@ -21,6 +21,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "fuse.js": "^7.3.0",
     "html2canvas-pro": "^2.0.2",
     "isbot": "^5.1.36",
     "jspdf": "^4.2.1",
