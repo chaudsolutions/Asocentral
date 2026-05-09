@@ -444,3 +444,18 @@ export const publishUnpublishedNews = async (
         throw error;
     }
 };
+
+export const deleteUnpublishedNews = async (
+    newsId: string,
+): Promise<{ message: string }> => {
+    try {
+        const response = await axios.delete(
+            `${serVer}/admin/unpublished-news/${newsId}`,
+            { headers: getAdminAuthHeader() },
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting submitted news:", error);
+        throw error;
+    }
+};

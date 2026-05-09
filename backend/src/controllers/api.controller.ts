@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import axios from "axios";
+import crypto from "node:crypto";
 import { NEWS_DATA_API_KEY, NEWS_DATA_API_URL } from "../utils/constants";
 import { CategoryModel } from "../models/category.model";
 import NewsModel, { INews } from "../models/news.model";
 import AppSettingsModel from "../models/app-settings.model";
 import { NotificationCategory } from "../models/notification.model";
 import { createNotificationWithEmail } from "../utils/notification";
+import { UserModel, UserRole } from "../models/user.model";
 
 // Cache variables stored in memory (server-side)
 let cachedNewsData: INews[] = [];
@@ -181,6 +183,7 @@ export const apiController = {
             }
 
             const comment = {
+                commentId: crypto.randomUUID(),
                 sessionId: sessionId.trim(),
                 name: name?.trim() || "Anonymous Reader",
                 user: sessionId.trim(),
@@ -234,6 +237,84 @@ export const apiController = {
             res.status(500).json({
                 success: false,
                 message: "Failed to add comment",
+            });
+        }
+    },
+
+    deleteNewsComment: async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { newsId, commentId } = req.params;
+            const requesterId = req.userId;
+
+            if (!requesterId) {
+                res.status(401).json({
+                    success: false,
+                    message: "Unauthorized",
+                });
+                return;
+            }
+
+            const [requester, news] = await Promise.all([
+                UserModel.findById(requesterId).select("_id role"),
+                NewsModel.findById(newsId),
+            ]);
+
+            if (!requester) {
+                res.status(401).json({
+                    success: false,
+                    message: "Unauthorized",
+                });
+                return;
+            }
+
+            if (!news) {
+                res.status(404).json({
+                    success: false,
+                    message: "News not found",
+                });
+                return;
+            }
+
+            const isAdmin = requester.role === UserRole.ADMIN;
+            const isCreator = (news.creator || []).some(
+                (id: unknown) => String(id) === String(requester._id),
+            );
+
+            if (!isAdmin && !isCreator) {
+                res.status(403).json({
+                    success: false,
+                    message:
+                        "Only admins or creators of this news can delete comments",
+                });
+                return;
+            }
+
+            const originalLength = news.comments?.length || 0;
+            news.comments = (news.comments || []).filter(
+                (comment: { commentId: string }) =>
+                    comment.commentId !== commentId,
+            );
+
+            if (news.comments.length === originalLength) {
+                res.status(404).json({
+                    success: false,
+                    message: "Comment not found",
+                });
+                return;
+            }
+
+            await news.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Comment deleted successfully",
+                comments: news.comments,
+            });
+        } catch (error) {
+            console.error("Error deleting news comment:", error);
+            res.status(500).json({
+                success: false,
+                message: "Failed to delete comment",
             });
         }
     },

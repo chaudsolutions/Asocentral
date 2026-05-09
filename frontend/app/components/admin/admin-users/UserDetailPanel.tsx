@@ -17,9 +17,14 @@ import Paper from "@mui/material/Paper";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import type { UnpublishedNewsType } from "~/types/news";
 import type { UserType } from "~/types/user";
-import { fetchUserDetails, publishUnpublishedNews } from "~/hooks/useUserApi";
+import {
+    deleteUnpublishedNews,
+    fetchUserDetails,
+    publishUnpublishedNews,
+} from "~/hooks/useUserApi";
 import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
+import { useConfirmDialog } from "~/context/ConfirmDialogContext";
 
 interface Props {
     user: UserType;
@@ -29,6 +34,7 @@ interface Props {
 
 export default function UserDetailPanel({ user, onBack, onEditNews }: Props) {
     const { showToast } = useToast();
+    const { confirm } = useConfirmDialog();
     const [tab, setTab] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [details, setDetails] = useState<{
@@ -74,6 +80,32 @@ export default function UserDetailPanel({ user, onBack, onEditNews }: Props) {
                 showToast("Unable to post news", "error");
             }
         }
+    };
+
+    const handleDelete = async (news: UnpublishedNewsType) => {
+        await confirm({
+            title: "Delete Submission",
+            message: `Delete "${news.title}" from unpublished submissions?`,
+            confirmText: "Delete",
+            confirmColor: "error",
+            onConfirm: async () => {
+                try {
+                    const res = await deleteUnpublishedNews(news._id);
+                    showToast(res.message, "success");
+                    loadDetails();
+                } catch (error) {
+                    if (isAxiosError(error)) {
+                        showToast(
+                            error.response?.data?.message ||
+                                "Unable to delete submission",
+                            "error",
+                        );
+                    } else {
+                        showToast("Unable to delete submission", "error");
+                    }
+                }
+            },
+        });
     };
 
     const viewedUser = details?.user || user;
@@ -218,6 +250,14 @@ export default function UserDetailPanel({ user, onBack, onEditNews }: Props) {
                                                         Post
                                                     </Button>
                                                 )}
+                                                <Button
+                                                    size="small"
+                                                    color="error"
+                                                    onClick={() =>
+                                                        handleDelete(news)
+                                                    }>
+                                                    Delete
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ),

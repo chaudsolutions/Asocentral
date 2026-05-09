@@ -1060,6 +1060,57 @@ export const adminController = {
         }
     },
 
+    deleteUnpublishedNews: async (req: Request, res: Response) => {
+        try {
+            const adminId = req.userId;
+            const { newsId } = req.params;
+
+            const admin = await UserModel.findById(adminId);
+            if (!admin || admin.role !== "admin") {
+                throw new BadRequestError("User not found or not authorized");
+            }
+
+            const unpublishedNews = await UnpublishedNewsModel.findById(newsId);
+            if (!unpublishedNews) {
+                throw new BadRequestError("Submitted news not found");
+            }
+
+            const mediaUrls = new Set<string>();
+            if (unpublishedNews.image_url) {
+                mediaUrls.add(unpublishedNews.image_url);
+            }
+            if (unpublishedNews.video_url) {
+                mediaUrls.add(unpublishedNews.video_url);
+            }
+
+            collectContentImageUrls(
+                unpublishedNews.content as unknown as NewsContent[],
+            ).forEach((url) => mediaUrls.add(url));
+
+            await deleteUrlsSafely([...mediaUrls]);
+            await UnpublishedNewsModel.findByIdAndDelete(newsId);
+
+            res.status(200).json({
+                success: true,
+                message: "Submitted news deleted successfully",
+            });
+        } catch (error) {
+            console.error("Error deleting submitted news:", error);
+            if (error instanceof BadRequestError) {
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
+            } else {
+                res.status(500).json({
+                    success: false,
+                    message:
+                        "Internal server error while deleting submitted news",
+                });
+            }
+        }
+    },
+
     // function to publish a user's submitted news into the standard news feed
     publishUnpublishedNews: async (req: Request, res: Response) => {
         try {

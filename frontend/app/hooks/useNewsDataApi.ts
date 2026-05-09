@@ -3,7 +3,7 @@ import type { NewsCommentType, NewsDataType } from "~/types/news";
 import type { PersonalityType } from "~/types/personality";
 import type { AppSettingsType } from "~/types/settings";
 import { serVer } from "~/utils/constants";
-import { getAdminToken } from "./useTools";
+import { getAdminToken, getUserToken } from "./useTools";
 
 // fetch news data from api
 export const fetchNewsData = async (): Promise<NewsDataType[]> => {
@@ -145,6 +145,29 @@ export const addNewsComment = async (
         console.error("Error adding comment:", error);
         throw error;
     }
+};
+
+export const deleteNewsComment = async (
+    newsId: string,
+    commentId: string,
+): Promise<{ message: string; comments: NewsCommentType[] }> => {
+    const { token: adminToken } = getAdminToken();
+    const { token: userToken } = getUserToken();
+    const authToken = adminToken || userToken;
+
+    if (!authToken) {
+        throw new Error("Authentication required to delete comments");
+    }
+
+    const response = await axios.delete(
+        `${serVer}/app/news/${newsId}/comments/${commentId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${authToken}`,
+            },
+        },
+    );
+    return response.data;
 };
 
 export const fetchPersonalities = async (): Promise<PersonalityType[]> => {

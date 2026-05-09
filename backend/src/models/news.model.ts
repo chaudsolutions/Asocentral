@@ -8,6 +8,7 @@ export interface INewsContent {
 }
 
 export interface IComment {
+    commentId: string;
     sessionId: string;
     name: string;
     user: string;
@@ -50,6 +51,7 @@ const NewsContentSchema = new Schema<INewsContent>(
 
 const CommentSchema = new Schema<IComment>(
     {
+        commentId: { type: String, required: true },
         sessionId: { type: String, required: true },
         name: { type: String, default: "Anonymous Reader" },
         user: { type: String, required: true },

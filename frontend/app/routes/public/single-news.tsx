@@ -22,14 +22,16 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import MessageIcon from "@mui/icons-material/Message";
+import DeleteIcon from "@mui/icons-material/Delete";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 
-import { useSingleNewsData } from "~/hooks/useCaching";
+import { useAdminData, useSingleNewsData, useUserData } from "~/hooks/useCaching";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 import FormTextField from "~/components/form-fields/FormTextField";
 import {
     addNewsComment,
+    deleteNewsComment,
     fetchSingleNewsData,
     updateNewsMetrics,
 } from "~/hooks/useNewsDataApi";
@@ -37,6 +39,7 @@ import { formatDate } from "~/hooks/useTools";
 import type { NewsCommentType, NewsDataType } from "~/types/news";
 import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 import type { AppSettingsType } from "~/types/settings";
+import { useAuthContext } from "~/context/AuthContext";
 
 export async function loader({ params }: { params: { articleId?: string } }) {
     if (!params.articleId) return { newsData: null };
@@ -117,6 +120,9 @@ const getBrowserSessionId = () => {
 
 export default function SingleNews() {
     const { articleId } = useParams();
+    const { adminToken, userToken } = useAuthContext();
+    const { adminData } = useAdminData();
+    const { userData } = useUserData();
     const { singleNewsData, isSingleNewsDataLoading } = useSingleNewsData(
         articleId || "",
     );
@@ -268,6 +274,25 @@ export default function SingleNews() {
             console.error("Comment failed", err);
         } finally {
             setIsCommenting(false);
+        }
+    };
+
+    const canManageComments = Boolean(adminToken && adminData?._id)
+        || Boolean(
+            userToken &&
+                userData?._id &&
+                singleNewsData?.creator?.includes(userData._id),
+        );
+
+    const handleDeleteComment = async (commentId?: string) => {
+        if (!singleNewsData?._id || !commentId || !canManageComments) return;
+        if (!window.confirm("Delete this comment?")) return;
+
+        try {
+            const response = await deleteNewsComment(singleNewsData._id, commentId);
+            setComments(response.comments || []);
+        } catch (err) {
+            console.error("Delete comment failed", err);
         }
     };
 
@@ -727,6 +752,20 @@ export default function SingleNews() {
                                             {comment.content}
                                         </Typography>
                                     </Box>
+                                    {canManageComments && comment.commentId && (
+                                        <Tooltip title="Delete comment">
+                                            <IconButton
+                                                size="small"
+                                                color="error"
+                                                onClick={() =>
+                                                    handleDeleteComment(
+                                                        comment.commentId,
+                                                    )
+                                                }>
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
                                 </Box>
                             ))}
                         {visibleComments < comments.length && (

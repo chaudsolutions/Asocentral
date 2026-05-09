@@ -103,6 +103,7 @@ export default function NewsBasicInfoForm({
                     label="Publication Date"
                     control={control}
                     rules={{ required: "Publication date is required" }}
+                    maxDate={new Date()}
                 />
             </Grid>
         </Grid>

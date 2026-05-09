@@ -5,6 +5,7 @@ export interface NewsContentType {
 }
 
 export interface NewsCommentType {
+    commentId?: string;
     sessionId: string;
     name: string;
     user: string;

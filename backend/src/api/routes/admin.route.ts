@@ -35,6 +35,10 @@ adminRoute.delete("/users/:userId", adminController.deleteUser);
 
 // submitted journalist news
 adminRoute.put("/unpublished-news/:newsId", adminController.updateUnpublishedNews);
+adminRoute.delete(
+    "/unpublished-news/:newsId",
+    adminController.deleteUnpublishedNews,
+);
 adminRoute.post(
     "/unpublished-news/:newsId/publish",
     adminController.publishUnpublishedNews,
