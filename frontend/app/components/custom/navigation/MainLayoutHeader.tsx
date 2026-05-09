@@ -123,11 +123,10 @@ const MainLayoutHeader = () => {
                                             sx={{
                                                 color: "#222",
                                                 fontWeight: 800,
+                                                pb: 1.7,
                                                 fontSize: "0.85rem",
                                                 fontFamily:
                                                     "Arial Narrow, sans-serif",
-                                                minWidth: "auto",
-                                                p: 0,
                                                 "&:hover": {
                                                     bgcolor: "transparent",
                                                     color: "#c00",

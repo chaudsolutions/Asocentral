@@ -1,4 +1,4 @@
-import { type RadioGroupProps } from "@mui/material";
+import type { RadioGroupProps } from "@mui/material/RadioGroup";
 import {
     Controller,
     type Control,

@@ -19,11 +19,10 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { appName } from "~/utils/constants";
 import { useUserDashboard, useUserData } from "~/hooks/useCaching";
 
 export function meta() {
-    return [{ title: `Journalist Dashboard | ${appName}` }];
+    return [{ title: "Journalist Dashboard | N/A" }];
 }
 
 function StatCard({
@@ -102,8 +101,12 @@ const shortTitle = (title: string) =>
     title.length > 26 ? `${title.slice(0, 26)}...` : title;
 
 export default function UserDashboard() {
-    const { userData } = useUserData();
-    const { userDashboard } = useUserDashboard();
+    const { userData, isUserDataLoading } = useUserData();
+    const { userDashboard, isUserDashboardLoading } = useUserDashboard();
+
+    if (isUserDataLoading || isUserDashboardLoading) {
+        return <LinearProgress />;
+    }
 
     const published = userDashboard?.stats.publishedNews || 0;
     const pending = userDashboard?.stats.unpublishedNews || 0;

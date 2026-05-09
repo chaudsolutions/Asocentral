@@ -4,10 +4,18 @@ import type { Route } from "./+types/category";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import NewsDisplay from "~/components/public/home/NewsDisplay";
-import { appName, websiteUrl } from "~/utils/constants";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export const meta = ({ params }: Route.MetaArgs) => {
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export const meta = ({ params, loaderData }: Route.MetaArgs) => {
     const { categoryName } = params;
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
 
     // Format the slug (e.g., 'breaking-news' -> 'Breaking News')
     const formattedTitle = categoryName
@@ -31,6 +39,7 @@ export const meta = ({ params }: Route.MetaArgs) => {
         // Open Graph
         { property: "og:title", content: title },
         { property: "og:description", content: description },
+        { property: "og:image", content: websiteLogo },
         { property: "og:url", content: canonicalUrl },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: appName },
@@ -39,6 +48,7 @@ export const meta = ({ params }: Route.MetaArgs) => {
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+        { name: "twitter:image", content: websiteLogo },
 
         // Structured Data: WebPage
         {

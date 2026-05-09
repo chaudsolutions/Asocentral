@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import { useNewsCategories } from "~/hooks/useCaching";
-import { appName } from "~/utils/constants";
 import type { NewsCategoryType } from "~/types/news";
 import CategoryTable from "~/components/admin/admin-category/CategoryTable";
 import CategoryDialog from "~/components/admin/admin-category/CategoryDialog";
@@ -14,7 +13,7 @@ import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
 
 export function meta() {
-    return [{ title: `Admin Category | ${appName}` }];
+    return [{ title: "Admin Category | N/A" }];
 }
 
 export default function AdminCategory() {

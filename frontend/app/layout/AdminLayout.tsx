@@ -13,7 +13,8 @@ import PageLoader from "~/components/animations/PageLoader";
 import { useResponsive } from "~/hooks/useTools";
 import { useAdminData } from "~/hooks/useCaching";
 import AdminSideNav from "~/components/custom/navigation/AdminSideNav";
-import { Container } from "@mui/material";
+import Container from "@mui/material/Container";
+import NotificationMenu from "~/components/custom/notification/NotificationMenu";
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 72;
@@ -71,8 +72,9 @@ export default function AdminLoggedWrapper() {
                             Admin Dashboard
                         </Typography>
                     </Box>
-
-                    {/* <AdminNotificationsBtn /> */}
+                    <Box sx={{ ml: "auto" }}>
+                        <NotificationMenu />
+                    </Box>
                 </Toolbar>
             </AppBar>
             <Box

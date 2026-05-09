@@ -13,6 +13,7 @@ import { useResponsive } from "~/hooks/useTools";
 import { useUserData } from "~/hooks/useCaching";
 import PageLoader from "~/components/animations/PageLoader";
 import UserSideNav from "~/components/custom/navigation/UserSideNav";
+import NotificationMenu from "~/components/custom/notification/NotificationMenu";
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 72;
@@ -57,6 +58,9 @@ export default function UserLayout() {
                     <Typography variant="h6" noWrap component="div">
                         Journalist Dashboard
                     </Typography>
+                    <Box sx={{ ml: "auto" }}>
+                        <NotificationMenu />
+                    </Box>
                 </Toolbar>
             </AppBar>
             <Box sx={{ display: "flex", width: "100%" }}>

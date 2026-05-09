@@ -7,11 +7,11 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
 import FormTextField from "~/components/form-fields/FormTextField";
 import FormPasswordField from "~/components/form-fields/FormPasswordField";
 import FormImageSelectUpload from "~/components/form-fields/FormImageSelectUpload";
 import FormAutocomplete from "~/components/form-fields/FormAutocomplete";
-import { appName } from "~/utils/constants";
 import { useUserData } from "~/hooks/useCaching";
 import {
     changeMyPassword,
@@ -22,10 +22,11 @@ import {
 import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
 import { countriesStatesArray } from "~/utils/countries-states";
+import { uploadIfNeeded } from "~/hooks/useUpload";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 
 export function meta() {
-    return [{ title: `Journalist Settings | ${appName}` }];
+    return [{ title: "Journalist Settings | N/A" }];
 }
 
 function TabPanel({
@@ -53,7 +54,7 @@ interface PasswordForm {
 export default function UserSettings() {
     const [tab, setTab] = useState(0);
     const { showToast } = useToast();
-    const { userData, refetchUserData } = useUserData();
+    const { userData, isUserDataLoading, refetchUserData } = useUserData();
 
     const profileForm = useForm<ProfileForm>({
         defaultValues: { name: "", email: "" },
@@ -132,7 +133,21 @@ export default function UserSettings() {
 
     const onKycSubmit: SubmitHandler<KycPayload> = async (data) => {
         try {
-            const res = await updateMyKyc({ ...data, age: Number(data.age) });
+            const idCardImage = await uploadIfNeeded(data.idCardImage, {
+                folder: "kyc/id-cards",
+                fileName: "id-front",
+            });
+            const idCardBackImage = await uploadIfNeeded(data.idCardBackImage, {
+                folder: "kyc/id-cards",
+                fileName: "id-back",
+            });
+
+            const res = await updateMyKyc({
+                ...data,
+                age: Number(data.age),
+                idCardImage,
+                idCardBackImage,
+            });
             showToast(res.message, "success");
             refetchUserData();
         } catch (error) {
@@ -149,6 +164,10 @@ export default function UserSettings() {
             handleError(error);
         }
     };
+
+    if (isUserDataLoading) {
+        return <LinearProgress />;
+    }
 
     return (
         <Box>

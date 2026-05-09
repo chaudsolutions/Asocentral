@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import { appName } from "~/utils/constants";
 import { useFetchAllUsers } from "~/hooks/useCaching";
 import { useConfirmDialog } from "~/context/ConfirmDialogContext";
 import { useToast } from "~/context/ToastContext";
@@ -18,7 +17,7 @@ import NewsEditorStepper from "~/components/admin/admin-news/NewsEditorStepper";
 import { updateUnpublishedNews } from "~/hooks/useUserApi";
 
 export function meta() {
-    return [{ title: `Admin Users | ${appName}` }];
+    return [{ title: "Admin Users | N/A" }];
 }
 
 export default function AdminUsers() {

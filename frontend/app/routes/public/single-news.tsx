@@ -1,5 +1,6 @@
 import { useParams } from "react-router";
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -12,7 +13,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -26,6 +26,8 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 
 import { useSingleNewsData } from "~/hooks/useCaching";
+import FormTextArea from "~/components/form-fields/FormTextArea";
+import FormTextField from "~/components/form-fields/FormTextField";
 import {
     addNewsComment,
     fetchSingleNewsData,
@@ -33,21 +35,31 @@ import {
 } from "~/hooks/useNewsDataApi";
 import { formatDate } from "~/hooks/useTools";
 import type { NewsCommentType, NewsDataType } from "~/types/news";
-import { appName, websiteUrl } from "~/utils/constants";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
+import type { AppSettingsType } from "~/types/settings";
 
 export async function loader({ params }: { params: { articleId?: string } }) {
     if (!params.articleId) return { newsData: null };
 
     try {
-        const newsData = await fetchSingleNewsData(params.articleId);
-        return { newsData };
+        const [newsData, settings] = await Promise.all([
+            fetchSingleNewsData(params.articleId),
+            fetchPublicSettings(),
+        ]);
+        return { newsData, settings };
     } catch {
-        return { newsData: null };
+        return { newsData: null, settings: null };
     }
 }
 
-export function meta({ data }: { data?: { newsData: NewsDataType | null } }) {
+export function meta({
+    data,
+}: {
+    data?: { newsData: NewsDataType | null; settings?: AppSettingsType | null };
+}) {
     const news = data?.newsData;
+    const appName = data?.settings?.general?.websiteName || "N/A";
+    const websiteUrl = data?.settings?.general?.websiteUrl || "N/A";
     const title = news ? `${news.title} | ${appName}` : `News | ${appName}`;
     const description =
         news?.description ||
@@ -58,7 +70,7 @@ export function meta({ data }: { data?: { newsData: NewsDataType | null } }) {
     return [
         { title },
         { name: "description", content: description },
-        { name: "keywords", content: news?.keywords?.join(", ") || appName },
+        { name: "keywords", content: news?.keywords?.join(", ") || "N/A" },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: url },
         { property: "og:title", content: title },
@@ -105,15 +117,33 @@ const getBrowserSessionId = () => {
 
 export default function SingleNews() {
     const { articleId } = useParams();
-    const { singleNewsData } = useSingleNewsData(articleId || "");
+    const { singleNewsData, isSingleNewsDataLoading } = useSingleNewsData(
+        articleId || "",
+    );
     const articleRef = useRef<HTMLDivElement>(null);
     const [isExporting, setIsExporting] = useState(false);
-    const [commentName, setCommentName] = useState("");
-    const [commentContent, setCommentContent] = useState("");
     const [comments, setComments] = useState<NewsCommentType[]>([]);
     const [isCommenting, setIsCommenting] = useState(false);
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [visibleComments, setVisibleComments] = useState(5);
+    const { control, handleSubmit, watch, reset } = useForm<{
+        commentName: string;
+        commentContent: string;
+    }>({
+        defaultValues: {
+            commentName: "",
+            commentContent: "",
+        },
+    });
+    const commentContent = watch("commentContent");
+
+    if (isSingleNewsDataLoading) {
+        return (
+            <Container maxWidth="lg" sx={{ py: 4, textAlign: "center" }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
 
     const handleLoadMore = () => {
         setVisibleComments((prev) => prev + 5);
@@ -227,21 +257,21 @@ export default function SingleNews() {
         }
     };
 
-    const handleComment = async () => {
+    const handleComment = async (formData: {
+        commentName: string;
+        commentContent: string;
+    }) => {
         if (!singleNewsData?._id || !commentContent.trim()) return;
 
         setIsCommenting(true);
         try {
             const response = await addNewsComment(singleNewsData._id, {
-                name: commentName.trim() || "Anonymous Reader",
-                content: commentContent,
+                name: formData.commentName.trim() || "Anonymous Reader",
+                content: formData.commentContent,
                 sessionId: getBrowserSessionId(),
             });
             setComments(response.comments);
-            setCommentContent("");
-            if (!commentName.trim()) {
-                setCommentName("");
-            }
+            reset({ commentName: "", commentContent: "" });
         } catch (err) {
             console.error("Comment failed", err);
         } finally {
@@ -456,27 +486,29 @@ export default function SingleNews() {
                     </Stack>
 
                     {/* Featured Image */}
-                    <Box
-                        sx={{
-                            position: "relative",
-                            mb: 5,
-                            borderRadius: 2,
-                            overflow: "hidden",
-                            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-                        }}>
+                    {singleNewsData.image_url && (
                         <Box
-                            component="img"
-                            src={singleNewsData.image_url}
-                            alt={singleNewsData.title}
                             sx={{
-                                width: "100%",
-                                height: "auto",
-                                objectFit: "cover",
-                                maxHeight: 500,
-                                display: "block",
-                            }}
-                        />
-                    </Box>
+                                position: "relative",
+                                mb: 5,
+                                borderRadius: 2,
+                                overflow: "hidden",
+                                boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                            }}>
+                            <Box
+                                component="img"
+                                src={singleNewsData.image_url}
+                                alt={singleNewsData.title}
+                                sx={{
+                                    width: "100%",
+                                    height: "auto",
+                                    objectFit: "cover",
+                                    maxHeight: 500,
+                                    display: "block",
+                                }}
+                            />
+                        </Box>
+                    )}
 
                     {/* Article Content */}
                     <Stack spacing={5}>
@@ -523,6 +555,30 @@ export default function SingleNews() {
                             </Box>
                         ))}
                     </Stack>
+
+                    {/* End of article video */}
+                    {singleNewsData.video_url && (
+                        <Box sx={{ mt: 5 }}>
+                            <Typography
+                                variant="h5"
+                                sx={{ fontWeight: 700, mb: 2, color: "#003366" }}>
+                                Watch Related Video
+                            </Typography>
+                            <Box
+                                component="video"
+                                src={singleNewsData.video_url}
+                                controls
+                                preload="metadata"
+                                sx={{
+                                    width: "100%",
+                                    borderRadius: 2,
+                                    objectFit: "cover",
+                                    maxHeight: 500,
+                                    bgcolor: "#111",
+                                }}
+                            />
+                        </Box>
+                    )}
                 </Box>
 
                 {/* Comments Section */}
@@ -559,27 +615,26 @@ export default function SingleNews() {
                             sx={{ fontWeight: 600, mb: 2 }}>
                             Join the Discussion
                         </Typography>
-                        <Stack spacing={2}>
-                            <TextField
-                                fullWidth
+                        <Stack
+                            spacing={2}
+                            component="form"
+                            onSubmit={handleSubmit(handleComment)}>
+                            <FormTextField
+                                name="commentName"
                                 label="Name (optional)"
-                                size="small"
-                                value={commentName}
-                                onChange={(event) =>
-                                    setCommentName(event.target.value)
-                                }
+                                control={control}
                                 placeholder="Anonymous Reader"
                             />
-                            <TextField
-                                fullWidth
+                            <FormTextArea
+                                name="commentContent"
                                 label="Your Comment"
-                                multiline
-                                minRows={4}
-                                value={commentContent}
-                                onChange={(event) =>
-                                    setCommentContent(event.target.value)
-                                }
+                                control={control}
+                                rows={4}
                                 placeholder="Share your thoughts on this article..."
+                                rules={{
+                                    required:
+                                        "Comment content cannot be empty",
+                                }}
                             />
                             <Box
                                 sx={{
@@ -587,8 +642,8 @@ export default function SingleNews() {
                                     justifyContent: "flex-end",
                                 }}>
                                 <Button
+                                    type="submit"
                                     variant="contained"
-                                    onClick={handleComment}
                                     disabled={
                                         isCommenting || !commentContent.trim()
                                     }

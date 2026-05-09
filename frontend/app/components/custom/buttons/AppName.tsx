@@ -1,14 +1,15 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
-import { appName } from "../../../utils/constants";
 import { NavLink } from "react-router";
 import Avatar from "@mui/material/Avatar";
-import { useImagesPath } from "~/hooks/useImagesPath";
+import Skeleton from "@mui/material/Skeleton";
+import { usePublicSettings } from "~/hooks/useCaching";
 
 const AppName = () => {
     const theme = useTheme();
-    const { logo } = useImagesPath();
+    const { publicSettings, isPublicSettingsLoading } = usePublicSettings();
+    const logoUrl = publicSettings?.general?.logoUrl || undefined;
 
     return (
         <Box
@@ -26,22 +27,56 @@ const AppName = () => {
                 color: theme.palette.grey[50],
             }}
             to="/">
-            <Avatar sx={{ width: 35, height: 35 }} src={logo} />
-            <Typography
-                variant="h6"
-                sx={{
-                    fontWeight: 700,
-                    fontSize: "1.2rem",
-                }}>
-                {appName}
-            </Typography>
+            {isPublicSettingsLoading ? (
+                <>
+                    <Skeleton
+                        variant="circular"
+                        width={35}
+                        height={35}
+                        sx={{ bgcolor: "rgba(255,255,255,0.3)" }}
+                    />
+                    <Skeleton
+                        variant="text"
+                        width={140}
+                        height={32}
+                        sx={{ bgcolor: "rgba(255,255,255,0.3)" }}
+                    />
+                </>
+            ) : (
+                <>
+                    <Avatar sx={{ width: 35, height: 35 }} src={logoUrl} />
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 700,
+                            fontSize: "1.2rem",
+                        }}>
+                        {publicSettings?.general?.websiteName || "N/A"}
+                    </Typography>
+                </>
+            )}
         </Box>
     );
 };
 
 export const AppLogo = () => {
-    const { logo } = useImagesPath();
-    return <Avatar sx={{ width: 35, height: 35 }} src={logo} />;
+    const { publicSettings, isPublicSettingsLoading } = usePublicSettings();
+    if (isPublicSettingsLoading) {
+        return (
+            <Skeleton
+                variant="circular"
+                width={35}
+                height={35}
+                sx={{ bgcolor: "rgba(255,255,255,0.3)" }}
+            />
+        );
+    }
+    return (
+        <Avatar
+            sx={{ width: 35, height: 35 }}
+            src={publicSettings?.general?.logoUrl || undefined}
+        />
+    );
 };
 
 export default AppName;

@@ -5,10 +5,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import HomeIcon from "@mui/icons-material/Home";
-import { appName } from "~/utils/constants";
 
 export function meta() {
-    return [{ title: `Admin 404 | ${appName}` }];
+    return [{ title: "Admin 404 | N/A" }];
 }
 
 export default function Admin404() {
@@ -88,7 +87,7 @@ export default function Admin404() {
                 <Typography
                     variant="caption"
                     sx={{ mt: 4, color: "text.disabled" }}>
-                    {appName} Admin Portal • Version 1.2.0
+                    N/A Admin Portal • Version 1.2.0
                 </Typography>
             </Box>
         </Container>

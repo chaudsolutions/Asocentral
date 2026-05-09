@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 import axios from "axios";
 import { NEWS_DATA_API_KEY, NEWS_DATA_API_URL } from "../utils/constants";
 import { CategoryModel } from "../models/category.model";
-import { Readability } from "@mozilla/readability";
-import { JSDOM } from "jsdom";
 import NewsModel, { INews } from "../models/news.model";
+import AppSettingsModel from "../models/app-settings.model";
+import { NotificationCategory } from "../models/notification.model";
+import { createNotificationWithEmail } from "../utils/notification";
 
 // Cache variables stored in memory (server-side)
 let cachedNewsData: INews[] = [];
@@ -12,6 +13,13 @@ let lastFetchTime: number | null = null;
 
 // 6 hours in milliseconds
 const CACHE_DURATION = 6 * 60 * 60 * 1000;
+
+const getWebsiteUrl = async () => {
+    const settings = await AppSettingsModel.findOne({ key: "main" })
+        .select("general.websiteUrl")
+        .lean();
+    return settings?.general?.websiteUrl || "N/A";
+};
 
 export const apiController = {
     getNewsFromNewsDataIo: async (
@@ -184,7 +192,7 @@ export const apiController = {
                 newsId,
                 { $push: { comments: comment } },
                 { new: true },
-            ).select("comments");
+            ).select("comments title creator article_id");
 
             if (!news) {
                 res.status(404).json({
@@ -193,6 +201,28 @@ export const apiController = {
                 });
                 return;
             }
+
+            const creatorIds = (news.creator || []).map((id: unknown) =>
+                String(id),
+            );
+            const websiteUrl = await getWebsiteUrl();
+            await Promise.all(
+                creatorIds.map((creatorId: string) =>
+                    createNotificationWithEmail({
+                        recipient: creatorId,
+                        category: NotificationCategory.NEWS_COMMENTED,
+                        title: "New comment on your news",
+                        message: `${comment.name} commented on "${news.title}".`,
+                        entityType: "news",
+                        entityId: String(news._id),
+                        emailSubject: "New Comment on Your News",
+                        emailHeading: "Your News Got a New Comment",
+                        emailBody: `${comment.name} just commented on "${news.title}".`,
+                        ctaLabel: "View Comment",
+                        ctaLink: `${websiteUrl}/news/${news.article_id}`,
+                    }),
+                ),
+            );
 
             res.status(201).json({
                 success: true,

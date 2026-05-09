@@ -4,13 +4,14 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import AppName from "../buttons/AppName";
-import { useNewsCategories } from "~/hooks/useCaching";
+import { useNewsCategories, usePublicSettings } from "~/hooks/useCaching";
 import { Link } from "react-router";
 import Skeleton from "@mui/material/Skeleton";
 
 const MainLayoutFooter = () => {
     const { newsCategories = [], isNewsCategoriesLoading } =
         useNewsCategories();
+    const { publicSettings, isPublicSettingsLoading } = usePublicSettings();
 
     // Pick 5 random categories or just the first 5 for the footer
     const footerCategories = newsCategories.slice(0, 5);
@@ -45,17 +46,20 @@ const MainLayoutFooter = () => {
                         <Box sx={{ mb: 2 }}>
                             <AppName />
                         </Box>
-                        <Typography
-                            variant="body2"
-                            sx={{
-                                color: "#888",
-                                maxWidth: "300px",
-                                lineHeight: 1.6,
-                            }}>
-                            Trojan News Network. Providing breaking news, deep
-                            investigations, and world-class journalism from
-                            Lagos to the world.
-                        </Typography>
+                        {isPublicSettingsLoading ? (
+                            <Skeleton variant="text" width={280} height={24} />
+                        ) : (
+                            <Typography
+                                variant="body2"
+                                sx={{
+                                    color: "#888",
+                                    maxWidth: "300px",
+                                    lineHeight: 1.6,
+                                }}>
+                                {publicSettings?.general?.websiteDescription ||
+                                    "Trojan News Network. Providing breaking news and world-class journalism."}
+                            </Typography>
+                        )}
                     </Grid>
 
                     {/* Quick Categories Section */}
@@ -98,15 +102,15 @@ const MainLayoutFooter = () => {
                         </Box>
                         <Box
                             component={Link}
-                            to="/careers"
+                            to="/faqs"
                             sx={footerLinkStyle}>
-                            Careers
+                            FAQs
                         </Box>
                         <Box
                             component={Link}
-                            to="/accessibility"
+                            to="/personality-of-the-week"
                             sx={footerLinkStyle}>
-                            Accessibility
+                            Personality Of The Week
                         </Box>
                     </Grid>
 
@@ -124,12 +128,6 @@ const MainLayoutFooter = () => {
                             to="/terms-of-use"
                             sx={footerLinkStyle}>
                             Terms of Use
-                        </Box>
-                        <Box
-                            component={Link}
-                            to="/ad-choices"
-                            sx={footerLinkStyle}>
-                            Ad Choices
                         </Box>
                     </Grid>
                 </Grid>

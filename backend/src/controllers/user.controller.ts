@@ -4,7 +4,10 @@ import { BadRequestError, UnauthorizedError } from "../errors/httpError";
 import { UserModel } from "../models/user.model";
 import UnpublishedNewsModel from "../models/unpublished-news.model";
 import NewsModel from "../models/news.model";
+import AppSettingsModel from "../models/app-settings.model";
 import { hashPassword, validatePassword } from "../utils/tools";
+import { NotificationCategory } from "../models/notification.model";
+import { createNotificationWithEmail } from "../utils/notification";
 
 interface NewsContent {
     image_url: string;
@@ -45,6 +48,13 @@ interface KycRequest extends Request {
         idCardBackImage?: string;
     };
 }
+
+const getWebsiteUrl = async () => {
+    const settings = await AppSettingsModel.findOne({ key: "main" })
+        .select("general.websiteUrl")
+        .lean();
+    return settings?.general?.websiteUrl || "N/A";
+};
 
 export const userController = {
     getUserData: async (req: Request, res: Response) => {
@@ -175,6 +185,28 @@ export const userController = {
             if (!user) {
                 throw new BadRequestError("User not found");
             }
+            const websiteUrl = await getWebsiteUrl();
+
+            const admins = await UserModel.find({ role: "admin" }).select(
+                "_id",
+            );
+            await Promise.all(
+                admins.map((admin) =>
+                    createNotificationWithEmail({
+                        recipient: admin._id,
+                        category: NotificationCategory.KYC_COMPLETED,
+                        title: "Journalist KYC completed",
+                        message: `${user.name} has completed KYC verification.`,
+                        entityType: "user",
+                        entityId: String(user._id),
+                        emailSubject: "KYC Completed",
+                        emailHeading: "KYC Completed",
+                        emailBody: `${user.name} completed KYC and is now eligible to submit news.`,
+                        ctaLabel: "Review User",
+                        ctaLink: `${websiteUrl}/admin/users`,
+                    }),
+                ),
+            );
 
             res.status(200).json({
                 success: true,
@@ -360,6 +392,28 @@ export const userController = {
                 author: user._id,
                 posted: false,
             });
+            const websiteUrl = await getWebsiteUrl();
+
+            const admins = await UserModel.find({ role: "admin" }).select(
+                "_id",
+            );
+            await Promise.all(
+                admins.map((admin) =>
+                    createNotificationWithEmail({
+                        recipient: admin._id,
+                        category: NotificationCategory.NEWS_SUBMITTED,
+                        title: "New unpublished news submitted",
+                        message: `${user.name} submitted "${news.title}" for review.`,
+                        entityType: "news",
+                        entityId: String(news._id),
+                        emailSubject: "New News Submission",
+                        emailHeading: "New News Submission",
+                        emailBody: `${user.name} submitted a new unpublished news article titled "${news.title}".`,
+                        ctaLabel: "Review Submission",
+                        ctaLink: `${websiteUrl}/admin/users`,
+                    }),
+                ),
+            );
 
             res.status(201).json({
                 success: true,

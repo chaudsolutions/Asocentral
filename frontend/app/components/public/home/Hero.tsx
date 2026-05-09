@@ -53,20 +53,42 @@ const Hero = ({ newsData, isNewsDataLoading }: HeroProps) => {
                             position: "relative",
                         }}>
                         {/* Article Image */}
-                        <Box
-                            component="img"
-                            src={
-                                article.image_url ||
-                                "https://via.placeholder.com/800x500?text=News+Image"
-                            }
-                            alt={article.title}
-                            sx={{
-                                width: "100%",
-                                height: { xs: 350, md: 500 },
-                                objectFit: "cover",
-                                filter: "brightness(0.7)", // Darken to make text pop
-                            }}
-                        />
+                        {article.image_url ? (
+                            <Box
+                                component="img"
+                                src={article.image_url}
+                                alt={article.title}
+                                sx={{
+                                    width: "100%",
+                                    height: { xs: 350, md: 500 },
+                                    objectFit: "cover",
+                                    filter: "brightness(0.7)", // Darken to make text pop
+                                }}
+                            />
+                        ) : article.video_url ? (
+                            <Box
+                                component="video"
+                                src={article.video_url}
+                                controls
+                                muted
+                                preload="metadata"
+                                sx={{
+                                    width: "100%",
+                                    height: { xs: 350, md: 500 },
+                                    objectFit: "cover",
+                                    filter: "brightness(0.7)",
+                                    bgcolor: "#111",
+                                }}
+                            />
+                        ) : (
+                            <Box
+                                sx={{
+                                    width: "100%",
+                                    height: { xs: 350, md: 500 },
+                                    bgcolor: "#ddd",
+                                }}
+                            />
+                        )}
 
                         {/* Text Overlay - Fox News Style */}
                         <Box

@@ -1,4 +1,4 @@
-import { type TextFieldProps } from "@mui/material";
+import type { TextFieldProps } from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import type { DatePickerProps } from "@mui/x-date-pickers/DatePicker";

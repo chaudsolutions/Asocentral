@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { apiController } from "../../controllers/api.controller";
+import { personalityController } from "../../controllers/personality.controller";
+import { staticController } from "../../controllers/static.controller";
+import { appSettingsController } from "../../controllers/app-settings.controller";
 
 const apiRoute = Router();
 
@@ -12,5 +15,12 @@ apiRoute.patch("/news/:newsId/metrics", apiController.updateNewsMetrics);
 apiRoute.post("/news/:newsId/comments", apiController.addNewsComment);
 
 apiRoute.get("/categories", apiController.getCategories);
+apiRoute.get("/personalities", personalityController.getPersonalities);
+apiRoute.get(
+    "/personalities/:personalityId",
+    personalityController.getSinglePersonality,
+);
+apiRoute.post("/contact", staticController.contactUs);
+apiRoute.get("/settings", appSettingsController.getPublicSettings);
 
 export default apiRoute;

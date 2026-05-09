@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import crypto from "node:crypto";
-import { BadRequestError } from "../errors/httpError";
+import { BadRequestError, UnauthorizedError } from "../errors/httpError";
 import { UserModel, UserRole } from "../models/user.model";
 import { CategoryModel } from "../models/category.model";
 import NewsModel from "../models/news.model";
 import UnpublishedNewsModel from "../models/unpublished-news.model";
-import { hashPassword } from "../utils/tools";
+import AppSettingsModel from "../models/app-settings.model";
+import { hashPassword, validatePassword } from "../utils/tools";
+import { deleteFromS3ByUrl } from "../utils/s3-upload";
+import { NotificationCategory } from "../models/notification.model";
+import { createNotificationWithEmail } from "../utils/notification";
 
 interface CategoryRequestBody extends Request {
     body: {
@@ -56,6 +60,31 @@ interface UserRequestBody extends Request {
     };
 }
 
+const collectContentImageUrls = (content: NewsContent[] = []): string[] => {
+    return content
+        .map((block) => block.image_url)
+        .filter((url): url is string => Boolean(url));
+};
+
+const deleteUrlsSafely = async (urls: string[]) => {
+    await Promise.allSettled(
+        urls.map(async (url) => {
+            try {
+                await deleteFromS3ByUrl(url);
+            } catch (error) {
+                console.error("Error deleting S3 media:", error);
+            }
+        }),
+    );
+};
+
+const getWebsiteUrl = async () => {
+    const settings = await AppSettingsModel.findOne({ key: "main" })
+        .select("general.websiteUrl")
+        .lean();
+    return settings?.general?.websiteUrl || "N/A";
+};
+
 export const adminController = {
     // function to get admin data
     getAdminData: async (req: Request, res: Response) => {
@@ -75,6 +104,56 @@ export const adminController = {
             res.status(500).json({
                 success: false,
                 message: "Internal server error while fetching admin data",
+            });
+        }
+    },
+
+    changePassword: async (req: Request, res: Response) => {
+        try {
+            const { currentPassword, newPassword } = req.body as {
+                currentPassword?: string;
+                newPassword?: string;
+            };
+
+            if (!currentPassword || !newPassword || newPassword.length < 6) {
+                throw new BadRequestError(
+                    "Current password and a new password of at least 6 characters are required",
+                );
+            }
+
+            const admin = await UserModel.findById(req.userId);
+            if (!admin || admin.role !== "admin") {
+                throw new BadRequestError("User not found or not authorized");
+            }
+
+            const isPasswordValid = validatePassword(
+                currentPassword,
+                admin.password,
+            );
+            if (!isPasswordValid) {
+                throw new UnauthorizedError("Current password is incorrect");
+            }
+
+            admin.password = hashPassword(newPassword);
+            await admin.save();
+
+            res.status(200).json({
+                success: true,
+                message: "Password changed successfully",
+            });
+        } catch (error) {
+            console.error("Error changing admin password:", error);
+            if (error instanceof UnauthorizedError) {
+                res.status(401).json({ success: false, message: error.message });
+                return;
+            }
+            if (error instanceof BadRequestError) {
+                res.status(400).json({ success: false, message: error.message });
+                return;
+            }
+            res.status(500).json({
+                success: false,
+                message: "Internal server error while changing password",
             });
         }
     },
@@ -345,7 +424,7 @@ export const adminController = {
             // generate article id with node crypto
             const articleId = crypto.randomBytes(16).toString("hex");
 
-            await NewsModel.create({
+            const createdNews = await NewsModel.create({
                 article_id: articleId,
                 title,
                 description,
@@ -359,6 +438,27 @@ export const adminController = {
                 pubDate,
                 video_url,
             });
+
+            if (creator?.length) {
+                const websiteUrl = await getWebsiteUrl();
+                await Promise.all(
+                    creator.map((creatorId) =>
+                        createNotificationWithEmail({
+                            recipient: creatorId,
+                            category: NotificationCategory.NEWS_CREATED,
+                            title: "News published by admin",
+                            message: `Admin published "${title}" and tagged you as creator.`,
+                            entityType: "news",
+                            entityId: String(createdNews._id),
+                            emailSubject: "News Published",
+                            emailHeading: "Your News Was Published",
+                            emailBody: `Admin created and published "${title}" with you listed as creator.`,
+                            ctaLabel: "View News",
+                            ctaLink: `${websiteUrl}/news/${createdNews.article_id}`,
+                        }),
+                    ),
+                );
+            }
 
             res.status(201).json({
                 success: true,
@@ -404,6 +504,40 @@ export const adminController = {
                 throw new BadRequestError("User not found or not authorized");
             }
 
+            const existingNews = await NewsModel.findById(newsId);
+            if (!existingNews) {
+                throw new BadRequestError("News not found");
+            }
+
+            const staleMediaUrls = new Set<string>();
+
+            if (
+                existingNews.image_url &&
+                existingNews.image_url !== image_url
+            ) {
+                staleMediaUrls.add(existingNews.image_url);
+            }
+
+            if (
+                existingNews.video_url &&
+                existingNews.video_url !== video_url
+            ) {
+                staleMediaUrls.add(existingNews.video_url);
+            }
+
+            const oldContentImages = new Set(
+                collectContentImageUrls(existingNews.content as NewsContent[]),
+            );
+            const newContentImages = new Set(collectContentImageUrls(content));
+
+            oldContentImages.forEach((oldUrl) => {
+                if (!newContentImages.has(oldUrl)) {
+                    staleMediaUrls.add(oldUrl);
+                }
+            });
+
+            await deleteUrlsSafely([...staleMediaUrls]);
+
             const news = await NewsModel.findOneAndUpdate(
                 { _id: newsId },
                 {
@@ -421,10 +555,6 @@ export const adminController = {
                 },
                 { new: true },
             );
-
-            if (!news) {
-                throw new BadRequestError("News not found");
-            }
 
             res.status(200).json({
                 success: true,
@@ -624,11 +754,29 @@ export const adminController = {
                 );
             }
 
-            await UserModel.create({
+            const createdUser = await UserModel.create({
                 name: name.trim(),
                 email: normalizedEmail,
                 password: hashPassword(password),
                 role,
+            });
+
+            const websiteUrl = await getWebsiteUrl();
+            await createNotificationWithEmail({
+                recipient: createdUser._id,
+                category: NotificationCategory.USER_CREATED,
+                title: "Account created by admin",
+                message: "Your account has been created. You can now log in.",
+                entityType: "user",
+                entityId: String(createdUser._id),
+                emailSubject: "Welcome to Trojan News",
+                emailHeading: "Your Account Is Ready",
+                emailBody: "An admin created your account on Trojan News. You can now sign in and start using the platform.",
+                ctaLabel: "Sign In",
+                ctaLink:
+                    role === "admin"
+                        ? `${websiteUrl}/auth/admin`
+                        : `${websiteUrl}/auth/user`,
             });
 
             res.status(201).json({
@@ -837,21 +985,58 @@ export const adminController = {
         try {
             const adminId = req.userId;
             const { newsId } = req.params;
+            const {
+                content,
+                image_url,
+                video_url,
+            } = req.body;
 
             const admin = await UserModel.findById(adminId);
             if (!admin || admin.role !== "admin") {
                 throw new BadRequestError("User not found or not authorized");
             }
 
+            const existingNews = await UnpublishedNewsModel.findById(newsId);
+            if (!existingNews) {
+                throw new BadRequestError("Submitted news not found");
+            }
+
+            const staleMediaUrls = new Set<string>();
+
+            if (
+                existingNews.image_url &&
+                existingNews.image_url !== image_url
+            ) {
+                staleMediaUrls.add(existingNews.image_url);
+            }
+
+            if (
+                existingNews.video_url &&
+                existingNews.video_url !== video_url
+            ) {
+                staleMediaUrls.add(existingNews.video_url);
+            }
+
+            const oldContentImages = new Set(
+                collectContentImageUrls(existingNews.content as NewsContent[]),
+            );
+            const newContentImages = new Set(
+                collectContentImageUrls(content || []),
+            );
+
+            oldContentImages.forEach((oldUrl) => {
+                if (!newContentImages.has(oldUrl)) {
+                    staleMediaUrls.add(oldUrl);
+                }
+            });
+
+            await deleteUrlsSafely([...staleMediaUrls]);
+
             const news = await UnpublishedNewsModel.findOneAndUpdate(
                 { _id: newsId },
                 req.body,
                 { new: true },
             );
-
-            if (!news) {
-                throw new BadRequestError("Submitted news not found");
-            }
 
             res.status(200).json({
                 success: true,
@@ -916,6 +1101,29 @@ export const adminController = {
             unpublishedNews.posted = true;
             unpublishedNews.postedAt = new Date();
             await unpublishedNews.save();
+
+            const recipientIds =
+                unpublishedNews.creator?.map((id: unknown) => String(id)) ||
+                [];
+            const websiteUrl = await getWebsiteUrl();
+
+            await Promise.all(
+                recipientIds.map((creatorId: string) =>
+                    createNotificationWithEmail({
+                        recipient: creatorId,
+                        category: NotificationCategory.NEWS_POSTED,
+                        title: "Your unpublished news is now published",
+                        message: `Admin published "${unpublishedNews.title}" to the main news feed.`,
+                        entityType: "news",
+                        entityId: String(unpublishedNews._id),
+                        emailSubject: "News Approved and Published",
+                        emailHeading: "Great News! Your Article Was Published",
+                        emailBody: `"${unpublishedNews.title}" has been reviewed and published by admin.`,
+                        ctaLabel: "Open Published News",
+                        ctaLink: `${websiteUrl}/news/${unpublishedNews.article_id}`,
+                    }),
+                ),
+            );
 
             res.status(200).json({
                 success: true,

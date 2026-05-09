@@ -5,6 +5,8 @@ import type { NewsDataType } from "~/types/news";
 
 const NewsList = ({ news }: { news: NewsDataType }) => {
     const isLocalNews = !!news._id;
+    const hasImage = Boolean(news.image_url);
+    const hasVideo = Boolean(news.video_url);
 
     return (
         <Box
@@ -15,21 +17,44 @@ const NewsList = ({ news }: { news: NewsDataType }) => {
                 "&:hover": { opacity: 0.8 },
             }}>
             {/* Thumbnail Image */}
-            <Box
-                component="img"
-                src={
-                    news.image_url ||
-                    "https://via.placeholder.com/150x100?text=Trojan+News"
-                }
-                alt={news.title}
-                sx={{
-                    width: { xs: 100, sm: 180 },
-                    height: { xs: 80, sm: 120 },
-                    objectFit: "cover",
-                    flexShrink: 0,
-                    bgcolor: "#f0f0f0",
-                }}
-            />
+            {hasImage ? (
+                <Box
+                    component="img"
+                    src={news.image_url}
+                    alt={news.title}
+                    sx={{
+                        width: { xs: 100, sm: 180 },
+                        height: { xs: 80, sm: 120 },
+                        objectFit: "cover",
+                        flexShrink: 0,
+                        bgcolor: "#f0f0f0",
+                    }}
+                />
+            ) : hasVideo ? (
+                <Box
+                    component="video"
+                    src={news.video_url || undefined}
+                    muted
+                    controls
+                    preload="metadata"
+                    sx={{
+                        width: { xs: 100, sm: 180 },
+                        height: { xs: 80, sm: 120 },
+                        objectFit: "cover",
+                        flexShrink: 0,
+                        bgcolor: "#111",
+                    }}
+                />
+            ) : (
+                <Box
+                    sx={{
+                        width: { xs: 100, sm: 180 },
+                        height: { xs: 80, sm: 120 },
+                        flexShrink: 0,
+                        bgcolor: "#f0f0f0",
+                    }}
+                />
+            )}
 
             {/* Content */}
             <Box

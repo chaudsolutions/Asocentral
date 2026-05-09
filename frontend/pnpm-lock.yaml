@@ -65,6 +65,9 @@ importers:
       react-hook-form:
         specifier: ^7.73.1
         version: 7.73.1(react@19.2.5)
+      react-marquee-text:
+        specifier: ^1.0.6
+        version: 1.0.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       react-phone-number-input:
         specifier: ^3.4.16
         version: 3.4.16(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -2517,6 +2520,12 @@ packages:
 
   react-is@19.2.5:
     resolution: {integrity: sha512-Dn0t8IQhCmeIT3wu+Apm1/YVsJXsGWi6k4sPdnBIdqMVtHtv0IGi6dcpNpNkNac0zB2uUAqNX3MHzN8c+z2rwQ==}
+
+  react-marquee-text@1.0.6:
+    resolution: {integrity: sha512-tHDzeP0uX+kVS/W3AyUisLPaVx1HhMHdBD5ZHyNOrPleXPie/5Pi+fFps1uTSmSTs/uJzCfbB1IJn8tcBfKLeg==}
+    peerDependencies:
+      react: ^19.2.0
+      react-dom: ^19.2.0
 
   react-phone-number-input@3.4.16:
     resolution: {integrity: sha512-ix1+SIyGuLxnlAeW+XQNhwOmmDd4Zmr6Ng1eQl0E2XS8xIuue3gdZeBG4LGTMjTIFneOTO9pUPL+AEDhV6+r+A==}
@@ -5489,6 +5498,11 @@ snapshots:
   react-is@16.13.1: {}
 
   react-is@19.2.5: {}
+
+  react-marquee-text@1.0.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
+    dependencies:
+      react: 19.2.5
+      react-dom: 19.2.5(react@19.2.5)
 
   react-phone-number-input@3.4.16(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:

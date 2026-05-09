@@ -1,4 +1,4 @@
-import { type CheckboxProps } from "@mui/material";
+import type { CheckboxProps } from "@mui/material/Checkbox";
 import {
     Controller,
     type Control,

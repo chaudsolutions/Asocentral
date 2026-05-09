@@ -28,6 +28,7 @@ import NewsMetadataForm from "./NewsMetadataForm";
 import type { UserType } from "~/types/user";
 import { useFetchAllUsers, useNewsCategories } from "~/hooks/useCaching";
 import { countriesStatesArray } from "~/utils/countries-states";
+import { uploadIfNeeded } from "~/hooks/useUpload";
 
 const steps = ["Basic Information", "News Content", "Metadata"];
 
@@ -35,14 +36,14 @@ export interface NewsFormData {
     title: string;
     description: string;
     category: NewsCategoryType[] | [];
-    image_url: File | null;
-    video_url: string | null;
+    image_url: File | string | null;
+    video_url: File | string | null;
     link: string;
     pubDate: Date | null;
     content: {
         title: string;
         description: string;
-        image_url: File | null;
+        image_url: File | string | null;
     }[];
     country: string[] | [];
     creator: UserType[] | [];
@@ -123,8 +124,8 @@ export default function NewsEditorStepper({
                 title: initialData.title,
                 description: initialData.description,
                 category: categories || [],
-                image_url: null,
-                video_url: initialData.video_url,
+                image_url: initialData.image_url,
+                video_url: initialData.video_url || null,
                 link: initialData.link,
                 pubDate: initialData.pubDate
                     ? new Date(initialData.pubDate)
@@ -132,7 +133,7 @@ export default function NewsEditorStepper({
                 content: initialData.content.map((content) => ({
                     title: content.title,
                     description: content.description,
-                    image_url: null,
+                    image_url: content.image_url,
                 })),
                 country: countries || [],
                 creator: creators || [],
@@ -158,20 +159,34 @@ export default function NewsEditorStepper({
 
     const onSubmit: SubmitHandler<NewsFormData> = async (data) => {
         // process images and videos
+        const coverImageUrl = await uploadIfNeeded(data.image_url, {
+            folder: "news/images",
+            fileName: "cover-image",
+        });
+        const videoUrl = await uploadIfNeeded(data.video_url, {
+            folder: "news/videos",
+            fileName: "news-video",
+        });
+        const contentWithImages = await Promise.all(
+            data.content.map(async (content, index) => ({
+                title: content.title,
+                description: content.description,
+                image_url: await uploadIfNeeded(content.image_url, {
+                    folder: "news/content",
+                    fileName: `content-${index + 1}`,
+                }),
+            })),
+        );
+
         const payload: NewsPayload = {
             title: data.title,
             description: data.description,
             category: data.category.map((cat) => cat.name),
-            image_url:
-                "https://cpmr-islands.org/wp-content/uploads/sites/4/2019/07/Test-Logo-Small-Black-transparent-1-300x300.png",
-            video_url: "",
+            image_url: coverImageUrl,
+            video_url: videoUrl,
             link: data.link,
             pubDate: data.pubDate?.toISOString() || new Date().toISOString(),
-            content: data.content.map((content) => ({
-                title: content.title,
-                description: content.description,
-                image_url: "",
-            })),
+            content: contentWithImages,
             country: data.country,
             creator: data.creator?.map((c) => c._id) || [],
             keywords: data.keywords,

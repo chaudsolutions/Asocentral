@@ -8,9 +8,10 @@ const envSchema = z.object({
     NEWS_DATA_API_KEY: z.string(),
     JWT_SECRET: z.string(),
     DB_URI: z.string(),
-    SECRET_USER: z.string(),
-    SECRET_PASS: z.string(),
-    CLIENT_URL: z.string(),
+    AWS_REGION: z.string(),
+    AWS_BUCKET_NAME: z.string(),
+    AWS_ACCESS_KEY_ID: z.string(),
+    AWS_SECRET_ACCESS_KEY: z.string(),
 });
 
 try {

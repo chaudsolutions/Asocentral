@@ -2,16 +2,41 @@ import { fetchNewsData } from "~/hooks/useNewsDataApi";
 import { useNewsData } from "~/hooks/useCaching";
 import Hero from "~/components/public/home/Hero";
 import NewsDisplay from "~/components/public/home/NewsDisplay";
-import { appName, websiteLogo, websiteUrl } from "~/utils/constants";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import type { NewsDataType } from "~/types/news";
+import { Link } from "react-router";
+import type { AppSettingsType } from "~/types/settings";
+import { serVer } from "~/utils/constants";
+
+const getPublicSettings = async (): Promise<AppSettingsType | null> => {
+    try {
+        const response = await fetch(`${serVer}/app/settings`);
+        if (!response.ok) return null;
+        const data = (await response.json()) as { settings?: AppSettingsType };
+        return data.settings || null;
+    } catch {
+        return null;
+    }
+};
 
 export async function loader() {
     // fetch news in SSR
     const newsData = await fetchNewsData();
+    const settings = await getPublicSettings();
 
-    return { newsData };
+    return { newsData, settings };
 }
 
-export const meta = () => {
+export const meta = ({
+    data,
+}: {
+    data?: { settings?: AppSettingsType | null };
+}) => {
+    const appName = data?.settings?.general?.websiteName || "N/A";
+    const websiteUrl = data?.settings?.general?.websiteUrl || "N/A";
+    const websiteLogo = data?.settings?.general?.logoUrl || "";
     const title = `${appName} | Breaking News, Latest Stories and World Updates`;
     const description =
         "Stay informed with Trojan News Network. Get real-time breaking news, deep investigations, and latest updates on politics, technology, and world events from Lagos to the world.";
@@ -77,18 +102,104 @@ export const meta = () => {
 export default function Home() {
     const { newsData = [], isNewsDataLoading } = useNewsData();
 
-    const activeNews = newsData.filter(
-        (n) => (n.active && n.isSystem) || !n._id,
-    );
+    const systemNews = newsData.filter((n) => n._id && n.active && n.isSystem);
+    const externalApiNews = newsData.filter((n) => !n._id);
 
     return (
-        <>
-            <Hero newsData={activeNews} isNewsDataLoading={isNewsDataLoading} />
+        <Box
+            sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", lg: "280px 1fr" },
+                gap: 3,
+            }}>
+            <HomeLeftRail newsData={externalApiNews.slice(0, 12)} />
+            <Box>
+                <Hero
+                    newsData={systemNews}
+                    isNewsDataLoading={isNewsDataLoading}
+                />
+                <NewsDisplay
+                    newsData={systemNews}
+                    isNewsDataLoading={isNewsDataLoading}
+                />
+            </Box>
+        </Box>
+    );
+}
 
-            <NewsDisplay
-                newsData={activeNews}
-                isNewsDataLoading={isNewsDataLoading}
-            />
-        </>
+function HomeLeftRail({ newsData }: { newsData: NewsDataType[] }) {
+    return (
+        <Box sx={{ display: { xs: "none", lg: "grid" }, gap: 2 }}>
+            {newsData.map((news, index) => (
+                <Box key={`${news.article_id}-${index}`}>
+                    <Link
+                        to={news._id ? `/news/${news.article_id}` : news.link}
+                        target={news._id ? "_self" : "_blank"}
+                        style={{ textDecoration: "none", color: "inherit" }}>
+                        {news.image_url ? (
+                            <Box
+                                component="img"
+                                src={news.image_url}
+                                alt={news.title}
+                                sx={{
+                                    width: "100%",
+                                    height: 160,
+                                    objectFit: "cover",
+                                    borderRadius: 1,
+                                    mb: 1,
+                                }}
+                            />
+                        ) : news.video_url ? (
+                            <Box
+                                component="video"
+                                src={news.video_url}
+                                controls
+                                preload="metadata"
+                                sx={{
+                                    width: "100%",
+                                    height: 160,
+                                    objectFit: "cover",
+                                    borderRadius: 1,
+                                    mb: 1,
+                                    bgcolor: "#111",
+                                }}
+                            />
+                        ) : (
+                            <Box
+                                sx={{
+                                    width: "100%",
+                                    height: 160,
+                                    borderRadius: 1,
+                                    mb: 1,
+                                    bgcolor: "#eee",
+                                }}
+                            />
+                        )}
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 800,
+                                fontSize: "1.05rem",
+                                lineHeight: 1.25,
+                                mb: 0.5,
+                            }}>
+                            {news.title}
+                        </Typography>
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                            }}>
+                            {news.description}
+                        </Typography>
+                    </Link>
+                    <Divider sx={{ mt: 2 }} />
+                </Box>
+            ))}
+        </Box>
     );
 }

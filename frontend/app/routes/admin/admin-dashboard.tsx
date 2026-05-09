@@ -19,11 +19,10 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { appName } from "~/utils/constants";
 import { useAdminDashboard } from "~/hooks/useCaching";
 
 export function meta() {
-    return [{ title: `Admin Dashboard | ${appName}` }];
+    return [{ title: "Admin Dashboard | N/A" }];
 }
 
 function StatCard({

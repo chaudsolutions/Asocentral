@@ -8,7 +8,6 @@ import type MessageResponse from "./interfaces/message-response.js";
 
 import api from "./api/index.js";
 import * as middlewares from "./middlewares.js";
-import { appName } from "./utils/constants.js";
 import connectDB from "./utils/connectDb.js";
 
 const app = express();
@@ -28,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get<object, MessageResponse>("/", (req, res) => {
     res.json({
-        message: `Welcome to ${appName} API 🦄🌈✨👋🌎🌍🌏✨🌈🦄`,
+        message: "Welcome to N/A API",
     });
 });
 

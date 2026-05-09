@@ -4,7 +4,6 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useNewsData } from "~/hooks/useCaching";
-import { appName } from "~/utils/constants";
 import type { NewsDataType } from "~/types/news";
 import NewsEditorStepper from "~/components/admin/admin-news/NewsEditorStepper";
 import NewsTable from "~/components/admin/admin-news/NewsTable";
@@ -15,7 +14,7 @@ import { deleteNewsData, updateNewsStatus } from "~/hooks/useNewsDataApi";
 import { isAxiosError } from "axios";
 
 export function meta() {
-    return [{ title: `Admin News | ${appName}` }];
+    return [{ title: "Admin News | N/A" }];
 }
 
 function CustomTabPanel({

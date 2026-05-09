@@ -4,6 +4,9 @@ import { getUserToken } from "./useTools";
 import type { UserRole, UserType } from "~/types/user";
 import type { NewsPayload } from "./useNewsDataApi";
 import type { UnpublishedNewsType } from "~/types/news";
+import type { NotificationType } from "~/types/others";
+import type { PersonalityType } from "~/types/personality";
+import type { AppSettingsType } from "~/types/settings";
 
 export type UserPayload = {
     name: string;
@@ -22,8 +25,8 @@ export type KycPayload = {
     occupation: string;
     age: number;
     zip?: string;
-    idCardImage: string; // Front of ID card
-    idCardBackImage: string; // Back of ID card
+    idCardImage: string | File; // Front of ID card
+    idCardBackImage: string | File; // Back of ID card
 };
 
 export type AdminDashboardData = {
@@ -68,6 +71,11 @@ export type UserDashboardData = {
             commentsCount: number;
         }[];
     };
+};
+
+export type NotificationsResponse = {
+    notifications: NotificationType[];
+    unreadCount: number;
 };
 
 // get all users
@@ -250,6 +258,22 @@ export const changeMyPassword = async (data: {
     }
 };
 
+export const changeAdminPassword = async (data: {
+    currentPassword: string;
+    newPassword: string;
+}): Promise<{ message: string }> => {
+    const { token } = getUserToken();
+    try {
+        const response = await axios.patch(`${serVer}/admin/password`, data, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error changing admin password:", error);
+        throw error;
+    }
+};
+
 // fetch journalist submitted news
 export const fetchMyUnpublishedNews = async (): Promise<
     UnpublishedNewsType[]
@@ -280,6 +304,132 @@ export const createUnpublishedNews = async (
         console.error("Error submitting news:", error);
         throw error;
     }
+};
+
+export const fetchMyNotifications = async (
+    category?: string,
+): Promise<NotificationsResponse> => {
+    const { token } = getUserToken();
+    const query = category ? `?category=${encodeURIComponent(category)}` : "";
+    const response = await axios.get(`${serVer}/notifications${query}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return {
+        notifications: response.data.notifications || [],
+        unreadCount: response.data.unreadCount || 0,
+    };
+};
+
+export const markNotificationRead = async (
+    notificationId: string,
+): Promise<void> => {
+    const { token } = getUserToken();
+    await axios.patch(
+        `${serVer}/notifications/${notificationId}/read`,
+        {},
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        },
+    );
+};
+
+export const markAllNotificationsRead = async (): Promise<void> => {
+    const { token } = getUserToken();
+    await axios.patch(
+        `${serVer}/notifications/read-all`,
+        {},
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        },
+    );
+};
+
+export const fetchAdminPersonalities = async (): Promise<PersonalityType[]> => {
+    const { token } = getUserToken();
+    const response = await axios.get(`${serVer}/admin/personalities`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.personalities;
+};
+
+export const createPersonality = async (payload: {
+    title: string;
+    description: string;
+    image: string;
+    website?: string;
+    socialLinks?: {
+        twitter?: string;
+        facebook?: string;
+        instagram?: string;
+        linkedin?: string;
+        youtube?: string;
+    };
+    isActive: boolean;
+}): Promise<{ message: string }> => {
+    const { token } = getUserToken();
+    const response = await axios.post(`${serVer}/admin/personalities`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+};
+
+export const updatePersonality = async (
+    personalityId: string,
+    payload: {
+        title: string;
+        description: string;
+        image: string;
+        website?: string;
+        socialLinks?: {
+            twitter?: string;
+            facebook?: string;
+            instagram?: string;
+            linkedin?: string;
+            youtube?: string;
+        };
+        isActive: boolean;
+    },
+): Promise<{ message: string }> => {
+    const { token } = getUserToken();
+    const response = await axios.put(
+        `${serVer}/admin/personalities/${personalityId}`,
+        payload,
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        },
+    );
+    return response.data;
+};
+
+export const deletePersonality = async (
+    personalityId: string,
+): Promise<{ message: string }> => {
+    const { token } = getUserToken();
+    const response = await axios.delete(
+        `${serVer}/admin/personalities/${personalityId}`,
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        },
+    );
+    return response.data;
+};
+
+export const fetchAdminSettings = async (): Promise<AppSettingsType> => {
+    const { token } = getUserToken();
+    const response = await axios.get(`${serVer}/admin/settings`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.settings;
+};
+
+export const updateAdminSettings = async (
+    payload: Partial<AppSettingsType>,
+): Promise<{ message: string; settings: AppSettingsType }> => {
+    const { token } = getUserToken();
+    const response = await axios.put(`${serVer}/admin/settings`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
 };
 
 // admin updates submitted news

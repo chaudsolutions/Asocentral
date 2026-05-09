@@ -15,6 +15,7 @@ export interface UserType {
         age?: number;
         zip?: string;
         idCardImage?: string;
+        idCardBackImage?: string;
     };
     createdAt?: string;
     updatedAt?: string;

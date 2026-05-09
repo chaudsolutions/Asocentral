@@ -24,7 +24,6 @@ export interface INews extends Document {
     country: string[];
     creator: Types.ObjectId[];
     description: string;
-    fetched_at: Date;
     image_url: string;
     keywords: string[];
     language: string;
@@ -88,11 +87,6 @@ const NewsSchema: Schema = new Schema<INews>(
             },
         ],
         description: { type: String, default: "" },
-        fetched_at: {
-            type: Date,
-            default: Date.now,
-            expires: "6h", // Optional: If you want to auto-delete cached news after 6 hours
-        },
         image_url: { type: String, required: true },
         keywords: { type: [String], default: [] },
         language: { type: String, default: "en" },

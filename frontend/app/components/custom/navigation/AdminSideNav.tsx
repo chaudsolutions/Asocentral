@@ -18,6 +18,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import CloseIcon from "@mui/icons-material/Close";
 import ViewInArOutlinedIcon from "@mui/icons-material/ViewInArOutlined";
 import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
+import EmojiPeopleOutlinedIcon from "@mui/icons-material/EmojiPeopleOutlined";
+import TuneOutlinedIcon from "@mui/icons-material/TuneOutlined";
 import { useTheme } from "@mui/material/styles";
 import { useAuthContext } from "~/context/AuthContext";
 import { useInvalidateCache } from "~/hooks/useCaching";
@@ -72,11 +74,20 @@ const AdminSideNav = ({
             icon: <BusinessOutlinedIcon fontSize="small" />,
             path: "news",
         },
-        // --- Group Separator ---
+        {
+            text: "Personality",
+            icon: <EmojiPeopleOutlinedIcon fontSize="small" />,
+            path: "personality",
+        },
         {
             text: "Categories",
             icon: <SettingsIcon fontSize="small" />,
             path: "category",
+        },
+        {
+            text: "Settings",
+            icon: <TuneOutlinedIcon fontSize="small" />,
+            path: "settings",
             separator: true,
         },
         {

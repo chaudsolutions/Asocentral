@@ -11,6 +11,21 @@ const connectDB = async () => {
 
         console.log(`MongoDB Connected: ${conn.connection.host}`);
 
+        // Ensure old TTL index does not keep deleting news records.
+        try {
+            const newsCollection = conn.connection.collection("news");
+            const indexes = await newsCollection.indexes();
+            const hasFetchedAtTtl = indexes.some(
+                (index) => index.name === "fetched_at_1",
+            );
+            if (hasFetchedAtTtl) {
+                await newsCollection.dropIndex("fetched_at_1");
+                console.log("Dropped legacy TTL index: fetched_at_1");
+            }
+        } catch (indexError) {
+            console.warn("Index cleanup skipped:", indexError);
+        }
+
         // Event listeners
         mongoose.connection.on("error", (err) => {
             console.error("DB connection error:", err.message);

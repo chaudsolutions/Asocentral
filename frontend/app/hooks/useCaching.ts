@@ -1,11 +1,22 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNewsCategories } from "./useNewsCategories";
-import { fetchNewsData, fetchSingleNewsData } from "./useNewsDataApi";
+import {
+    fetchNewsData,
+    fetchPersonalities,
+    fetchSingleNewsData,
+    fetchSinglePersonality,
+} from "./useNewsDataApi";
 import { getAdminData, getUserData } from "./useAuthApi";
 import { useAuthContext } from "~/context/AuthContext";
 import {
+    fetchPublicSettings,
+} from "./useNewsDataApi";
+import {
+    fetchAdminSettings,
     fetchAdminDashboard,
+    fetchAdminPersonalities,
     fetchAllUsers,
+    fetchMyNotifications,
     fetchMyUnpublishedNews,
     fetchUserDashboard,
 } from "./useUserApi";
@@ -179,5 +190,121 @@ export const useMyUnpublishedNews = () => {
         isMyUnpublishedNewsLoading,
         myUnpublishedNewsError,
         refetchMyUnpublishedNews,
+    };
+};
+
+export const useMyNotifications = (category?: string) => {
+    const {
+        data,
+        isLoading: isNotificationsLoading,
+        error: notificationsError,
+        refetch: refetchNotifications,
+    } = useQuery({
+        queryKey: ["myNotifications", category || "all"],
+        queryFn: () => fetchMyNotifications(category),
+        refetchInterval: 30000,
+    });
+
+    return {
+        notificationsData: data,
+        isNotificationsLoading,
+        notificationsError,
+        refetchNotifications,
+    };
+};
+
+export const usePersonalities = () => {
+    const {
+        data: personalities,
+        isLoading: isPersonalitiesLoading,
+        error: personalitiesError,
+        refetch: refetchPersonalities,
+    } = useQuery({
+        queryKey: ["personalities"],
+        queryFn: fetchPersonalities,
+    });
+
+    return {
+        personalities,
+        isPersonalitiesLoading,
+        personalitiesError,
+        refetchPersonalities,
+    };
+};
+
+export const useSinglePersonality = (personalityId: string) => {
+    const {
+        data: personality,
+        isLoading: isSinglePersonalityLoading,
+        error: singlePersonalityError,
+        refetch: refetchSinglePersonality,
+    } = useQuery({
+        queryKey: ["singlePersonality", personalityId],
+        queryFn: () => fetchSinglePersonality(personalityId),
+        enabled: !!personalityId,
+    });
+
+    return {
+        personality,
+        isSinglePersonalityLoading,
+        singlePersonalityError,
+        refetchSinglePersonality,
+    };
+};
+
+export const useAdminPersonalities = () => {
+    const {
+        data: adminPersonalities,
+        isLoading: isAdminPersonalitiesLoading,
+        error: adminPersonalitiesError,
+        refetch: refetchAdminPersonalities,
+    } = useQuery({
+        queryKey: ["adminPersonalities"],
+        queryFn: fetchAdminPersonalities,
+    });
+
+    return {
+        adminPersonalities,
+        isAdminPersonalitiesLoading,
+        adminPersonalitiesError,
+        refetchAdminPersonalities,
+    };
+};
+
+export const usePublicSettings = () => {
+    const {
+        data: publicSettings,
+        isLoading: isPublicSettingsLoading,
+        error: publicSettingsError,
+        refetch: refetchPublicSettings,
+    } = useQuery({
+        queryKey: ["publicSettings"],
+        queryFn: fetchPublicSettings,
+    });
+
+    return {
+        publicSettings,
+        isPublicSettingsLoading,
+        publicSettingsError,
+        refetchPublicSettings,
+    };
+};
+
+export const useAdminSettings = () => {
+    const {
+        data: adminSettings,
+        isLoading: isAdminSettingsLoading,
+        error: adminSettingsError,
+        refetch: refetchAdminSettings,
+    } = useQuery({
+        queryKey: ["adminSettings"],
+        queryFn: fetchAdminSettings,
+    });
+
+    return {
+        adminSettings,
+        isAdminSettingsLoading,
+        adminSettingsError,
+        refetchAdminSettings,
     };
 };

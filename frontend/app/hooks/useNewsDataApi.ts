@@ -1,5 +1,7 @@
 import axios from "axios";
 import type { NewsCommentType, NewsDataType } from "~/types/news";
+import type { PersonalityType } from "~/types/personality";
+import type { AppSettingsType } from "~/types/settings";
 import { serVer } from "~/utils/constants";
 import { getUserToken } from "./useTools";
 
@@ -143,4 +145,33 @@ export const addNewsComment = async (
         console.error("Error adding comment:", error);
         throw error;
     }
+};
+
+export const fetchPersonalities = async (): Promise<PersonalityType[]> => {
+    const response = await axios.get(`${serVer}/app/personalities`);
+    return response.data.personalities;
+};
+
+export const fetchSinglePersonality = async (
+    personalityId: string,
+): Promise<PersonalityType> => {
+    const response = await axios.get(
+        `${serVer}/app/personalities/${personalityId}`,
+    );
+    return response.data.personality;
+};
+
+export const sendContactMessage = async (data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+}): Promise<{ message: string }> => {
+    const response = await axios.post(`${serVer}/app/contact`, data);
+    return response.data;
+};
+
+export const fetchPublicSettings = async (): Promise<AppSettingsType> => {
+    const response = await axios.get(`${serVer}/app/settings`);
+    return response.data.settings;
 };

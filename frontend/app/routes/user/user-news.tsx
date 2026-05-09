@@ -11,7 +11,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import AddIcon from "@mui/icons-material/Add";
-import { appName } from "~/utils/constants";
+import LinearProgress from "@mui/material/LinearProgress";
 import { useMyUnpublishedNews, useUserData } from "~/hooks/useCaching";
 import NewsEditorStepper from "~/components/admin/admin-news/NewsEditorStepper";
 import { createUnpublishedNews } from "~/hooks/useUserApi";
@@ -19,18 +19,22 @@ import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
 
 export function meta() {
-    return [{ title: `Journalist News | ${appName}` }];
+    return [{ title: "Journalist News | N/A" }];
 }
 
 export default function UserNews() {
     const [isCreating, setIsCreating] = useState(false);
     const { showToast } = useToast();
-    const { userData } = useUserData();
+    const { userData, isUserDataLoading } = useUserData();
     const {
         myUnpublishedNews = [],
         isMyUnpublishedNewsLoading,
         refetchMyUnpublishedNews,
     } = useMyUnpublishedNews();
+
+    if (isUserDataLoading) {
+        return <LinearProgress />;
+    }
 
     if (isCreating) {
         return (

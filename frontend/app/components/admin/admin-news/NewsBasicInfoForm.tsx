@@ -22,7 +22,12 @@ export default function NewsBasicInfoForm({
     isNewsCategoriesLoading,
 }: Props) {
     return (
-        <Grid container spacing={3}>
+        <Grid
+            container
+            spacing={3}
+            sx={{
+                alignItems: "center",
+            }}>
             <Grid size={12}>
                 <Typography
                     variant="h6"

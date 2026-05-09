@@ -1,4 +1,4 @@
-import { type AutocompleteProps } from "@mui/material";
+import type { AutocompleteProps } from "@mui/material/Autocomplete";
 import {
     Controller,
     type Control,

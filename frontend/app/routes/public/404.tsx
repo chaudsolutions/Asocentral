@@ -6,10 +6,20 @@ import HomeIcon from "@mui/icons-material/Home";
 import NewspaperIcon from "@mui/icons-material/Newspaper";
 import Stack from "@mui/material/Stack";
 import { Link } from "react-router";
-import { appName } from "~/utils/constants";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
+import type { Route } from "./+types/404";
+
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
 
 // SEO Meta Function
-export const meta = () => {
+export const meta = ({ loaderData }: Route.MetaArgs) => {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+    const pageUrl = `${websiteUrl}/404`;
     const title = `Page Not Found | ${appName}`;
     const description =
         "The page you are looking for does not exist or has been moved. Return to our homepage for the latest breaking news and updates.";
@@ -17,17 +27,20 @@ export const meta = () => {
     return [
         { title },
         { name: "description", content: description },
-        // CRITICAL: Tell search engines NOT to index this page
         { name: "robots", content: "noindex, follow" },
+        { tagName: "link", rel: "canonical", href: pageUrl },
 
-        // Open Graph
         { property: "og:title", content: title },
         { property: "og:description", content: description },
+        { property: "og:image", content: websiteLogo },
+        { property: "og:url", content: pageUrl },
         { property: "og:type", content: "website" },
+        { property: "og:site_name", content: appName },
 
-        // Twitter
+        { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+        { name: "twitter:image", content: websiteLogo },
     ];
 };
 

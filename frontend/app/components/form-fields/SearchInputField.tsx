@@ -1,4 +1,4 @@
-import { type TextFieldProps } from "@mui/material";
+import type { TextFieldProps } from "@mui/material/TextField";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useEffect, useState } from "react";
