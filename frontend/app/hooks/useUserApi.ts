@@ -246,7 +246,8 @@ export const changeMyPassword = async (data: {
 
 export const changeAdminPassword = async (data: {
     currentPassword: string;
-    newPassword: string;
+    newPassword?: string;
+    newEmail?: string;
 }): Promise<{ message: string }> => {
     try {
         const response = await axios.patch(`${serVer}/admin/password`, data, {

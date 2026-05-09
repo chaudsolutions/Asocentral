@@ -25,6 +25,7 @@ export default function AdminUsers() {
     const { showToast } = useToast();
     const { allUsers = [], isAllUsersLoading, refetchAllUsers } =
         useFetchAllUsers();
+    const nonAdminUsers = allUsers.filter((user) => user.role !== "admin");
 
     const [open, setOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
@@ -128,7 +129,7 @@ export default function AdminUsers() {
             </Box>
 
             <UserTable
-                data={allUsers}
+                data={nonAdminUsers}
                 isLoading={isAllUsersLoading}
                 onEdit={handleOpen}
                 onDelete={handleDelete}

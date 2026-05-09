@@ -110,14 +110,15 @@ export const adminController = {
 
     changePassword: async (req: Request, res: Response) => {
         try {
-            const { currentPassword, newPassword } = req.body as {
+            const { currentPassword, newPassword, newEmail } = req.body as {
                 currentPassword?: string;
                 newPassword?: string;
+                newEmail?: string;
             };
 
-            if (!currentPassword || !newPassword || newPassword.length < 6) {
+            if (!currentPassword) {
                 throw new BadRequestError(
-                    "Current password and a new password of at least 6 characters are required",
+                    "Current password is required",
                 );
             }
 
@@ -134,15 +135,45 @@ export const adminController = {
                 throw new UnauthorizedError("Current password is incorrect");
             }
 
-            admin.password = hashPassword(newPassword);
+            const normalizedEmail = newEmail?.trim().toLowerCase();
+
+            if (!newPassword && !normalizedEmail) {
+                throw new BadRequestError(
+                    "Provide a new password or a new email",
+                );
+            }
+
+            if (newPassword && newPassword.length < 6) {
+                throw new BadRequestError(
+                    "New password must be at least 6 characters",
+                );
+            }
+
+            if (normalizedEmail) {
+                const existing = await UserModel.findOne({
+                    email: normalizedEmail,
+                    _id: { $ne: admin._id },
+                }).select("_id");
+                if (existing) {
+                    throw new BadRequestError(
+                        "User with this email already exists",
+                    );
+                }
+                admin.email = normalizedEmail;
+            }
+
+            if (newPassword) {
+                admin.password = hashPassword(newPassword);
+            }
+
             await admin.save();
 
             res.status(200).json({
                 success: true,
-                message: "Password changed successfully",
+                message: "Admin credentials updated successfully",
             });
         } catch (error) {
-            console.error("Error changing admin password:", error);
+            console.error("Error changing admin credentials:", error);
             if (error instanceof UnauthorizedError) {
                 res.status(401).json({ success: false, message: error.message });
                 return;
@@ -153,7 +184,8 @@ export const adminController = {
             }
             res.status(500).json({
                 success: false,
-                message: "Internal server error while changing password",
+                message:
+                    "Internal server error while changing admin credentials",
             });
         }
     },

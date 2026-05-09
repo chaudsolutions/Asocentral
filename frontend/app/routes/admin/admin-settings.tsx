@@ -108,6 +108,22 @@ export default function AdminSettings() {
             confirmPassword: "",
         },
     });
+    const {
+        control: emailControl,
+        handleSubmit: handleEmailSubmit,
+        watch: watchEmail,
+        reset: resetEmailForm,
+    } = useForm<{
+        currentPassword: string;
+        newEmail: string;
+        confirmEmail: string;
+    }>({
+        defaultValues: {
+            currentPassword: "",
+            newEmail: "",
+            confirmEmail: "",
+        },
+    });
     const { fields, append, remove } = useFieldArray({
         control,
         name: "aboutUs.sections",
@@ -243,6 +259,38 @@ export default function AdminSettings() {
                 );
             } else {
                 showToast("Failed to change password", "error");
+            }
+        } finally {
+            setPasswordLoading(false);
+        }
+    };
+
+    const onAdminEmailSubmit = async (values: {
+        currentPassword: string;
+        newEmail: string;
+        confirmEmail: string;
+    }) => {
+        if (values.newEmail.trim().toLowerCase() !== values.confirmEmail.trim().toLowerCase()) {
+            showToast("New email and confirm email do not match", "error");
+            return;
+        }
+        setPasswordLoading(true);
+        try {
+            const res = await changeAdminPassword({
+                currentPassword: values.currentPassword,
+                newEmail: values.newEmail.trim().toLowerCase(),
+            });
+            showToast(res.message, "success");
+            resetEmailForm();
+            refetchAdminSettings();
+        } catch (error) {
+            if (isAxiosError(error)) {
+                showToast(
+                    error.response?.data?.message || "Failed to change email",
+                    "error",
+                );
+            } else {
+                showToast("Failed to change email", "error");
             }
         } finally {
             setPasswordLoading(false);
@@ -673,6 +721,71 @@ export default function AdminSettings() {
                                         sx={{ mt: 1.5 }}
                                         disabled={passwordLoading}>
                                         Update Admin Password
+                                    </Button>
+                                </Box>
+                                <Divider sx={{ my: 1.5 }} />
+                                <Box
+                                    component="form"
+                                    onSubmit={handleEmailSubmit(
+                                        onAdminEmailSubmit,
+                                    )}>
+                                    <Typography
+                                        sx={{ fontWeight: 700, mb: 1.5 }}>
+                                        Change Admin Email
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        <Grid size={{ xs: 12, md: 4 }}>
+                                            <FormTextField
+                                                name="currentPassword"
+                                                label="Current Password"
+                                                control={emailControl}
+                                                type="password"
+                                                rules={{
+                                                    required:
+                                                        "Current password is required",
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid size={{ xs: 12, md: 4 }}>
+                                            <FormTextField
+                                                name="newEmail"
+                                                label="New Email"
+                                                control={emailControl}
+                                                rules={{
+                                                    required: "New email is required",
+                                                    pattern: {
+                                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                        message: "Enter a valid email address",
+                                                    },
+                                                }}
+                                            />
+                                        </Grid>
+                                        <Grid size={{ xs: 12, md: 4 }}>
+                                            <FormTextField
+                                                name="confirmEmail"
+                                                label="Confirm Email"
+                                                control={emailControl}
+                                                rules={{
+                                                    required:
+                                                        "Please confirm email",
+                                                    validate: (value: string) =>
+                                                        value.trim().toLowerCase() ===
+                                                            watchEmail(
+                                                                "newEmail",
+                                                            )
+                                                                .trim()
+                                                                .toLowerCase() ||
+                                                        "Emails do not match",
+                                                }}
+                                            />
+                                        </Grid>
+                                    </Grid>
+                                    <Button
+                                        type="submit"
+                                        variant="outlined"
+                                        sx={{ mt: 1.5 }}
+                                        disabled={passwordLoading}>
+                                        Update Admin Email
                                     </Button>
                                 </Box>
                             </>
