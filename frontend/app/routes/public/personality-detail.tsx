@@ -33,7 +33,11 @@ export function meta({ loaderData }: Route.MetaArgs) {
     return [
         { title },
         { name: "description", content: description },
-        { name: "keywords", content: "personality profile, trojan news, journalist profile, featured personality" },
+        {
+            name: "keywords",
+            content:
+                "personality profile, trojan news, journalist profile, featured personality",
+        },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },
         { property: "og:title", content: title },
@@ -92,7 +96,7 @@ export default function PersonalityDetail() {
                 sx={{
                     width: "100%",
                     height: { xs: 260, md: 500 },
-                    objectFit: "cover",
+                    objectFit: "contain",
                     borderRadius: 1,
                     border: "1px solid #e5e7eb",
                 }}
@@ -145,13 +149,7 @@ export default function PersonalityDetail() {
     );
 }
 
-function SocialLink({
-    href,
-    icon,
-}: {
-    href?: string;
-    icon: ReactNode;
-}) {
+function SocialLink({ href, icon }: { href?: string; icon: ReactNode }) {
     if (!href) return null;
     return (
         <IconButton
@@ -176,11 +174,20 @@ function PersonalityDetailSkeleton() {
         <Box sx={{ display: "grid", gap: 2 }}>
             <Skeleton variant="rounded" width={180} height={28} />
             <Skeleton variant="text" width="60%" height={54} />
-            <Skeleton variant="rectangular" height={500} sx={{ borderRadius: 1 }} />
+            <Skeleton
+                variant="rectangular"
+                height={500}
+                sx={{ borderRadius: 1 }}
+            />
             <Skeleton variant="rounded" height={130} sx={{ borderRadius: 1 }} />
             <Stack direction="row" spacing={1}>
                 {[1, 2, 3, 4].map((item) => (
-                    <Skeleton key={item} variant="rounded" width={34} height={34} />
+                    <Skeleton
+                        key={item}
+                        variant="rounded"
+                        width={34}
+                        height={34}
+                    />
                 ))}
             </Stack>
         </Box>

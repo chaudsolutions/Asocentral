@@ -545,6 +545,7 @@ export default function SingleNews() {
                                 <Typography
                                     variant="body1"
                                     sx={{
+                                        whiteSpace: "pre-line",
                                         fontSize: ".9rem",
                                         lineHeight: 1.8,
                                         color: "#2c2c2c",
