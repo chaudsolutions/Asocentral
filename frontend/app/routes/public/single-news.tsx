@@ -137,14 +137,6 @@ export default function SingleNews() {
     });
     const commentContent = watch("commentContent");
 
-    if (isSingleNewsDataLoading) {
-        return (
-            <Container maxWidth="lg" sx={{ py: 4, textAlign: "center" }}>
-                <CircularProgress />
-            </Container>
-        );
-    }
-
     const handleLoadMore = () => {
         setVisibleComments((prev) => prev + 5);
     };
@@ -278,6 +270,14 @@ export default function SingleNews() {
             setIsCommenting(false);
         }
     };
+
+    if (isSingleNewsDataLoading) {
+        return (
+            <Container maxWidth="lg" sx={{ py: 4, textAlign: "center" }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
 
     if (!singleNewsData) {
         return (
