@@ -6,13 +6,13 @@ import { useAuthContext } from "~/context/AuthContext";
 
 export default function AuthWrapper() {
     const navigate = useNavigate();
-    const { user, isCheckingAuth } = useAuthContext();
+    const { userToken, isCheckingAuth } = useAuthContext();
 
     useEffect(() => {
-        if (user) {
+        if (userToken) {
             navigate("/user/dashboard");
         }
-    }, [user, navigate]);
+    }, [userToken, navigate]);
 
     if (isCheckingAuth) {
         return <PageLoader />;

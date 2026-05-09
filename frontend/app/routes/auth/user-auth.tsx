@@ -39,7 +39,7 @@ export default function UserAuth() {
     const onSubmit: SubmitHandler<LoginCredentials> = async (data) => {
         try {
             const response = await userLogin(data);
-            login(response.token);
+            login(response.token, "user");
         } catch (err) {
             if (isAxiosError(err)) {
                 showToast(

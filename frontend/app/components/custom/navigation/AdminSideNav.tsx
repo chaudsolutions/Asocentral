@@ -53,7 +53,7 @@ const AdminSideNav = ({
         });
 
         if (shouldLogout) {
-            logout();
+            logout("admin");
             queryClient.clear();
         }
     };

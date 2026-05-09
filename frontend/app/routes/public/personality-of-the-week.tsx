@@ -35,7 +35,11 @@ export function meta({ loaderData }: Route.MetaArgs) {
     return [
         { title },
         { name: "description", content: description },
-        { name: "keywords", content: "personality of the week, journalists, trojan news, featured voices, newsroom" },
+        {
+            name: "keywords",
+            content:
+                "personality of the week, journalists, trojan news, featured voices, newsroom",
+        },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },
         { property: "og:title", content: title },
@@ -79,7 +83,10 @@ export default function PersonalityOfTheWeek() {
                         <Box
                             sx={{
                                 display: "grid",
-                                gridTemplateColumns: { xs: "1fr", md: "1.2fr 1fr" },
+                                gridTemplateColumns: {
+                                    xs: "1fr",
+                                    md: "1.2fr 1fr",
+                                },
                                 gap: 2,
                                 border: "1px solid #e5e7eb",
                                 borderRadius: 1,
@@ -107,7 +114,9 @@ export default function PersonalityOfTheWeek() {
                                         color: "#1e3a8a",
                                     }}
                                 />
-                                <Typography variant="h5" sx={{ fontWeight: 900, lineHeight: 1.2 }}>
+                                <Typography
+                                    variant="h5"
+                                    sx={{ fontWeight: 900, lineHeight: 1.2 }}>
                                     {featured.title}
                                 </Typography>
                                 <Typography
@@ -128,14 +137,18 @@ export default function PersonalityOfTheWeek() {
 
                     <Grid container spacing={2}>
                         {rest.map((item) => (
-                            <Grid key={item._id} size={{ xs: 12, sm: 6, md: 4 }}>
+                            <Grid
+                                key={item._id}
+                                size={{ xs: 12, sm: 6, md: 4 }}>
                                 <PersonalityCard item={item} />
                             </Grid>
                         ))}
                     </Grid>
                 </>
             ) : (
-                <Typography color="text.secondary">No personalities available yet.</Typography>
+                <Typography color="text.secondary">
+                    No personalities available yet.
+                </Typography>
             )}
         </Box>
     );
@@ -165,11 +178,13 @@ function PersonalityCard({ item }: { item: PersonalityType }) {
                     sx={{
                         width: "100%",
                         height: 210,
-                        objectFit: "cover",
+                        objectFit: "contain",
                     }}
                 />
                 <Box sx={{ p: 1.5 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1.3 }}>
+                    <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 800, lineHeight: 1.3 }}>
                         {item.title}
                     </Typography>
                     <Box sx={{ mt: 1 }}>
@@ -195,15 +210,30 @@ function PersonalityLinks({ item }: { item: PersonalityType }) {
 
     return (
         <Stack direction="row" spacing={0.5} sx={{ flexWrap: "wrap" }}>
-            <SocialLink href={item.website} icon={<LanguageIcon fontSize="small" />} />
-            <SocialLink href={links.twitter} icon={<XIcon fontSize="small" />} />
+            <SocialLink
+                href={item.website}
+                icon={<LanguageIcon fontSize="small" />}
+            />
+            <SocialLink
+                href={links.twitter}
+                icon={<XIcon fontSize="small" />}
+            />
             <SocialLink
                 href={links.facebook}
                 icon={<FacebookOutlinedIcon fontSize="small" />}
             />
-            <SocialLink href={links.instagram} icon={<InstagramIcon fontSize="small" />} />
-            <SocialLink href={links.linkedin} icon={<LinkedInIcon fontSize="small" />} />
-            <SocialLink href={links.youtube} icon={<YouTubeIcon fontSize="small" />} />
+            <SocialLink
+                href={links.instagram}
+                icon={<InstagramIcon fontSize="small" />}
+            />
+            <SocialLink
+                href={links.linkedin}
+                icon={<LinkedInIcon fontSize="small" />}
+            />
+            <SocialLink
+                href={links.youtube}
+                icon={<YouTubeIcon fontSize="small" />}
+            />
         </Stack>
     );
 }
@@ -234,10 +264,19 @@ function PersonalitySkeleton() {
         <Box sx={{ display: "grid", gap: 2 }}>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 7 }}>
-                    <Skeleton variant="rectangular" height={360} sx={{ borderRadius: 1 }} />
+                    <Skeleton
+                        variant="rectangular"
+                        height={360}
+                        sx={{ borderRadius: 1 }}
+                    />
                 </Grid>
                 <Grid size={{ xs: 12, md: 5 }}>
-                    <Skeleton variant="rounded" height={24} width={90} sx={{ mb: 2 }} />
+                    <Skeleton
+                        variant="rounded"
+                        height={24}
+                        width={90}
+                        sx={{ mb: 2 }}
+                    />
                     <Skeleton variant="text" height={44} width="90%" />
                     <Skeleton variant="text" height={32} width="100%" />
                     <Skeleton variant="text" height={32} width="100%" />
@@ -248,8 +287,17 @@ function PersonalitySkeleton() {
             <Grid container spacing={2}>
                 {[1, 2, 3].map((item) => (
                     <Grid key={item} size={{ xs: 12, sm: 6, md: 4 }}>
-                        <Skeleton variant="rectangular" height={210} sx={{ borderRadius: 1 }} />
-                        <Skeleton variant="text" height={36} width="85%" sx={{ mt: 1 }} />
+                        <Skeleton
+                            variant="rectangular"
+                            height={210}
+                            sx={{ borderRadius: 1 }}
+                        />
+                        <Skeleton
+                            variant="text"
+                            height={36}
+                            width="85%"
+                            sx={{ mt: 1 }}
+                        />
                     </Grid>
                 ))}
             </Grid>

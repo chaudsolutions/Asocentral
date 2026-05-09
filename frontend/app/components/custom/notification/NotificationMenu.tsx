@@ -11,6 +11,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router";
 import {
     markAllNotificationsRead,
     markNotificationRead,
@@ -27,6 +28,10 @@ const categoryLabel: Record<string, string> = {
 };
 
 const NotificationMenu = () => {
+    const location = useLocation();
+    const scope: "admin" | "user" = location.pathname.startsWith("/admin")
+        ? "admin"
+        : "user";
     const queryClient = useQueryClient();
     const { notificationsData, isNotificationsLoading } = useMyNotifications();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -41,12 +46,12 @@ const NotificationMenu = () => {
     );
 
     const handleMarkRead = async (notificationId: string) => {
-        await markNotificationRead(notificationId);
+        await markNotificationRead(notificationId, scope);
         queryClient.invalidateQueries({ queryKey: ["myNotifications"] });
     };
 
     const handleMarkAllRead = async () => {
-        await markAllNotificationsRead();
+        await markAllNotificationsRead(scope);
         queryClient.invalidateQueries({ queryKey: ["myNotifications"] });
     };
 

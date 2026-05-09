@@ -19,7 +19,7 @@ const drawerWidth = 240;
 const collapsedDrawerWidth = 72;
 
 export default function UserLayout() {
-    const { user, isCheckingAuth } = useAuthContext();
+    const { userToken, isCheckingAuth } = useAuthContext();
     const { userData, isUserDataLoading } = useUserData();
     const navigate = useNavigate();
     const { isMobile } = useResponsive();
@@ -29,11 +29,11 @@ export default function UserLayout() {
     useEffect(() => {
         if (
             !isCheckingAuth &&
-            (!user || (userData && userData.role !== "user"))
+            (!userToken || (userData && userData.role !== "user"))
         ) {
             navigate("/auth/user");
         }
-    }, [user, userData, isCheckingAuth, navigate]);
+    }, [userToken, userData, isCheckingAuth, navigate]);
 
     if (isUserDataLoading || isCheckingAuth) {
         return <PageLoader />;

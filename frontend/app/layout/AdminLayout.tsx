@@ -20,7 +20,7 @@ const drawerWidth = 240;
 const collapsedDrawerWidth = 72;
 
 export default function AdminLoggedWrapper() {
-    const { user, isCheckingAuth } = useAuthContext();
+    const { adminToken, isCheckingAuth } = useAuthContext();
     const { adminData, isAdminDataLoading } = useAdminData();
     const navigate = useNavigate();
     const { isMobile } = useResponsive();
@@ -34,11 +34,11 @@ export default function AdminLoggedWrapper() {
     useEffect(() => {
         if (
             !isCheckingAuth &&
-            (!user || (adminData && adminData?.role !== "admin"))
+            (!adminToken || (adminData && adminData?.role !== "admin"))
         ) {
             navigate("/");
         }
-    }, [adminData, navigate]);
+    }, [adminToken, adminData, isCheckingAuth, navigate]);
 
     if (isAdminDataLoading || isCheckingAuth) {
         return <PageLoader />;

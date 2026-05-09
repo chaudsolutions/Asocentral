@@ -44,7 +44,7 @@ export default function UserSideNav({
         });
 
         if (shouldLogout) {
-            logout();
+            logout("user");
             queryClient.clear();
         }
     };

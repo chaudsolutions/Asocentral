@@ -3,7 +3,7 @@ import type { NewsCommentType, NewsDataType } from "~/types/news";
 import type { PersonalityType } from "~/types/personality";
 import type { AppSettingsType } from "~/types/settings";
 import { serVer } from "~/utils/constants";
-import { getUserToken } from "./useTools";
+import { getAdminToken } from "./useTools";
 
 // fetch news data from api
 export const fetchNewsData = async (): Promise<NewsDataType[]> => {
@@ -52,7 +52,7 @@ export type NewsPayload = {
 
 // function to post news data to api
 export const postNewsData = async (payload: NewsPayload): Promise<void> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         await axios.post(`${serVer}/admin/news`, payload, {
             headers: {
@@ -70,7 +70,7 @@ export const updateNewsData = async (
     newsId: string,
     payload: NewsPayload,
 ): Promise<void> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         await axios.put(`${serVer}/admin/news/${newsId}`, payload, {
             headers: {
@@ -85,7 +85,7 @@ export const updateNewsData = async (
 
 // function to delete news data from api
 export const deleteNewsData = async (newsId: string): Promise<void> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         await axios.delete(`${serVer}/admin/news/${newsId}`, {
             headers: {
@@ -103,7 +103,7 @@ export const updateNewsStatus = async (
     newsId: string,
     isActive: boolean,
 ): Promise<void> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         await axios.patch(
             `${serVer}/admin/news/${newsId}/status`,

@@ -158,6 +158,9 @@ export default function NewsEditorStepper({
     const handleBack = () => setActiveStep((prev) => prev - 1);
 
     const onSubmit: SubmitHandler<NewsFormData> = async (data) => {
+        const normalizeParagraphs = (value: string) =>
+            value.replace(/\r\n/g, "\n");
+
         // process images and videos
         const coverImageUrl = await uploadIfNeeded(data.image_url, {
             folder: "news/images",
@@ -170,7 +173,7 @@ export default function NewsEditorStepper({
         const contentWithImages = await Promise.all(
             data.content.map(async (content, index) => ({
                 title: content.title,
-                description: content.description,
+                description: normalizeParagraphs(content.description),
                 image_url: await uploadIfNeeded(content.image_url, {
                     folder: "news/content",
                     fileName: `content-${index + 1}`,
@@ -180,7 +183,7 @@ export default function NewsEditorStepper({
 
         const payload: NewsPayload = {
             title: data.title,
-            description: data.description,
+            description: normalizeParagraphs(data.description),
             category: data.category.map((cat) => cat.name),
             image_url: coverImageUrl,
             video_url: videoUrl,

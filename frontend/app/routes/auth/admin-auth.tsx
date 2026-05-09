@@ -39,7 +39,7 @@ export default function AdminAuth() {
             const response = await adminLogin(data);
 
             // Update AuthContext with user/token
-            login(response.token);
+            login(response.token, "admin");
         } catch (err) {
             if (isAxiosError(err)) {
                 showToast(

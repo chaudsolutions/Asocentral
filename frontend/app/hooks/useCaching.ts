@@ -86,7 +86,7 @@ export const useSingleNewsData = (newsId: string) => {
 
 // use admin data
 export const useAdminData = () => {
-    const { user } = useAuthContext();
+    const { adminToken } = useAuthContext();
     const {
         data: adminData,
         isLoading: isAdminDataLoading,
@@ -95,7 +95,7 @@ export const useAdminData = () => {
     } = useQuery({
         queryKey: ["adminData"],
         queryFn: getAdminData,
-        enabled: !!user,
+        enabled: !!adminToken,
     });
 
     return { adminData, isAdminDataLoading, adminDataError, refetchAdminData };
@@ -103,7 +103,7 @@ export const useAdminData = () => {
 
 // use user data
 export const useUserData = () => {
-    const { user } = useAuthContext();
+    const { userToken } = useAuthContext();
     const {
         data: userData,
         isLoading: isUserDataLoading,
@@ -112,7 +112,7 @@ export const useUserData = () => {
     } = useQuery({
         queryKey: ["userData"],
         queryFn: getUserData,
-        enabled: !!user,
+        enabled: !!userToken,
     });
 
     return { userData, isUserDataLoading, userDataError, refetchUserData };
@@ -194,15 +194,18 @@ export const useMyUnpublishedNews = () => {
 };
 
 export const useMyNotifications = (category?: string) => {
+    const { adminToken, userToken } = useAuthContext();
+    const scope: "admin" | "user" = adminToken ? "admin" : "user";
     const {
         data,
         isLoading: isNotificationsLoading,
         error: notificationsError,
         refetch: refetchNotifications,
     } = useQuery({
-        queryKey: ["myNotifications", category || "all"],
-        queryFn: () => fetchMyNotifications(category),
+        queryKey: ["myNotifications", category || "all", scope],
+        queryFn: () => fetchMyNotifications(category, scope),
         refetchInterval: 30000,
+        enabled: !!adminToken || !!userToken,
     });
 
     return {

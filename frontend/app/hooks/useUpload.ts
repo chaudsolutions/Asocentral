@@ -1,6 +1,6 @@
 import axios from "axios";
 import { serVer } from "~/utils/constants";
-import { getUserToken } from "./useTools";
+import { getAdminToken, getUserToken } from "./useTools";
 
 type UploadResponse = {
     file: {
@@ -39,7 +39,9 @@ export const uploadFile = async (
     formData.append("file", normalizedFile);
     formData.append("folder", options?.folder || "uploads");
 
-    const { token } = getUserToken();
+    const { token: adminToken } = getAdminToken();
+    const { token: userToken } = getUserToken();
+    const token = adminToken || userToken;
     const response = await axios.post<UploadResponse>(
         `${serVer}/upload/file`,
         formData,

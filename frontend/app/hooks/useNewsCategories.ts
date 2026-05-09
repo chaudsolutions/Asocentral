@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { NewsCategoryType } from "~/types/news";
 import { serVer } from "~/utils/constants";
-import { getUserToken } from "./useTools";
+import { getAdminToken } from "./useTools";
 
 // get news categories
 export const getNewsCategories = async (): Promise<NewsCategoryType[]> => {
@@ -24,7 +24,7 @@ type CreateCategoryPayload = {
 export const createNewsCategory = async (
     data: CreateCategoryPayload,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         const response = await axios.post(`${serVer}/admin/category`, data, {
             headers: {
@@ -44,7 +44,7 @@ export const updateNewsCategory = async (
     categoryId: string,
     data: CreateCategoryPayload,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         const response = await axios.put(
             `${serVer}/admin/category/${categoryId}`,
@@ -67,7 +67,7 @@ export const updateNewsCategory = async (
 export const deleteNewsCategory = async (
     categoryId: string,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         const response = await axios.delete(
             `${serVer}/admin/category/${categoryId}`,

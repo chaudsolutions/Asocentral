@@ -1,6 +1,6 @@
 import axios from "axios";
 import { serVer } from "~/utils/constants";
-import { getUserToken } from "./useTools";
+import { getAdminToken, getUserToken } from "./useTools";
 import type { UserType } from "~/types/user";
 
 type LoginPayload = {
@@ -24,7 +24,7 @@ export const adminLogin = async (
 
 // get admin data
 export const getAdminData = async (): Promise<UserType> => {
-    const { token } = getUserToken();
+    const { token } = getAdminToken();
     try {
         const response = await axios.get(`${serVer}/admin/me`, {
             headers: {

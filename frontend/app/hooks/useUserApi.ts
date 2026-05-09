@@ -1,6 +1,6 @@
 import axios from "axios";
 import { serVer } from "~/utils/constants";
-import { getUserToken } from "./useTools";
+import { getAdminToken, getUserToken } from "./useTools";
 import type { UserRole, UserType } from "~/types/user";
 import type { NewsPayload } from "./useNewsDataApi";
 import type { UnpublishedNewsType } from "~/types/news";
@@ -78,14 +78,21 @@ export type NotificationsResponse = {
     unreadCount: number;
 };
 
+const getAdminAuthHeader = () => {
+    const { token } = getAdminToken();
+    return { Authorization: `Bearer ${token}` };
+};
+
+const getUserAuthHeader = () => {
+    const { token } = getUserToken();
+    return { Authorization: `Bearer ${token}` };
+};
+
 // get all users
 export const fetchAllUsers = async (): Promise<UserType[]> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.get(`${serVer}/admin/users`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: getAdminAuthHeader(),
         });
         return response.data.users;
     } catch (error) {
@@ -96,12 +103,9 @@ export const fetchAllUsers = async (): Promise<UserType[]> => {
 
 // get admin dashboard data
 export const fetchAdminDashboard = async (): Promise<AdminDashboardData> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.get(`${serVer}/admin/dashboard`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: getAdminAuthHeader(),
         });
         return {
             stats: response.data.stats,
@@ -115,12 +119,9 @@ export const fetchAdminDashboard = async (): Promise<AdminDashboardData> => {
 
 // get journalist dashboard data
 export const fetchUserDashboard = async (): Promise<UserDashboardData> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.get(`${serVer}/user/dashboard`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: getUserAuthHeader(),
         });
         return {
             stats: response.data.stats,
@@ -136,12 +137,9 @@ export const fetchUserDashboard = async (): Promise<UserDashboardData> => {
 export const fetchUserDetails = async (
     userId: string,
 ): Promise<{ user: UserType; unpublishedNews: UnpublishedNewsType[] }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.get(`${serVer}/admin/users/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: getAdminAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -154,12 +152,9 @@ export const fetchUserDetails = async (
 export const createUser = async (
     data: UserPayload,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.post(`${serVer}/admin/users`, data, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: getAdminAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -173,15 +168,12 @@ export const updateUser = async (
     userId: string,
     data: UserPayload,
 ): Promise<{ message: string; user: UserType }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.put(
             `${serVer}/admin/users/${userId}`,
             data,
             {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                headers: getAdminAuthHeader(),
             },
         );
         return response.data;
@@ -195,12 +187,9 @@ export const updateUser = async (
 export const deleteUser = async (
     userId: string,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.delete(`${serVer}/admin/users/${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: getAdminAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -213,10 +202,9 @@ export const deleteUser = async (
 export const updateMyProfile = async (
     data: Pick<UserPayload, "name" | "email">,
 ): Promise<{ message: string; user: UserType }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.put(`${serVer}/user/me`, data, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getUserAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -229,10 +217,9 @@ export const updateMyProfile = async (
 export const updateMyKyc = async (
     data: KycPayload,
 ): Promise<{ message: string; user: UserType }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.put(`${serVer}/user/kyc`, data, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getUserAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -246,10 +233,9 @@ export const changeMyPassword = async (data: {
     currentPassword: string;
     newPassword: string;
 }): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.patch(`${serVer}/user/password`, data, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getUserAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -262,10 +248,9 @@ export const changeAdminPassword = async (data: {
     currentPassword: string;
     newPassword: string;
 }): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.patch(`${serVer}/admin/password`, data, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getAdminAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -278,10 +263,9 @@ export const changeAdminPassword = async (data: {
 export const fetchMyUnpublishedNews = async (): Promise<
     UnpublishedNewsType[]
 > => {
-    const { token } = getUserToken();
     try {
         const response = await axios.get(`${serVer}/user/news`, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getUserAuthHeader(),
         });
         return response.data.news;
     } catch (error) {
@@ -294,10 +278,9 @@ export const fetchMyUnpublishedNews = async (): Promise<
 export const createUnpublishedNews = async (
     data: NewsPayload,
 ): Promise<{ message: string; news: UnpublishedNewsType }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.post(`${serVer}/user/news`, data, {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getUserAuthHeader(),
         });
         return response.data;
     } catch (error) {
@@ -308,11 +291,11 @@ export const createUnpublishedNews = async (
 
 export const fetchMyNotifications = async (
     category?: string,
+    scope: "admin" | "user" = "user",
 ): Promise<NotificationsResponse> => {
-    const { token } = getUserToken();
     const query = category ? `?category=${encodeURIComponent(category)}` : "";
     const response = await axios.get(`${serVer}/notifications${query}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: scope === "admin" ? getAdminAuthHeader() : getUserAuthHeader(),
     });
     return {
         notifications: response.data.notifications || [],
@@ -322,32 +305,32 @@ export const fetchMyNotifications = async (
 
 export const markNotificationRead = async (
     notificationId: string,
+    scope: "admin" | "user" = "user",
 ): Promise<void> => {
-    const { token } = getUserToken();
     await axios.patch(
         `${serVer}/notifications/${notificationId}/read`,
         {},
         {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: scope === "admin" ? getAdminAuthHeader() : getUserAuthHeader(),
         },
     );
 };
 
-export const markAllNotificationsRead = async (): Promise<void> => {
-    const { token } = getUserToken();
+export const markAllNotificationsRead = async (
+    scope: "admin" | "user" = "user",
+): Promise<void> => {
     await axios.patch(
         `${serVer}/notifications/read-all`,
         {},
         {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: scope === "admin" ? getAdminAuthHeader() : getUserAuthHeader(),
         },
     );
 };
 
 export const fetchAdminPersonalities = async (): Promise<PersonalityType[]> => {
-    const { token } = getUserToken();
     const response = await axios.get(`${serVer}/admin/personalities`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAdminAuthHeader(),
     });
     return response.data.personalities;
 };
@@ -366,9 +349,8 @@ export const createPersonality = async (payload: {
     };
     isActive: boolean;
 }): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     const response = await axios.post(`${serVer}/admin/personalities`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAdminAuthHeader(),
     });
     return response.data;
 };
@@ -390,12 +372,11 @@ export const updatePersonality = async (
         isActive: boolean;
     },
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     const response = await axios.put(
         `${serVer}/admin/personalities/${personalityId}`,
         payload,
         {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getAdminAuthHeader(),
         },
     );
     return response.data;
@@ -404,20 +385,18 @@ export const updatePersonality = async (
 export const deletePersonality = async (
     personalityId: string,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     const response = await axios.delete(
         `${serVer}/admin/personalities/${personalityId}`,
         {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: getAdminAuthHeader(),
         },
     );
     return response.data;
 };
 
 export const fetchAdminSettings = async (): Promise<AppSettingsType> => {
-    const { token } = getUserToken();
     const response = await axios.get(`${serVer}/admin/settings`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAdminAuthHeader(),
     });
     return response.data.settings;
 };
@@ -425,9 +404,8 @@ export const fetchAdminSettings = async (): Promise<AppSettingsType> => {
 export const updateAdminSettings = async (
     payload: Partial<AppSettingsType>,
 ): Promise<{ message: string; settings: AppSettingsType }> => {
-    const { token } = getUserToken();
     const response = await axios.put(`${serVer}/admin/settings`, payload, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: getAdminAuthHeader(),
     });
     return response.data;
 };
@@ -437,12 +415,11 @@ export const updateUnpublishedNews = async (
     newsId: string,
     data: NewsPayload,
 ): Promise<{ message: string; news: UnpublishedNewsType }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.put(
             `${serVer}/admin/unpublished-news/${newsId}`,
             data,
-            { headers: { Authorization: `Bearer ${token}` } },
+            { headers: getAdminAuthHeader() },
         );
         return response.data;
     } catch (error) {
@@ -455,12 +432,11 @@ export const updateUnpublishedNews = async (
 export const publishUnpublishedNews = async (
     newsId: string,
 ): Promise<{ message: string }> => {
-    const { token } = getUserToken();
     try {
         const response = await axios.post(
             `${serVer}/admin/unpublished-news/${newsId}/publish`,
             {},
-            { headers: { Authorization: `Bearer ${token}` } },
+            { headers: getAdminAuthHeader() },
         );
         return response.data;
     } catch (error) {

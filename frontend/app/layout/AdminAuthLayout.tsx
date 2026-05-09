@@ -6,13 +6,13 @@ import { useAuthContext } from "~/context/AuthContext";
 
 export default function AdminAuthLayout() {
     const navigate = useNavigate();
-    const { user, isCheckingAuth } = useAuthContext();
+    const { adminToken, isCheckingAuth } = useAuthContext();
 
     useEffect(() => {
-        if (user) {
+        if (adminToken) {
             navigate("/admin/dashboard");
         }
-    }, [user, navigate]);
+    }, [adminToken, navigate]);
 
     if (isCheckingAuth) {
         return <PageLoader />;

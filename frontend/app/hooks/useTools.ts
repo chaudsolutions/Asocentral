@@ -2,12 +2,28 @@ import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { format } from "date-fns";
-import { localStorageToken } from "../utils/constants";
+import {
+    adminLocalStorageToken,
+    localStorageToken,
+} from "../utils/constants";
+
+const safeParseToken = (value: string | null) => {
+    if (!value) return null;
+    try {
+        return JSON.parse(value) as string;
+    } catch {
+        return null;
+    }
+};
 
 export const getUserToken = () => {
-    const token = localStorage.getItem(localStorageToken) as string;
+    const token = safeParseToken(localStorage.getItem(localStorageToken));
+    return { token };
+};
 
-    return { token: JSON.parse(token) };
+export const getAdminToken = () => {
+    const token = safeParseToken(localStorage.getItem(adminLocalStorageToken));
+    return { token };
 };
 
 export function useDebounce<T>(value: T, delay: number): T {

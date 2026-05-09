@@ -1,11 +1,17 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { localStorageToken } from "../utils/constants";
-import { getUserToken } from "~/hooks/useTools";
+import {
+    adminLocalStorageToken,
+    localStorageToken,
+} from "../utils/constants";
+import { getAdminToken, getUserToken } from "~/hooks/useTools";
+
+type AuthRole = "admin" | "user";
 
 interface AuthContext {
-    user: string | null;
-    login: (user: string) => void;
-    logout: () => void;
+    adminToken: string | null;
+    userToken: string | null;
+    login: (token: string, role: AuthRole) => void;
+    logout: (role?: AuthRole) => void;
     isCheckingAuth: boolean;
 }
 
@@ -13,12 +19,11 @@ export const AuthContext = createContext<AuthContext>({} as AuthContext);
 
 export const AuthContextProvider = ({
     children,
-    initialUser = null,
 }: {
     children: React.ReactNode;
-    initialUser?: AuthContext["user"];
 }) => {
-    const [user, setUser] = useState<AuthContext["user"]>(initialUser);
+    const [adminToken, setAdminToken] = useState<string | null>(null);
+    const [userToken, setUserToken] = useState<string | null>(null);
     const [isMounted, setIsMounted] = useState(false);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
@@ -27,8 +32,10 @@ export const AuthContextProvider = ({
         setIsCheckingAuth(true);
 
         // Only access localStorage after component mounts
-        const { token } = getUserToken();
-        if (token) setUser(token);
+        const { token: storedAdminToken } = getAdminToken();
+        const { token: storedUserToken } = getUserToken();
+        if (storedAdminToken) setAdminToken(storedAdminToken);
+        if (storedUserToken) setUserToken(storedUserToken);
 
         setIsCheckingAuth(false);
     }, []);
@@ -36,30 +43,55 @@ export const AuthContextProvider = ({
     useEffect(() => {
         if (!isMounted) return;
 
-        if (user) {
-            localStorage.setItem(localStorageToken, JSON.stringify(user));
+        if (adminToken) {
+            localStorage.setItem(
+                adminLocalStorageToken,
+                JSON.stringify(adminToken),
+            );
+        } else {
+            localStorage.removeItem(adminLocalStorageToken);
+        }
+
+        if (userToken) {
+            localStorage.setItem(localStorageToken, JSON.stringify(userToken));
         } else {
             localStorage.removeItem(localStorageToken);
         }
-    }, [user, isMounted]);
+    }, [adminToken, userToken, isMounted]);
 
-    // Function to log in a user
-    const login = (userData: string) => {
-        setUser(userData);
-
-        localStorage.setItem(localStorageToken, JSON.stringify(userData));
+    const login = (token: string, role: AuthRole) => {
+        if (role === "admin") {
+            setAdminToken(token);
+            localStorage.setItem(
+                adminLocalStorageToken,
+                JSON.stringify(token),
+            );
+            return;
+        }
+        setUserToken(token);
+        localStorage.setItem(localStorageToken, JSON.stringify(token));
     };
 
-    // Function to log out a user
-    const logout = () => {
-        setUser(null);
-        // Clear user data from local storage
-
+    const logout = (role?: AuthRole) => {
+        if (role === "admin") {
+            setAdminToken(null);
+            localStorage.removeItem(adminLocalStorageToken);
+            return;
+        }
+        if (role === "user") {
+            setUserToken(null);
+            localStorage.removeItem(localStorageToken);
+            return;
+        }
+        setAdminToken(null);
+        setUserToken(null);
+        localStorage.removeItem(adminLocalStorageToken);
         localStorage.removeItem(localStorageToken);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isCheckingAuth }}>
+        <AuthContext.Provider
+            value={{ adminToken, userToken, login, logout, isCheckingAuth }}>
             {children}
         </AuthContext.Provider>
     );
