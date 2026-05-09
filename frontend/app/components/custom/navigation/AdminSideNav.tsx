@@ -137,13 +137,19 @@ const AdminSideNav = ({
                         {/* AppName/Header Text: Only show when drawer is fully open or on mobile */}
                         <Box
                             sx={{
-                                display:
-                                    isMobile || drawerOpen ? "flex" : "none",
+                                display: "flex",
                                 width: "100%",
+                                gap: 1,
                                 alignItems: "center",
                             }}>
                             <AppLogo />
-                            <Typography variant="body1">Admin</Typography>
+                            <Typography
+                                variant="body1"
+                                sx={{
+                                    fontWeight: 700,
+                                }}>
+                                Admin
+                            </Typography>
                         </Box>
 
                         {/* Mobile Close Button */}

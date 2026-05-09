@@ -89,12 +89,19 @@ export default function UserSideNav({
                     }}>
                     <Box
                         sx={{
-                            display:
-                                isMobile || drawerOpen ? "flex" : "none",
+                            display: "flex",
+                            width: "100%",
+                            gap: 1,
                             alignItems: "center",
                         }}>
                         <AppLogo />
-                        <Typography variant="body1">Journalist</Typography>
+                        <Typography
+                            variant="body1"
+                            sx={{
+                                fontWeight: 700,
+                            }}>
+                            Journalist
+                        </Typography>
                     </Box>
                     {isMobile && (
                         <IconButton

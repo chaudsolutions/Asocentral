@@ -11,14 +11,6 @@ export default [
     layout("layout/MainLayout.tsx", [
         // static pages
         index("routes/public/home.tsx"),
-
-        // dynamic pages
-        route("category/:categoryName", "routes/public/category.tsx", {
-            id: "news-category", // Explicit unique ID
-        }),
-        route("news/:articleId", "routes/public/single-news.tsx", {
-            id: "single-news", // Explicit unique ID
-        }),
         route(
             "personality-of-the-week",
             "routes/public/personality-of-the-week.tsx",
@@ -33,7 +25,14 @@ export default [
         route("faqs", "routes/public/faqs.tsx"),
         route("privacy-policy", "routes/public/privacy-policy.tsx"),
         route("terms-of-use", "routes/public/terms-of-use.tsx"),
-        route("ad-choices", "routes/public/ad-choices.tsx"),
+
+        // dynamic pages
+        route("category/:categoryName", "routes/public/category.tsx", {
+            id: "news-category", // Explicit unique ID
+        }),
+        route("news/:articleId", "routes/public/single-news.tsx", {
+            id: "single-news", // Explicit unique ID
+        }),
 
         // 404 page for unmatched routes
         route("*", "routes/public/404.tsx"),
