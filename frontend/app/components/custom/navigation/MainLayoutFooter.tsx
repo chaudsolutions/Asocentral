@@ -103,12 +103,6 @@ const MainLayoutFooter = () => {
                         <Box component={Link} to="/faqs" sx={footerLinkStyle}>
                             FAQs
                         </Box>
-                        <Box
-                            component={Link}
-                            to="/profiles"
-                            sx={footerLinkStyle}>
-                            Profiles
-                        </Box>
                     </Grid>
 
                     {/* Legal Section */}
