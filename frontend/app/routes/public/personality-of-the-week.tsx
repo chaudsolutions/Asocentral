@@ -17,6 +17,8 @@ import { usePersonalities } from "~/hooks/useCaching";
 import type { PersonalityType } from "~/types/personality";
 import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 import type { Route } from "./+types/personality-of-the-week";
+import { useLoaderData } from "react-router";
+import { usePublicSettings } from "~/hooks/useCaching";
 
 export async function loader() {
     const settings = await fetchPublicSettings();
@@ -55,8 +57,18 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export default function PersonalityOfTheWeek() {
+    const data = useLoaderData<typeof loader>();
+    const { publicSettings, isPublicSettingsLoading } = usePublicSettings();
+
+    const settings = publicSettings || data.settings;
+    const personalitySettings = settings?.personalityOfTheWeek;
+
     const { personalities = [], isPersonalitiesLoading } = usePersonalities();
     const [featured, ...rest] = personalities;
+
+    const isLoading =
+        isPersonalitiesLoading ||
+        (isPublicSettingsLoading && !publicSettings && !data.settings);
 
     return (
         <Box sx={{ display: "grid", gap: 3 }}>
@@ -66,14 +78,16 @@ export default function PersonalityOfTheWeek() {
                     pb: 1.5,
                 }}>
                 <Typography variant="h4" sx={{ fontWeight: 900 }}>
-                    Personality of the Week
+                    {personalitySettings?.title || "Personality of the Week"}
                 </Typography>
+
                 <Typography color="text.secondary" sx={{ mt: 1 }}>
-                    Profiles of standout voices shaping the newsroom.
+                    {personalitySettings?.summary ||
+                        "Profiles of standout voices shaping the newsroom."}
                 </Typography>
             </Box>
 
-            {isPersonalitiesLoading ? (
+            {isLoading ? (
                 <PersonalitySkeleton />
             ) : featured ? (
                 <>

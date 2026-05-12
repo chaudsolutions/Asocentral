@@ -41,6 +41,10 @@ export interface AppSettingsType {
             answer: string;
         }[];
     };
+    personalityOfTheWeek: {
+        title: string;
+        summary: string;
+    };
     security?: {
         lockPassword: string;
         smtpHost: string;

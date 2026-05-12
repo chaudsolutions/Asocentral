@@ -49,6 +49,10 @@ export interface IAppSettings extends Document {
             answer: string;
         }[];
     };
+    personalityOfTheWeek: {
+        title: string;
+        summary: string;
+    };
     createdAt: Date;
     updatedAt: Date;
 }
@@ -120,6 +124,13 @@ const appSettingsSchema = new Schema<IAppSettings>(
                     },
                 ],
                 default: [],
+            },
+        },
+        personalityOfTheWeek: {
+            title: { type: String, default: "Verified Handles" },
+            summary: {
+                type: String,
+                default: "Profiles of standout voices shaping the newsroom.",
             },
         },
         security: {

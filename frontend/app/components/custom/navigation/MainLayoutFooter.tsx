@@ -100,17 +100,14 @@ const MainLayoutFooter = () => {
                             sx={footerLinkStyle}>
                             Contact Us
                         </Box>
-                        <Box
-                            component={Link}
-                            to="/faqs"
-                            sx={footerLinkStyle}>
+                        <Box component={Link} to="/faqs" sx={footerLinkStyle}>
                             FAQs
                         </Box>
                         <Box
                             component={Link}
-                            to="/personality-of-the-week"
+                            to="/profiles"
                             sx={footerLinkStyle}>
-                            Personality Of The Week
+                            Profiles
                         </Box>
                     </Grid>
 

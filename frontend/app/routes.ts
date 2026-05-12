@@ -11,12 +11,9 @@ export default [
     layout("layout/MainLayout.tsx", [
         // static pages
         index("routes/public/home.tsx"),
+        route("profiles", "routes/public/personality-of-the-week.tsx"),
         route(
-            "personality-of-the-week",
-            "routes/public/personality-of-the-week.tsx",
-        ),
-        route(
-            "personality-of-the-week/:personalityId",
+            "profiles/:personalityId",
             "routes/public/personality-detail.tsx",
         ),
         route("about-us", "routes/public/about-us.tsx"),

@@ -17,7 +17,7 @@ import type { NewsCategoryType } from "~/types/news";
 import { useResponsive } from "~/hooks/useTools";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNewsData } from "~/hooks/useCaching";
-import SearchDrawer from "../news/SearchDrawer";
+import SearchOverlay from "../news/SearchOverlay";
 
 const MainLayoutHeader = () => {
     const { newsCategories = [], isNewsCategoriesLoading } =
@@ -114,6 +114,10 @@ const MainLayoutHeader = () => {
                                     </NavLink>
                                 ))}
 
+                                <NavLink to="/profiles" style={navLinkStyle}>
+                                    Profiles
+                                </NavLink>
+
                                 {/* 3. The "More" Dropdown */}
                                 {newsCategories.length > 3 && (
                                     <>
@@ -190,12 +194,14 @@ const MainLayoutHeader = () => {
                 </Container>
             </Toolbar>
 
-            <SearchDrawer
-                open={isSearchOpen}
-                onClose={() => setIsSearchOpen(false)}
-                data={activeNews}
-                loading={isNewsDataLoading}
-            />
+            <Box sx={{ position: "relative" }}>
+                <SearchOverlay
+                    open={isSearchOpen}
+                    onClose={() => setIsSearchOpen(false)}
+                    data={activeNews}
+                    loading={isNewsDataLoading}
+                />
+            </Box>
         </AppBar>
     );
 };

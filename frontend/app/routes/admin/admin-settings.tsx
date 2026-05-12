@@ -69,6 +69,10 @@ const defaultDraft: SettingsDraft = {
         summary: "",
         questions: [],
     },
+    personalityOfTheWeek: {
+        title: "",
+        summary: "",
+    },
     security: {
         lockPassword: "12345",
         smtpHost: "",
@@ -144,6 +148,9 @@ export default function AdminSettings() {
                 aboutUs: adminSettings.aboutUs,
                 contactUs: adminSettings.contactUs,
                 faqs: adminSettings.faqs || defaultDraft.faqs,
+                personalityOfTheWeek:
+                    adminSettings.personalityOfTheWeek ||
+                    defaultDraft.personalityOfTheWeek,
                 security: adminSettings.security || defaultDraft.security,
             });
         }
@@ -192,9 +199,14 @@ export default function AdminSettings() {
                         }
                       : tab === 2
                         ? { contactUs: draft.contactUs }
-                      : tab === 3
-                        ? { faqs: draft.faqs }
-                        : { security: draft.security };
+                        : tab === 3
+                          ? { faqs: draft.faqs }
+                          : tab === 4
+                            ? {
+                                  personalityOfTheWeek:
+                                      draft.personalityOfTheWeek,
+                              }
+                            : { security: draft.security };
             const res = await updateAdminSettings(payload);
             showToast(res.message, "success");
             refetchAdminSettings();
@@ -214,8 +226,8 @@ export default function AdminSettings() {
     };
 
     const handleTabChange = (_: SyntheticEvent, value: number) => {
-        if (value === 4 && !isSecurityUnlocked) {
-            setTab(4);
+        if (value === 5 && !isSecurityUnlocked) {
+            setTab(5);
             setIsUnlockDialogOpen(true);
             return;
         }
@@ -270,7 +282,10 @@ export default function AdminSettings() {
         newEmail: string;
         confirmEmail: string;
     }) => {
-        if (values.newEmail.trim().toLowerCase() !== values.confirmEmail.trim().toLowerCase()) {
+        if (
+            values.newEmail.trim().toLowerCase() !==
+            values.confirmEmail.trim().toLowerCase()
+        ) {
             showToast("New email and confirm email do not match", "error");
             return;
         }
@@ -315,6 +330,7 @@ export default function AdminSettings() {
                     <Tab label="About Us" />
                     <Tab label="Contact Us" />
                     <Tab label="FAQs" />
+                    <Tab label="Profiles" />
                     <Tab label="Security" />
                 </Tabs>
             </Paper>
@@ -616,6 +632,27 @@ export default function AdminSettings() {
                 )}
 
                 {tab === 4 && (
+                    <Grid container spacing={2}>
+                        <Grid size={12}>
+                            <FormTextField
+                                name="personalityOfTheWeek.title"
+                                label="Title"
+                                control={control}
+                            />
+                        </Grid>
+
+                        <Grid size={12}>
+                            <FormTextArea
+                                name="personalityOfTheWeek.summary"
+                                label="Summary"
+                                control={control}
+                                rows={4}
+                            />
+                        </Grid>
+                    </Grid>
+                )}
+
+                {tab === 5 && (
                     <Stack spacing={2}>
                         {isSecurityUnlocked ? (
                             <Grid container spacing={2}>
@@ -752,10 +789,12 @@ export default function AdminSettings() {
                                                 label="New Email"
                                                 control={emailControl}
                                                 rules={{
-                                                    required: "New email is required",
+                                                    required:
+                                                        "New email is required",
                                                     pattern: {
                                                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                        message: "Enter a valid email address",
+                                                        message:
+                                                            "Enter a valid email address",
                                                     },
                                                 }}
                                             />
@@ -769,7 +808,9 @@ export default function AdminSettings() {
                                                     required:
                                                         "Please confirm email",
                                                     validate: (value: string) =>
-                                                        value.trim().toLowerCase() ===
+                                                        value
+                                                            .trim()
+                                                            .toLowerCase() ===
                                                             watchEmail(
                                                                 "newEmail",
                                                             )

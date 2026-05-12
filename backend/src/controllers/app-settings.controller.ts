@@ -40,7 +40,10 @@ export const appSettingsController = {
         } catch (error) {
             console.error("Error fetching admin settings:", error);
             if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
                 return;
             }
             res.status(500).json({
@@ -106,13 +109,23 @@ export const appSettingsController = {
                     smtpUser: string;
                     smtpPass: string;
                 };
+                personalityOfTheWeek: {
+                    title: string;
+                    summary: string;
+                };
             }>;
 
             const settings = await AppSettingsModel.findByIdAndUpdate(
                 existing._id,
                 {
-                    general: { ...existing.general, ...(payload.general || {}) },
-                    aboutUs: { ...existing.aboutUs, ...(payload.aboutUs || {}) },
+                    general: {
+                        ...existing.general,
+                        ...(payload.general || {}),
+                    },
+                    aboutUs: {
+                        ...existing.aboutUs,
+                        ...(payload.aboutUs || {}),
+                    },
                     contactUs: {
                         ...existing.contactUs,
                         ...(payload.contactUs || {}),
@@ -120,6 +133,10 @@ export const appSettingsController = {
                     faqs: {
                         ...existing.faqs,
                         ...(payload.faqs || {}),
+                    },
+                    personalityOfTheWeek: {
+                        ...existing.personalityOfTheWeek,
+                        ...(payload.personalityOfTheWeek || {}),
                     },
                     security: {
                         ...existing.security,
@@ -137,7 +154,10 @@ export const appSettingsController = {
         } catch (error) {
             console.error("Error updating settings:", error);
             if (error instanceof BadRequestError) {
-                res.status(400).json({ success: false, message: error.message });
+                res.status(400).json({
+                    success: false,
+                    message: error.message,
+                });
                 return;
             }
             res.status(500).json({
