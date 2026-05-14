@@ -66,4 +66,8 @@ export default [
             route("settings", "routes/user/user-settings.tsx"),
         ]),
     ]),
+
+    // resources route
+    route("sitemap.xml", "routes/sitemap.tsx"),
+    route("robots.txt", "routes/robots.tsx"),
 ] satisfies RouteConfig;
