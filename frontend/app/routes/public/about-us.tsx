@@ -29,6 +29,9 @@ export function meta({ loaderData }: Route.MetaArgs) {
             name: "keywords",
             content: "about us, newsroom, mission, editorial standards",
         },
+
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },
         { property: "og:title", content: title },

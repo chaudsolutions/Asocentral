@@ -20,6 +20,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+                <meta
+                    name="google-site-verification"
+                    content="77f8oSN-tlXbBSqTrjvv7JMs59dtuxH6OxDmaNPbT5w"
+                />
                 <Meta />
                 <link rel="stylesheet" href={appStylesHref} />
                 <link rel="preconnect" href="https://fonts.googleapis.com" />

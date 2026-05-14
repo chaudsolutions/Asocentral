@@ -18,7 +18,6 @@ export default [
         ),
         route("about-us", "routes/public/about-us.tsx"),
         route("contact-us", "routes/public/contact-us.tsx"),
-        route("careers", "routes/public/careers.tsx"),
         route("faqs", "routes/public/faqs.tsx"),
         route("privacy-policy", "routes/public/privacy-policy.tsx"),
         route("terms-of-use", "routes/public/terms-of-use.tsx"),

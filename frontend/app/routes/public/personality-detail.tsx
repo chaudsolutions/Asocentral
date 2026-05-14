@@ -42,6 +42,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { tagName: "link", rel: "canonical", href: pageUrl },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
         { property: "og:image", content: websiteLogo },
         { property: "og:url", content: pageUrl },
         { property: "og:type", content: "article" },

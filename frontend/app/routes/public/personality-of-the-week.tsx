@@ -46,6 +46,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { tagName: "link", rel: "canonical", href: pageUrl },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
         { property: "og:image", content: websiteLogo },
         { property: "og:url", content: pageUrl },
         { property: "og:type", content: "website" },
@@ -92,7 +94,7 @@ export default function PersonalityOfTheWeek() {
             ) : featured ? (
                 <>
                     <Link
-                        to={`/personality-of-the-week/${featured._id}`}
+                        to={`/profiles/${featured._id}`}
                         style={{ textDecoration: "none", color: "inherit" }}>
                         <Box
                             sx={{
@@ -256,10 +258,6 @@ function SocialLink({ href, icon }: { href?: string; icon: ReactNode }) {
     if (!href) return null;
     return (
         <IconButton
-            component="a"
-            href={href}
-            target="_blank"
-            rel="noreferrer"
             size="small"
             onClick={(e) => e.stopPropagation()}
             sx={{

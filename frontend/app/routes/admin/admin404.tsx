@@ -5,9 +5,23 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import EngineeringIcon from "@mui/icons-material/Engineering";
 import HomeIcon from "@mui/icons-material/Home";
+import type { Route } from "./+types/admin404";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Admin 404 | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Admin 404 | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 export default function Admin404() {

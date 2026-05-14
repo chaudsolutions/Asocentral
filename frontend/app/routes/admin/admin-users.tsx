@@ -15,16 +15,33 @@ import UserDialog from "~/components/admin/admin-users/UserDialog";
 import UserDetailPanel from "~/components/admin/admin-users/UserDetailPanel";
 import NewsEditorStepper from "~/components/admin/admin-news/NewsEditorStepper";
 import { updateUnpublishedNews } from "~/hooks/useUserApi";
+import type { Route } from "./+types/admin-users";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Admin Users | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Admin Users | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 export default function AdminUsers() {
     const { confirm } = useConfirmDialog();
     const { showToast } = useToast();
-    const { allUsers = [], isAllUsersLoading, refetchAllUsers } =
-        useFetchAllUsers();
+    const {
+        allUsers = [],
+        isAllUsersLoading,
+        refetchAllUsers,
+    } = useFetchAllUsers();
     const nonAdminUsers = allUsers.filter((user) => user.role !== "admin");
 
     const [open, setOpen] = useState(false);
@@ -142,7 +159,6 @@ export default function AdminUsers() {
                 refetch={refetchAllUsers}
                 initialData={selectedUser}
             />
-
         </>
     );
 }

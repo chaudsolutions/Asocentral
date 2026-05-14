@@ -12,6 +12,24 @@ import { adminLogin } from "~/hooks/useAuthApi";
 import AppName from "~/components/custom/buttons/AppName";
 import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
+import type { Route } from "./+types/admin-auth";
+
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Admin Authentication | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
+}
 
 interface AdminLoginCredentials {
     email: string;

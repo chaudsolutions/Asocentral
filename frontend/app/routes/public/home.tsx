@@ -9,6 +9,7 @@ import type { NewsDataType } from "~/types/news";
 import { Link } from "react-router";
 import type { AppSettingsType } from "~/types/settings";
 import { serVer } from "~/utils/constants";
+import type { Route } from "./+types/home";
 
 const getPublicSettings = async (): Promise<AppSettingsType | null> => {
     try {
@@ -29,14 +30,10 @@ export async function loader() {
     return { newsData, settings };
 }
 
-export const meta = ({
-    data,
-}: {
-    data?: { settings?: AppSettingsType | null };
-}) => {
-    const appName = data?.settings?.general?.websiteName || "N/A";
-    const websiteUrl = data?.settings?.general?.websiteUrl || "N/A";
-    const websiteLogo = data?.settings?.general?.logoUrl || "";
+export const meta = ({ loaderData }: Route.MetaArgs) => {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
     const title = `${appName} | Breaking News, Latest Stories and World Updates`;
     const description =
         "Stay informed with Trojan News Network. Get real-time breaking news, deep investigations, and latest updates on politics, technology, and world events from Lagos to the world.";
@@ -68,7 +65,7 @@ export const meta = ({
         { name: "twitter:image", content: websiteLogo },
 
         // Favicon
-        { tagName: "link", rel: "icon", href: "/favicon.ico", sizes: "any" },
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
 
         // Theme / Mobile
         { name: "theme-color", content: "#003366" }, // Your brand blue

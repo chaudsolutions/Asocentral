@@ -37,6 +37,9 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: appName },
 
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },

@@ -15,6 +15,24 @@ import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
 import MainLayoutHeader from "~/components/custom/navigation/MainLayoutHeader";
 import MainLayoutFooter from "~/components/custom/navigation/MainLayoutFooter";
+import type { Route } from "./+types/user-auth";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
+
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Journalists Authentication | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
+}
 
 interface LoginCredentials {
     email: string;
@@ -125,58 +143,58 @@ export default function UserAuth() {
                             </Stack>
                         </Stack>
 
-                <Paper
-                    elevation={4}
-                    sx={{ p: 4, width: "100%", borderRadius: 2 }}>
-                    <Box
-                        sx={{
-                            mb: 3,
-                            bgcolor: "grey.900",
-                            p: 1,
-                            borderRadius: 2,
-                            textAlign: "center",
-                        }}>
-                        <AppName />
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                mt: 1,
-                                fontWeight: 700,
-                                color: "common.white",
-                            }}>
-                            Journalist Portal
-                        </Typography>
-                    </Box>
+                        <Paper
+                            elevation={4}
+                            sx={{ p: 4, width: "100%", borderRadius: 2 }}>
+                            <Box
+                                sx={{
+                                    mb: 3,
+                                    bgcolor: "grey.900",
+                                    p: 1,
+                                    borderRadius: 2,
+                                    textAlign: "center",
+                                }}>
+                                <AppName />
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        mt: 1,
+                                        fontWeight: 700,
+                                        color: "common.white",
+                                    }}>
+                                    Journalist Portal
+                                </Typography>
+                            </Box>
 
-                    <Box
-                        component="form"
-                        onSubmit={handleSubmit(onSubmit)}
-                        noValidate
-                        sx={{ display: "grid", gap: 2 }}>
-                        <FormTextField
-                            name="email"
-                            label="Email"
-                            control={control}
-                            rules={{ required: "Email is required" }}
-                        />
+                            <Box
+                                component="form"
+                                onSubmit={handleSubmit(onSubmit)}
+                                noValidate
+                                sx={{ display: "grid", gap: 2 }}>
+                                <FormTextField
+                                    name="email"
+                                    label="Email"
+                                    control={control}
+                                    rules={{ required: "Email is required" }}
+                                />
 
-                        <FormPasswordField
-                            name="password"
-                            label="Password"
-                            control={control}
-                            rules={{ required: "Password is required" }}
-                        />
+                                <FormPasswordField
+                                    name="password"
+                                    label="Password"
+                                    control={control}
+                                    rules={{ required: "Password is required" }}
+                                />
 
-                        <Button
-                            type="submit"
-                            variant="contained"
-                            fullWidth
-                            disabled={isSubmitting}
-                            sx={{ mt: 2, py: 1.2, bgcolor: "#003366" }}>
-                            {isSubmitting ? "Signing in..." : "Login"}
-                        </Button>
-                    </Box>
-                </Paper>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    fullWidth
+                                    disabled={isSubmitting}
+                                    sx={{ mt: 2, py: 1.2, bgcolor: "#003366" }}>
+                                    {isSubmitting ? "Signing in..." : "Login"}
+                                </Button>
+                            </Box>
+                        </Paper>
                     </Box>
                 </Container>
             </Box>

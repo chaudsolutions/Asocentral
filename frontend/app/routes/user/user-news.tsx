@@ -17,9 +17,23 @@ import NewsEditorStepper from "~/components/admin/admin-news/NewsEditorStepper";
 import { createUnpublishedNews } from "~/hooks/useUserApi";
 import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
+import type { Route } from "./+types/user-news";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Journalist News | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Journalist News | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 export default function UserNews() {
@@ -145,14 +159,10 @@ export default function UserNews() {
                                 <TableCell>
                                     <Chip
                                         label={
-                                            news.posted
-                                                ? "Posted"
-                                                : "In review"
+                                            news.posted ? "Posted" : "In review"
                                         }
                                         color={
-                                            news.posted
-                                                ? "success"
-                                                : "warning"
+                                            news.posted ? "success" : "warning"
                                         }
                                         size="small"
                                     />

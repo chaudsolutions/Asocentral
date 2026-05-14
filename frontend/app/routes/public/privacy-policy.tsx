@@ -25,6 +25,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { tagName: "link", rel: "canonical", href: pageUrl },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
         { property: "og:image", content: websiteLogo },
         { property: "og:url", content: pageUrl },
         { property: "og:type", content: "website" },
@@ -82,12 +84,16 @@ const sections = [
 export default function PrivacyPolicy() {
     return (
         <Box sx={{ display: "grid", gap: 2.5, maxWidth: 980 }}>
-            <Paper elevation={0} sx={{ p: { xs: 2, md: 3 }, border: "1px solid #e5e7eb" }}>
+            <Paper
+                elevation={0}
+                sx={{ p: { xs: 2, md: 3 }, border: "1px solid #e5e7eb" }}>
                 <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
                     Privacy Policy
                 </Typography>
                 <Typography color="text.secondary">
-                    Effective date: May 9, 2026. This policy explains how information is collected, used, and protected across the platform.
+                    Effective date: May 9, 2026. This policy explains how
+                    information is collected, used, and protected across the
+                    platform.
                 </Typography>
             </Paper>
 
@@ -99,7 +105,8 @@ export default function PrivacyPolicy() {
                     <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
                         {section.title}
                     </Typography>
-                    <Typography sx={{ lineHeight: 1.85, color: "text.secondary" }}>
+                    <Typography
+                        sx={{ lineHeight: 1.85, color: "text.secondary" }}>
                         {section.body}
                     </Typography>
                 </Paper>
@@ -107,4 +114,3 @@ export default function PrivacyPolicy() {
         </Box>
     );
 }
-

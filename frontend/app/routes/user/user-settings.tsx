@@ -24,9 +24,23 @@ import { isAxiosError } from "axios";
 import { countriesStatesArray } from "~/utils/countries-states";
 import { uploadIfNeeded } from "~/hooks/useUpload";
 import FormTextArea from "~/components/form-fields/FormTextArea";
+import type { Route } from "./+types/user-settings";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Journalist Settings | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Journalist Settings | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 function TabPanel({

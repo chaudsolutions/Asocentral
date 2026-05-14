@@ -26,7 +26,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas-pro";
 
-import { useAdminData, useSingleNewsData, useUserData } from "~/hooks/useCaching";
+import {
+    useAdminData,
+    useSingleNewsData,
+    useUserData,
+} from "~/hooks/useCaching";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 import FormTextField from "~/components/form-fields/FormTextField";
 import {
@@ -79,6 +83,8 @@ export function meta({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:image", content: image },
+        // Favicon
+        { tagName: "link", rel: "icon", href: image, sizes: "any" },
         { property: "og:url", content: url },
         { property: "og:type", content: "article" },
         { property: "og:site_name", content: appName },
@@ -277,11 +283,12 @@ export default function SingleNews() {
         }
     };
 
-    const canManageComments = Boolean(adminToken && adminData?._id)
-        || Boolean(
+    const canManageComments =
+        Boolean(adminToken && adminData?._id) ||
+        Boolean(
             userToken &&
-                userData?._id &&
-                singleNewsData?.creator?.includes(userData._id),
+            userData?._id &&
+            singleNewsData?.creator?.includes(userData._id),
         );
 
     const handleDeleteComment = async (commentId?: string) => {
@@ -289,7 +296,10 @@ export default function SingleNews() {
         if (!window.confirm("Delete this comment?")) return;
 
         try {
-            const response = await deleteNewsComment(singleNewsData._id, commentId);
+            const response = await deleteNewsComment(
+                singleNewsData._id,
+                commentId,
+            );
             setComments(response.comments || []);
         } catch (err) {
             console.error("Delete comment failed", err);
@@ -587,7 +597,11 @@ export default function SingleNews() {
                         <Box sx={{ mt: 5 }}>
                             <Typography
                                 variant="h5"
-                                sx={{ fontWeight: 700, mb: 2, color: "#003366" }}>
+                                sx={{
+                                    fontWeight: 700,
+                                    mb: 2,
+                                    color: "#003366",
+                                }}>
                                 Watch Related Video
                             </Typography>
                             <Box
@@ -658,8 +672,7 @@ export default function SingleNews() {
                                 rows={4}
                                 placeholder="Share your thoughts on this article..."
                                 rules={{
-                                    required:
-                                        "Comment content cannot be empty",
+                                    required: "Comment content cannot be empty",
                                 }}
                             />
                             <Box

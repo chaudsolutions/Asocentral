@@ -50,6 +50,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
         },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:image", content: websiteLogo },

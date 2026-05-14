@@ -26,6 +26,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:image", content: websiteLogo },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
         { property: "og:url", content: pageUrl },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: appName },
@@ -86,12 +88,15 @@ const sections = [
 export default function TermsOfUse() {
     return (
         <Box sx={{ display: "grid", gap: 2.5, maxWidth: 980 }}>
-            <Paper elevation={0} sx={{ p: { xs: 2, md: 3 }, border: "1px solid #e5e7eb" }}>
+            <Paper
+                elevation={0}
+                sx={{ p: { xs: 2, md: 3 }, border: "1px solid #e5e7eb" }}>
                 <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
                     Terms of Use
                 </Typography>
                 <Typography color="text.secondary">
-                    Effective date: May 9, 2026. These terms define the rules and responsibilities for using the platform.
+                    Effective date: May 9, 2026. These terms define the rules
+                    and responsibilities for using the platform.
                 </Typography>
             </Paper>
 
@@ -103,7 +108,8 @@ export default function TermsOfUse() {
                     <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
                         {section.title}
                     </Typography>
-                    <Typography sx={{ lineHeight: 1.85, color: "text.secondary" }}>
+                    <Typography
+                        sx={{ lineHeight: 1.85, color: "text.secondary" }}>
                         {section.body}
                     </Typography>
                 </Paper>
@@ -111,4 +117,3 @@ export default function TermsOfUse() {
         </Box>
     );
 }
-

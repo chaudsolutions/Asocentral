@@ -20,9 +20,23 @@ import {
     YAxis,
 } from "recharts";
 import { useUserDashboard, useUserData } from "~/hooks/useCaching";
+import type { Route } from "./+types/user-dashboard";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Journalist Dashboard | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Journalist Dashboard | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 function StatCard({
@@ -159,8 +173,8 @@ export default function UserDashboard() {
                     Welcome, {userData?.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    Track submission progress, review performance, and keep
-                    your verification ready for publishing.
+                    Track submission progress, review performance, and keep your
+                    verification ready for publishing.
                 </Typography>
             </Box>
 
@@ -260,9 +274,7 @@ export default function UserDashboard() {
                                         <Cell
                                             key={entry.name}
                                             fill={
-                                                ["#003366", "#c00"][
-                                                    index % 2
-                                                ]
+                                                ["#003366", "#c00"][index % 2]
                                             }
                                         />
                                     ))}

@@ -50,6 +50,9 @@ export const meta = ({ params, loaderData }: Route.MetaArgs) => {
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: websiteLogo },
 
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+
         // Structured Data: WebPage
         {
             type: "application/ld+json",

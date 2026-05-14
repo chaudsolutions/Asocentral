@@ -31,9 +31,23 @@ import { useAdminPersonalities } from "~/hooks/useCaching";
 import { useToast } from "~/context/ToastContext";
 import { useConfirmDialog } from "~/context/ConfirmDialogContext";
 import type { PersonalityType } from "~/types/personality";
+import type { Route } from "./+types/admin-personality";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Admin Personality | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Admin Personality | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 function CustomTabPanel({
@@ -47,7 +61,9 @@ function CustomTabPanel({
 }) {
     return (
         <div role="tabpanel" hidden={value !== index}>
-            {value === index ? <Box sx={{ p: { xs: 1, md: 2 } }}>{children}</Box> : null}
+            {value === index ? (
+                <Box sx={{ p: { xs: 1, md: 2 } }}>{children}</Box>
+            ) : null}
         </div>
     );
 }
@@ -247,14 +263,25 @@ export default function AdminPersonality() {
                     </Button>
                 </Stack>
 
-                <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #eee" }}>
+                <TableContainer
+                    component={Paper}
+                    elevation={0}
+                    sx={{ border: "1px solid #eee" }}>
                     <Table size="small">
                         <TableHead sx={{ bgcolor: "#f8f9fa" }}>
                             <TableRow>
-                                <TableCell sx={{ fontWeight: 700 }}>Image</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Title</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>Created</TableCell>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    Image
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    Title
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    Status
+                                </TableCell>
+                                <TableCell sx={{ fontWeight: 700 }}>
+                                    Created
+                                </TableCell>
                                 <TableCell sx={{ fontWeight: 700 }}>
                                     Actions
                                 </TableCell>
@@ -276,28 +303,44 @@ export default function AdminPersonality() {
                                             }}
                                         />
                                     </TableCell>
-                                    <TableCell sx={{ fontWeight: 700 }}>{item.title}</TableCell>
+                                    <TableCell sx={{ fontWeight: 700 }}>
+                                        {item.title}
+                                    </TableCell>
                                     <TableCell>
                                         <Chip
                                             size="small"
-                                            label={item.isActive ? "Active" : "Inactive"}
-                                            color={item.isActive ? "success" : "default"}
+                                            label={
+                                                item.isActive
+                                                    ? "Active"
+                                                    : "Inactive"
+                                            }
+                                            color={
+                                                item.isActive
+                                                    ? "success"
+                                                    : "default"
+                                            }
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        {new Date(item.createdAt).toLocaleDateString()}
+                                        {new Date(
+                                            item.createdAt,
+                                        ).toLocaleDateString()}
                                     </TableCell>
                                     <TableCell>
                                         <Stack direction="row" spacing={0.5}>
                                             <IconButton
                                                 size="small"
-                                                onClick={() => handleEdit(item)}>
+                                                onClick={() =>
+                                                    handleEdit(item)
+                                                }>
                                                 <EditIcon fontSize="small" />
                                             </IconButton>
                                             <IconButton
                                                 size="small"
                                                 color="error"
-                                                onClick={() => handleDelete(item)}>
+                                                onClick={() =>
+                                                    handleDelete(item)
+                                                }>
                                                 <DeleteIcon fontSize="small" />
                                             </IconButton>
                                         </Stack>
@@ -310,7 +353,10 @@ export default function AdminPersonality() {
                                         <TableCell colSpan={5}>
                                             <Typography
                                                 variant="body2"
-                                                sx={{ py: 3, textAlign: "center" }}>
+                                                sx={{
+                                                    py: 3,
+                                                    textAlign: "center",
+                                                }}>
                                                 No personalities yet.
                                             </Typography>
                                         </TableCell>

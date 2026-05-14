@@ -11,9 +11,23 @@ import { useConfirmDialog } from "~/context/ConfirmDialogContext";
 import { deleteNewsCategory } from "~/hooks/useNewsCategories";
 import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
+import type { Route } from "./+types/admin-category";
+import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 
-export function meta() {
-    return [{ title: "Admin Category | N/A" }];
+export async function loader() {
+    const settings = await fetchPublicSettings();
+    return { settings };
+}
+
+export function meta({ loaderData }: Route.MetaArgs) {
+    const appName = loaderData?.settings?.general?.websiteName || "N/A";
+    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+
+    return [
+        { title: `Admin Category | ${appName}` },
+        // Favicon
+        { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+    ];
 }
 
 export default function AdminCategory() {
