@@ -28,6 +28,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { property: "og:image", content: websiteLogo },
         // Favicon
         { tagName: "link", rel: "icon", href: websiteLogo, sizes: "any" },
+
         { property: "og:url", content: pageUrl },
         { property: "og:type", content: "website" },
         { property: "og:site_name", content: appName },
