@@ -8,8 +8,13 @@ const buildNotificationTemplate = (params: {
     ctaLabel?: string;
     ctaLink?: string;
 }) => {
-    const { appName, heading, body, ctaLabel = "Open Dashboard", ctaLink = "N/A" } =
-        params;
+    const {
+        appName,
+        heading,
+        body,
+        ctaLabel = "Open Dashboard",
+        ctaLink = "N/A",
+    } = params;
 
     return `
 <!DOCTYPE html>
@@ -61,15 +66,19 @@ export const sendNotificationEmail = async (params: {
     ctaLink?: string;
 }) => {
     const { to, subject, heading, body, ctaLabel, ctaLink } = params;
+
     const settings = await AppSettingsModel.findOne({ key: "main" }).lean();
-    const appName = settings?.general?.websiteName || "N/A";
-    const websiteUrl = settings?.general?.websiteUrl || "N/A";
+
+    const appName = settings?.general?.websiteName || "ASO CENTRAL";
+    const websiteUrl = settings?.general?.websiteUrl || "";
     const smtpHost = settings?.security?.smtpHost || "";
     const smtpPort = Number(settings?.security?.smtpPort || 587);
     const smtpUser = settings?.security?.smtpUser || "";
     const smtpPass = settings?.security?.smtpPass || "";
 
-    if (!smtpHost || !smtpPort || !smtpUser || !smtpPass) return;
+    if (!smtpHost || !smtpUser || !smtpPass) {
+        throw new Error("SMTP settings are missing");
+    }
 
     const transporter = nodemailer.createTransport({
         host: smtpHost,
@@ -81,8 +90,10 @@ export const sendNotificationEmail = async (params: {
         },
     });
 
-    await transporter.sendMail({
-        from: `${appName} <${smtpUser}>`,
+    await transporter.verify();
+
+    const info = await transporter.sendMail({
+        from: `"${appName}" <${smtpUser}>`,
         to,
         subject,
         html: buildNotificationTemplate({
@@ -93,4 +104,13 @@ export const sendNotificationEmail = async (params: {
             ctaLink: ctaLink || websiteUrl,
         }),
     });
+
+    console.log("Notification email result:", {
+        messageId: info.messageId,
+        accepted: info.accepted,
+        rejected: info.rejected,
+        response: info.response,
+    });
+
+    return info;
 };
