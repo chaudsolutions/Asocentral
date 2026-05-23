@@ -33,7 +33,8 @@ export async function loader() {
 export const meta = ({ loaderData }: Route.MetaArgs) => {
     const appName = loaderData?.settings?.general?.websiteName || "N/A";
     const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
-    const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
+    const websiteLogo =
+        loaderData?.settings?.general?.logoUrl || "/favicon.png";
     const title = `${appName} | Breaking News, Latest Stories and World Updates`;
     const description =
         "Stay informed with Trojan News Network. Get real-time breaking news, deep investigations, and latest updates on politics, technology, and world events from Lagos to the world.";

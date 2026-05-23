@@ -411,6 +411,17 @@ export const updateAdminSettings = async (
     return response.data;
 };
 
+export const sendTestEmail = async (
+    testEmail: string,
+): Promise<{ message: string }> => {
+    const response = await axios.post(
+        `${serVer}/admin/settings/test-email`,
+        { testEmail },
+        { headers: getAdminAuthHeader() },
+    );
+    return response.data;
+};
+
 // admin updates submitted news
 export const updateUnpublishedNews = async (
     newsId: string,

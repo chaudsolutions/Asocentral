@@ -59,5 +59,6 @@ adminRoute.delete(
 // app settings
 adminRoute.get("/settings", appSettingsController.getAdminSettings);
 adminRoute.put("/settings", appSettingsController.updateSettings);
+adminRoute.post("/settings/test-email", appSettingsController.sendTestEmail);
 
 export default adminRoute;

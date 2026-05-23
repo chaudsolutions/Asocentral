@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { BadRequestError } from "../errors/httpError";
 import AppSettingsModel from "../models/app-settings.model";
 import { UserModel } from "../models/user.model";
+import { sendNotificationEmail } from "../utils/email";
 
 const getOrCreateSettings = async () => {
     let settings = await AppSettingsModel.findOne({ key: "main" });
@@ -50,6 +51,53 @@ export const appSettingsController = {
                 success: false,
                 message: "Internal server error while fetching settings",
             });
+        }
+    },
+
+    sendTestEmail: async (req: Request, res: Response) => {
+        try {
+            const admin = await UserModel.findById(req.userId);
+            if (!admin || admin.role !== "admin") {
+                throw new BadRequestError("User not found or not authorized");
+            }
+
+            const { testEmail } = req.body as { testEmail?: string };
+            if (!testEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(testEmail)) {
+                throw new BadRequestError("A valid recipient email address is required");
+            }
+
+            const settings = await AppSettingsModel.findOne({ key: "main" }).lean();
+            const smtpHost = settings?.security?.smtpHost || "";
+            const smtpUser = settings?.security?.smtpUser || "";
+            const smtpPass = settings?.security?.smtpPass || "";
+
+            if (!smtpHost || !smtpUser || !smtpPass) {
+                throw new BadRequestError(
+                    "SMTP credentials are not configured. Please fill in the SMTP Host, User, and Password fields before testing."
+                );
+            }
+
+            await sendNotificationEmail({
+                to: testEmail,
+                subject: "✅ SMTP Test — Your mail settings are working!",
+                heading: "Test Email Successful",
+                body: "This is a test email sent from your admin settings panel. If you received this, your SMTP credentials are configured correctly and emails will be delivered successfully.",
+                ctaLabel: "Go to Dashboard",
+            });
+
+            res.status(200).json({
+                success: true,
+                message: `Test email sent successfully to ${testEmail}`,
+            });
+        } catch (error) {
+            console.error("Error sending test email:", error);
+            if (error instanceof BadRequestError) {
+                res.status(400).json({ success: false, message: error.message });
+                return;
+            }
+            const message =
+                error instanceof Error ? error.message : "Failed to send test email";
+            res.status(500).json({ success: false, message });
         }
     },
 

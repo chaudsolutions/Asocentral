@@ -24,7 +24,7 @@ import FormTextArea from "~/components/form-fields/FormTextArea";
 import FormTextField from "~/components/form-fields/FormTextField";
 import FormImageSelectUpload from "~/components/form-fields/FormImageSelectUpload";
 import { useAdminSettings } from "~/hooks/useCaching";
-import { changeAdminPassword, updateAdminSettings } from "~/hooks/useUserApi";
+import { changeAdminPassword, updateAdminSettings, sendTestEmail } from "~/hooks/useUserApi";
 import { useToast } from "~/context/ToastContext";
 import type { AppSettingsType } from "~/types/settings";
 import { uploadIfNeeded } from "~/hooks/useUpload";
@@ -106,6 +106,8 @@ export default function AdminSettings() {
     const [securityPasswordInput, setSecurityPasswordInput] = useState("");
     const [isUnlockDialogOpen, setIsUnlockDialogOpen] = useState(false);
     const [passwordLoading, setPasswordLoading] = useState(false);
+    const [testEmailAddress, setTestEmailAddress] = useState("");
+    const [testEmailLoading, setTestEmailLoading] = useState(false);
 
     const { control, reset, getValues } = useForm<SettingsDraft>({
         defaultValues: defaultDraft,
@@ -236,6 +238,29 @@ export default function AdminSettings() {
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSendTestEmail = async () => {
+        if (!testEmailAddress.trim()) {
+            showToast("Please enter a recipient email address", "error");
+            return;
+        }
+        setTestEmailLoading(true);
+        try {
+            const res = await sendTestEmail(testEmailAddress.trim());
+            showToast(res.message, "success");
+        } catch (error) {
+            if (isAxiosError(error)) {
+                showToast(
+                    error.response?.data?.message || "Failed to send test email",
+                    "error",
+                );
+            } else {
+                showToast("Failed to send test email", "error");
+            }
+        } finally {
+            setTestEmailLoading(false);
         }
     };
 
@@ -708,6 +733,41 @@ export default function AdminSettings() {
                                     />
                                 </Grid>
                             </Grid>
+                        ) : null}
+
+                        {isSecurityUnlocked ? (
+                            <>
+                                <Divider sx={{ my: 1.5 }} />
+                                <Box>
+                                    <Typography sx={{ fontWeight: 700, mb: 0.5 }}>
+                                        Test Mail Configuration
+                                    </Typography>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        sx={{ mb: 1.5 }}>
+                                        Send a test email to verify your SMTP credentials are working correctly.
+                                    </Typography>
+                                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                                        <TextField
+                                            label="Recipient Email Address"
+                                            type="email"
+                                            size="small"
+                                            value={testEmailAddress}
+                                            onChange={(e) => setTestEmailAddress(e.target.value)}
+                                            placeholder="you@example.com"
+                                            sx={{ minWidth: 280 }}
+                                        />
+                                        <Button
+                                            variant="outlined"
+                                            color="primary"
+                                            onClick={handleSendTestEmail}
+                                            disabled={testEmailLoading}>
+                                            {testEmailLoading ? "Sending…" : "Send Test Email"}
+                                        </Button>
+                                    </Stack>
+                                </Box>
+                            </>
                         ) : null}
 
                         {isSecurityUnlocked ? (
