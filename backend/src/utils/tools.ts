@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { compareSync, genSaltSync, hashSync } from "bcrypt-ts";
+import { compareSync, genSaltSync, hashSync } from "bcryptjs";
 import { JWT_SECRET } from "./constants";
 
 export function formatCurrency(amount: number): string {

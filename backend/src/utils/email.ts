@@ -88,6 +88,9 @@ export const sendNotificationEmail = async (params: {
             user: smtpUser,
             pass: smtpPass,
         },
+        connectionTimeout: 15_000,  // fail fast instead of waiting 2 min
+        socketTimeout: 15_000,
+        greetingTimeout: 10_000,
     });
 
     await transporter.verify();

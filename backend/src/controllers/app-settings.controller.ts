@@ -95,8 +95,39 @@ export const appSettingsController = {
                 res.status(400).json({ success: false, message: error.message });
                 return;
             }
-            const message =
-                error instanceof Error ? error.message : "Failed to send test email";
+
+            // Detect SMTP connection/timeout failures (common on Render free tier
+            // which blocks outbound SMTP on ports 25, 465, and 587).
+            const err = error as NodeJS.ErrnoException & { command?: string };
+            const isNetworkError =
+                err.code === "ETIMEDOUT" ||
+                err.code === "ECONNREFUSED" ||
+                err.code === "ECONNRESET" ||
+                err.code === "ENOTFOUND";
+
+            if (isNetworkError) {
+                const smtpPort = (await AppSettingsModel.findOne({ key: "main" }).lean())
+                    ?.security?.smtpPort ?? 587;
+                res.status(502).json({
+                    success: false,
+                    message:
+                        `Cannot reach your SMTP server (${err.code} on port ${smtpPort}). ` +
+                        `If you are hosted on Render's free plan, outbound SMTP on ports 25, 465, and 587 is blocked. ` +
+                        `Try switching to port 2525 (supported by SendGrid, Mailgun, Mailtrap) or upgrade your Render plan.`,
+                });
+                return;
+            }
+
+            // Authentication or credential errors
+            if (err.message?.toLowerCase().includes("auth") || err.message?.toLowerCase().includes("535")) {
+                res.status(502).json({
+                    success: false,
+                    message: "SMTP authentication failed. Please double-check your SMTP username and password.",
+                });
+                return;
+            }
+
+            const message = err.message || "Failed to send test email";
             res.status(500).json({ success: false, message });
         }
     },

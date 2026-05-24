@@ -21,7 +21,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.908.0",
     "axios": "^1.15.0",
-    "bcrypt-ts": "^8.0.1",
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
@@ -37,6 +37,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
     "@eslint/js": "^10.0.1",
+    "@types/bcryptjs": "^3.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/jsdom": "^28.0.1",
