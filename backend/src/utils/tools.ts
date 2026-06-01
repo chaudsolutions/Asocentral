@@ -13,7 +13,7 @@ export function formatCurrency(amount: number): string {
 
 // jwt token
 export const generateToken = (_id: string): string => {
-    return jwt.sign({ _id }, JWT_SECRET);
+    return jwt.sign({ _id }, JWT_SECRET, { expiresIn: "7d" });
 };
 
 // hash password
