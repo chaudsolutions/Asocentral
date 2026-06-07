@@ -85,6 +85,13 @@ const getWebsiteUrl = async () => {
     return settings?.general?.websiteUrl || "N/A";
 };
 
+const getAppName = async () => {
+    const settings = await AppSettingsModel.findOne({ key: "main" })
+        .select("general.websiteName")
+        .lean();
+    return settings?.general?.websiteName || "";
+};
+
 export const adminController = {
     // function to get admin data
     getAdminData: async (req: Request, res: Response) => {
@@ -793,7 +800,10 @@ export const adminController = {
                 role,
             });
 
-            const websiteUrl = await getWebsiteUrl();
+            const [websiteUrl, appName] = await Promise.all([
+                getWebsiteUrl(),
+                getAppName(),
+            ]);
             await createNotificationWithEmail({
                 recipient: createdUser._id,
                 category: NotificationCategory.USER_CREATED,
@@ -801,9 +811,9 @@ export const adminController = {
                 message: "Your account has been created. You can now log in.",
                 entityType: "user",
                 entityId: String(createdUser._id),
-                emailSubject: "Welcome to Trojan News",
+                emailSubject: `Welcome to ${appName}`,
                 emailHeading: "Your Account Is Ready",
-                emailBody: "An admin created your account on Trojan News. You can now sign in and start using the platform.",
+                emailBody: `An admin created your account on ${appName}. You can now sign in and start using the platform.`,
                 ctaLabel: "Sign In",
                 ctaLink:
                     role === "admin"

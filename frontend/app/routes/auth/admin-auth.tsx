@@ -14,6 +14,7 @@ import { useToast } from "~/context/ToastContext";
 import { isAxiosError } from "axios";
 import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 import type { Route } from "./+types/admin-auth";
+import { useLoaderData } from "react-router";
 
 export async function loader() {
     const settings = await fetchPublicSettings();
@@ -37,6 +38,8 @@ interface AdminLoginCredentials {
 }
 
 export default function AdminAuth() {
+    const { settings } = useLoaderData<typeof loader>();
+    const appName = settings?.general?.websiteName || "";
     const { showToast } = useToast();
     const { login } = useAuthContext();
 
@@ -156,7 +159,7 @@ export default function AdminAuth() {
                 <Typography
                     variant="caption"
                     sx={{ mt: 3, color: "text.disabled" }}>
-                    © 2026 Trojan News Network • Secure Access Only
+                    © {new Date().getFullYear()} {appName} • Secure Access Only
                 </Typography>
             </Box>
         </Container>

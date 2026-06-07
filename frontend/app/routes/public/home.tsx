@@ -36,10 +36,8 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
     const websiteLogo =
         loaderData?.settings?.general?.logoUrl || "/favicon.png";
     const title = `${appName} | Breaking News, Latest Stories and World Updates`;
-    const description =
-        "Stay informed with Trojan News Network. Get real-time breaking news, deep investigations, and latest updates on politics, technology, and world events from Lagos to the world.";
-    const keywords =
-        "breaking news, world news, politics today, technology updates, Trojan News, Nigeria news, global news network";
+    const description = `Stay informed with ${appName}. Get real-time breaking news, deep investigations, and latest updates on politics, technology, and world events.`;
+    const keywords = `breaking news, world news, politics today, technology updates, ${appName}, Nigeria news, global news network`;
 
     return [
         { title },

@@ -18,6 +18,7 @@ import { useResponsive } from "~/hooks/useTools";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNewsData } from "~/hooks/useCaching";
 import SearchOverlay from "../news/SearchOverlay";
+import TopMarquee from "./TopMarquee";
 
 const MainLayoutHeader = () => {
     const { newsCategories = [], isNewsCategoriesLoading } =
@@ -59,7 +60,11 @@ const MainLayoutHeader = () => {
         : newsCategories.slice(0, 7);
 
     return (
-        <AppBar position="static" sx={{ bgcolor: "white", boxShadow: "none" }}>
+        <AppBar
+            position="sticky"
+            sx={{ top: 0, bgcolor: "white", boxShadow: "none" }}>
+            <TopMarquee />
+
             {/* Top Branding Bar */}
             <Box sx={{ bgcolor: "#003366", py: 1 }}>
                 <Container maxWidth="xl">

@@ -4,10 +4,12 @@ import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 import Divider from "@mui/material/Divider";
 import Fade from "@mui/material/Fade";
-import { useNewsData } from "~/hooks/useCaching";
+import { useNewsData, usePublicSettings } from "~/hooks/useCaching";
 
 const FloatingCard = () => {
     const { newsData = [], isNewsDataLoading } = useNewsData();
+    const { publicSettings } = usePublicSettings();
+    const appName = publicSettings?.general?.websiteName || "";
     const [index, setIndex] = useState(0);
     const [show, setShow] = useState(true);
 
@@ -167,7 +169,7 @@ const FloatingCard = () => {
                     textTransform: "uppercase",
                     "&:hover": { bgcolor: "#a00" },
                 }}>
-                Watch Trojan TV
+                Watch {appName} TV
             </Box>
         </Box>
     );

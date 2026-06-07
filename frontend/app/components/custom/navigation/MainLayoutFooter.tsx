@@ -57,7 +57,7 @@ const MainLayoutFooter = () => {
                                     lineHeight: 1.6,
                                 }}>
                                 {publicSettings?.general?.websiteDescription ||
-                                    "Trojan News Network. Providing breaking news and world-class journalism."}
+                                    `${publicSettings?.general?.websiteName || ""}. Providing breaking news and world-class journalism.`}
                             </Typography>
                         )}
                     </Grid>
@@ -134,7 +134,7 @@ const MainLayoutFooter = () => {
                         alignItems: "center",
                     }}>
                     <Typography variant="caption" sx={{ color: "#666" }}>
-                        © 2026 Trojan News Network. All rights reserved.
+                        © {new Date().getFullYear()} {publicSettings?.general?.websiteName}. All rights reserved.
                         <br />
                         Quotes displayed in real-time or delayed by at least 15
                         minutes.

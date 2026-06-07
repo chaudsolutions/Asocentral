@@ -26,8 +26,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
     const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
     const title = `Personality Profile | ${appName}`;
-    const description =
-        "Explore a featured personality profile on Trojan News, including background, impact, and official links.";
+    const description = `Explore a featured personality profile on ${appName}, including background, impact, and official links.`;
     const pageUrl = `${websiteUrl}/personality-of-the-week`;
 
     return [
@@ -35,8 +34,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { name: "description", content: description },
         {
             name: "keywords",
-            content:
-                "personality profile, trojan news, journalist profile, featured personality",
+            content: `personality profile, ${appName}, journalist profile, featured personality`,
         },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },

@@ -17,6 +17,7 @@ import MainLayoutHeader from "~/components/custom/navigation/MainLayoutHeader";
 import MainLayoutFooter from "~/components/custom/navigation/MainLayoutFooter";
 import type { Route } from "./+types/user-auth";
 import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
+import { useLoaderData } from "react-router";
 
 export async function loader() {
     const settings = await fetchPublicSettings();
@@ -40,6 +41,8 @@ interface LoginCredentials {
 }
 
 export default function UserAuth() {
+    const { settings } = useLoaderData<typeof loader>();
+    const appName = settings?.general?.websiteName || "";
     const { showToast } = useToast();
     const { login } = useAuthContext();
 
@@ -93,7 +96,7 @@ export default function UserAuth() {
                         }}>
                         <Stack spacing={3}>
                             <Chip
-                                label="Trojan News Contributor Access"
+                                label={`${appName} Contributor Access`}
                                 color="primary"
                                 sx={{
                                     width: "fit-content",

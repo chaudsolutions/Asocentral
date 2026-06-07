@@ -36,8 +36,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
     const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
     const title = `Contact Us | ${appName}`;
-    const description =
-        "Contact Trojan News for editorial feedback, corrections, partnerships, and newsroom support.";
+    const description = `Contact ${appName} for editorial feedback, corrections, partnerships, and newsroom support.`;
     const pageUrl = `${websiteUrl}/contact-us`;
 
     return [
@@ -46,7 +45,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
         {
             name: "keywords",
             content:
-                "contact trojan news, newsroom contact, editorial support, press inquiry",
+                `contact ${appName}, newsroom contact, editorial support, press inquiry`,
         },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },

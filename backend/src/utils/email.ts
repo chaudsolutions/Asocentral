@@ -69,7 +69,7 @@ export const sendNotificationEmail = async (params: {
 
     const settings = await AppSettingsModel.findOne({ key: "main" }).lean();
 
-    const appName = settings?.general?.websiteName || "ASO CENTRAL";
+    const appName = settings?.general?.websiteName || "";
     const websiteUrl = settings?.general?.websiteUrl || "";
     const smtpHost = settings?.security?.smtpHost || "";
     const smtpPort = Number(settings?.security?.smtpPort || 587);

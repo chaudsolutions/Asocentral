@@ -47,7 +47,7 @@ export default function AdminLoggedWrapper() {
     return (
         <NoSsr>
             <AppBar
-                position="sticky"
+                position="static"
                 sx={{
                     ml: { md: `${activeDrawerWidth}px` },
                     width: { md: `calc(100% - ${activeDrawerWidth}px)` },

@@ -30,8 +30,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     const websiteUrl = loaderData?.settings?.general?.websiteUrl || "N/A";
     const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
     const title = `Personality of the Week | ${appName}`;
-    const description =
-        "Meet outstanding journalists and voices shaping Trojan News. Explore featured personalities, their stories, and editorial impact.";
+    const description = `Meet outstanding journalists and voices shaping ${appName}. Explore featured personalities, their stories, and editorial impact.`;
     const pageUrl = `${websiteUrl}/personality-of-the-week`;
 
     return [
@@ -39,8 +38,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
         { name: "description", content: description },
         {
             name: "keywords",
-            content:
-                "personality of the week, journalists, trojan news, featured voices, newsroom",
+            content: `personality of the week, journalists, ${appName}, featured voices, newsroom`,
         },
         { name: "robots", content: "index, follow" },
         { tagName: "link", rel: "canonical", href: pageUrl },

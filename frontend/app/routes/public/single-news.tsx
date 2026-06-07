@@ -70,7 +70,7 @@ export function meta({
     const title = news ? `${news.title} | ${appName}` : `News | ${appName}`;
     const description =
         news?.description ||
-        "Read the latest verified story from Trojan News Network.";
+        `Read the latest verified story from ${appName}.`;
     const image = news?.image_url;
     const url = news ? `${websiteUrl}/news/${news.article_id}` : websiteUrl;
 

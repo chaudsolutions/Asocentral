@@ -5,7 +5,6 @@ import { Outlet } from "react-router";
 import ScrollToTop from "~/components/custom/buttons/ScrollToTop";
 import MainLayoutFooter from "~/components/custom/navigation/MainLayoutFooter";
 import MainLayoutHeader from "~/components/custom/navigation/MainLayoutHeader";
-import TopMarquee from "~/components/custom/navigation/TopMarquee";
 import FloatingCard from "~/components/public/home/FloatingCard";
 
 export default function MainLayout() {
@@ -19,7 +18,6 @@ export default function MainLayout() {
                 bgcolor: "background.default",
             }}>
             <Box>
-                <TopMarquee />
                 <MainLayoutHeader />
 
                 <Container maxWidth="xl">
