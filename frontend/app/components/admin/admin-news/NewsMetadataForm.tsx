@@ -40,6 +40,11 @@ export default function NewsMetadataForm({
                     getOptionLabel={(option) => option}
                     isEqual={(option, value) => option === value}
                     placeholder="Select countries"
+                    rules={{
+                        validate: (value: string[]) =>
+                            (Array.isArray(value) && value.length > 0) ||
+                            "At least one country is required",
+                    }}
                 />
             </Grid>
 
@@ -64,6 +69,11 @@ export default function NewsMetadataForm({
                     label="SEO Keywords"
                     control={control}
                     placeholder="Type keywords and press enter"
+                    rules={{
+                        validate: (value: string[]) =>
+                            (Array.isArray(value) && value.length > 0) ||
+                            "At least one keyword is required",
+                    }}
                 />
             </Grid>
         </Grid>

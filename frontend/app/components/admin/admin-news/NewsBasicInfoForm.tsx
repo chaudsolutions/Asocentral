@@ -67,6 +67,7 @@ export default function NewsBasicInfoForm({
                     name="image_url"
                     label="Cover Image"
                     control={control}
+                    rules={{ required: "Cover image is required" }}
                 />
             </Grid>
             {/* Replaced with Video Upload */}

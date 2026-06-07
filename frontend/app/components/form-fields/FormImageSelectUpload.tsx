@@ -26,6 +26,7 @@ interface ImageSelectUploadProps<T extends FieldValues> {
     maxSize?: number;
     accept?: string;
     uploading?: boolean;
+    rules?: Record<string, unknown>;
 }
 
 const FormImageSelectUpload = <T extends FieldValues>({
@@ -35,6 +36,7 @@ const FormImageSelectUpload = <T extends FieldValues>({
     maxSize = 5 * 1024 * 1024,
     accept = "image/*",
     uploading = false,
+    rules,
 }: ImageSelectUploadProps<T>) => {
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -115,7 +117,8 @@ const FormImageSelectUpload = <T extends FieldValues>({
         <Controller
             name={name}
             control={control}
-            render={({ field: { onChange, value } }) => (
+            rules={rules}
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
                 <Box>
                     <input
                         type="file"
@@ -127,25 +130,36 @@ const FormImageSelectUpload = <T extends FieldValues>({
                     />
 
                     {!value && !preview && (
-                        <label htmlFor={`image-upload-${name}`}>
-                            <Button
-                                component="span"
-                                variant="outlined"
-                                startIcon={<CloudUploadIcon />}
-                                fullWidth
-                                sx={{
-                                    py: 2,
-                                    borderStyle: "dashed",
-                                    "&:hover": {
+                        <Box>
+                            <label htmlFor={`image-upload-${name}`}>
+                                <Button
+                                    component="span"
+                                    variant="outlined"
+                                    startIcon={<CloudUploadIcon />}
+                                    fullWidth
+                                    color={error ? "error" : "primary"}
+                                    sx={{
+                                        py: 2,
                                         borderStyle: "dashed",
-                                    },
-                                }}>
-                                {label}
-                                <Typography variant="caption" sx={{ ml: 1 }}>
-                                    (Max {maxSize / 1024 / 1024}MB)
+                                        "&:hover": {
+                                            borderStyle: "dashed",
+                                        },
+                                    }}>
+                                    {label}
+                                    <Typography variant="caption" sx={{ ml: 1 }}>
+                                        (Max {maxSize / 1024 / 1024}MB)
+                                    </Typography>
+                                </Button>
+                            </label>
+                            {error && (
+                                <Typography
+                                    variant="caption"
+                                    color="error"
+                                    sx={{ mt: 0.5, display: "block" }}>
+                                    {error.message}
                                 </Typography>
-                            </Button>
-                        </label>
+                            )}
+                        </Box>
                     )}
 
                     {uploading && (

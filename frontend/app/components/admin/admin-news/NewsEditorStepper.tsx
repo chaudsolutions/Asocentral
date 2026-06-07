@@ -86,6 +86,7 @@ export default function NewsEditorStepper({
         handleSubmit,
         reset,
         trigger,
+        getValues,
         formState: { isSubmitting },
     } = useForm<NewsFormData>({
         defaultValues: {
@@ -143,14 +144,25 @@ export default function NewsEditorStepper({
     }, [initialData, reset, isNewsCategoriesLoading]);
 
     const handleNext = async () => {
-        // This will check only the fields on the current step
-        const isStepValid = await trigger([
-            "title",
-            "category",
-            "image_url",
-            "description",
-            "pubDate",
-        ]);
+        let isStepValid = false;
+
+        if (activeStep === 0) {
+            isStepValid = await trigger([
+                "title",
+                "category",
+                "image_url",
+                "description",
+                "pubDate",
+            ]);
+        } else if (activeStep === 1) {
+            // Trigger validation on every content block description
+            const blocks = getValues("content");
+            const descriptionFields = blocks.map(
+                (_, i) => `content.${i}.description` as const,
+            );
+            isStepValid = await trigger(descriptionFields);
+        }
+
         if (isStepValid) {
             setActiveStep((prev) => prev + 1);
         }
