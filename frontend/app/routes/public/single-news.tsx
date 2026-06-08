@@ -69,8 +69,7 @@ export function meta({
     const websiteUrl = data?.settings?.general?.websiteUrl || "N/A";
     const title = news ? `${news.title} | ${appName}` : `News | ${appName}`;
     const description =
-        news?.description ||
-        `Read the latest verified story from ${appName}.`;
+        news?.description || `Read the latest verified story from ${appName}.`;
     const image = news?.image_url;
     const url = news ? `${websiteUrl}/news/${news.article_id}` : websiteUrl;
 
@@ -537,7 +536,7 @@ export default function SingleNews() {
                                 sx={{
                                     width: "100%",
                                     height: "auto",
-                                    objectFit: "cover",
+                                    objectFit: "contain",
                                     maxHeight: 500,
                                     display: "block",
                                 }}
