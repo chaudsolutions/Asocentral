@@ -52,7 +52,7 @@ const FloatingCard = () => {
                 flexDirection: "column",
 
                 position: "sticky",
-                top: 20, // Distance from the top of the screen when scrolling
+                top: 150, // Distance from the top of the screen when scrolling
                 height: "fit-content", // Shrink to fit content
                 maxHeight: "70vh", // Ensure it doesn't overflow the screen
                 zIndex: 10,
