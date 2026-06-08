@@ -61,7 +61,8 @@ const MainLayoutHeader = () => {
 
     return (
         <AppBar
-            position="sticky"
+            id="main-layout-header"
+            position="fixed"
             sx={{ top: 0, bgcolor: "white", boxShadow: "none" }}>
             <TopMarquee />
 

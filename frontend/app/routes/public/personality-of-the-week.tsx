@@ -31,7 +31,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
     const title = `Personality of the Week | ${appName}`;
     const description = `Meet outstanding journalists and voices shaping ${appName}. Explore featured personalities, their stories, and editorial impact.`;
-    const pageUrl = `${websiteUrl}/personality-of-the-week`;
+    const pageUrl = `${websiteUrl}/profiles`;
 
     return [
         { title },
@@ -171,7 +171,7 @@ export default function PersonalityOfTheWeek() {
 function PersonalityCard({ item }: { item: PersonalityType }) {
     return (
         <Link
-            to={`/personality-of-the-week/${item._id}`}
+            to={`/profiles/${item._id}`}
             style={{ textDecoration: "none", color: "inherit" }}>
             <Box
                 sx={{

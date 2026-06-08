@@ -27,7 +27,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     const websiteLogo = loaderData?.settings?.general?.logoUrl || "";
     const title = `Personality Profile | ${appName}`;
     const description = `Explore a featured personality profile on ${appName}, including background, impact, and official links.`;
-    const pageUrl = `${websiteUrl}/personality-of-the-week`;
+    const pageUrl = `${websiteUrl}/profiles`;
 
     return [
         { title },
