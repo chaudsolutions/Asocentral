@@ -5,13 +5,15 @@ import IconButton from "@mui/material/IconButton";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Tooltip from "@mui/material/Tooltip";
 import LanguageIcon from "@mui/icons-material/Language";
 import XIcon from "@mui/icons-material/X";
 import FacebookOutlinedIcon from "@mui/icons-material/FacebookOutlined";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import YouTubeIcon from "@mui/icons-material/YouTube";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useSinglePersonality } from "~/hooks/useCaching";
 import { fetchPublicSettings } from "~/hooks/useNewsDataApi";
 import type { Route } from "./+types/personality-detail";
@@ -55,6 +57,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function PersonalityDetail() {
     const { personalityId = "" } = useParams();
+    const navigate = useNavigate();
     const { personality, isSinglePersonalityLoading } =
         useSinglePersonality(personalityId);
 
@@ -68,6 +71,13 @@ export default function PersonalityDetail() {
 
     return (
         <Box sx={{ maxWidth: 980, display: "grid", gap: 2.5 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Tooltip title="Go back">
+                    <IconButton size="small" onClick={() => navigate(-1)} sx={{ color: "#333" }}>
+                        <ArrowBackIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+            </Box>
             <Box
                 sx={{
                     borderBottom: "2px solid #111827",

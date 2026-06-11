@@ -6,11 +6,45 @@ const PAGE_H = 297;
 const MARGIN = 15;
 const CONTENT_W = PAGE_W - MARGIN * 2;
 
+async function loadImageViaElement(
+    url: string,
+): Promise<{ data: string; format: "JPEG" | "PNG" } | null> {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
+            try {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.naturalWidth || 800;
+                canvas.height = img.naturalHeight || 600;
+                const ctx = canvas.getContext("2d");
+                if (!ctx) { resolve(null); return; }
+                ctx.drawImage(img, 0, 0);
+                const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                resolve({ data: dataUrl, format: "JPEG" });
+            } catch {
+                // Canvas tainted — CORS headers missing from cached response
+                resolve(null);
+            }
+        };
+        img.onerror = () => resolve(null);
+        img.src = url;
+    });
+}
+
 async function fetchImageBase64(
     url: string,
 ): Promise<{ data: string; format: "JPEG" | "PNG" } | null> {
+    // Strategy 1: Image element → canvas (leverages browser CORS image cache)
+    const fromElement = await loadImageViaElement(url);
+    if (fromElement) return fromElement;
+
+    // Strategy 2: fetch with cache-bust to force fresh CORS headers from CDN
     try {
-        const res = await fetch(url);
+        const sep = url.includes("?") ? "&" : "?";
+        const bustUrl = `${url}${sep}_pdf=1`;
+        const res = await fetch(bustUrl, { mode: "cors", cache: "no-cache" });
+        if (!res.ok) return null;
         const blob = await res.blob();
         const format: "JPEG" | "PNG" =
             blob.type === "image/png" ? "PNG" : "JPEG";

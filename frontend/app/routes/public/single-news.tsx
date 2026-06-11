@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import ShareIcon from "@mui/icons-material/Share";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CircularProgress from "@mui/material/CircularProgress";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -125,6 +126,7 @@ const getBrowserSessionId = () => {
 
 export default function SingleNews() {
     const { articleId } = useParams();
+    const navigate = useNavigate();
     const { adminToken, userToken } = useAuthContext();
     const { adminData } = useAdminData();
     const { userData } = useUserData();
@@ -333,7 +335,15 @@ export default function SingleNews() {
                             alignItems: "center",
                             flexWrap: "wrap",
                         }}>
-                        <Stack direction="row" spacing={{ xs: 0, md: 0.5 }}>
+                        <Stack direction="row" spacing={{ xs: 0, md: 0.5 }} sx={{ alignItems: "center" }}>
+                            <Tooltip title="Go back">
+                                <IconButton
+                                    size="small"
+                                    onClick={() => navigate(-1)}
+                                    sx={{ color: "#333", mr: { xs: 0.5, md: 1 } }}>
+                                    <ArrowBackIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
                             <Tooltip title="Share on Facebook">
                                 <IconButton
                                     size="small"
@@ -531,6 +541,7 @@ export default function SingleNews() {
                                 component="img"
                                 src={singleNewsData.image_url}
                                 alt={singleNewsData.title}
+                                crossOrigin="anonymous"
                                 sx={{
                                     width: "100%",
                                     height: "auto",
@@ -565,6 +576,7 @@ export default function SingleNews() {
                                         component="img"
                                         src={block.image_url}
                                         alt={block.title || "Article image"}
+                                        crossOrigin="anonymous"
                                         sx={{
                                             width: "100%",
                                             borderRadius: 1,
