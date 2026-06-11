@@ -47,7 +47,7 @@ const MainLayoutHeader = () => {
         textDecoration: "none",
         color: isActive ? "#c00" : "#222",
         fontWeight: 800,
-        fontSize: "0.85rem",
+        fontSize: isMobile ? "0.72rem" : "0.85rem",
         textTransform: "uppercase" as const,
         fontFamily: "Arial Narrow, sans-serif",
         borderBottom: isActive ? "3px solid #c00" : "3px solid transparent",
@@ -56,7 +56,7 @@ const MainLayoutHeader = () => {
     });
 
     const categoriesToDisplay = isMobile
-        ? newsCategories.slice(0, 3)
+        ? newsCategories.slice(0, 2)
         : newsCategories.slice(0, 7);
 
     return (
@@ -87,10 +87,13 @@ const MainLayoutHeader = () => {
                                 component={Link}
                                 to="/auth/user"
                                 variant="contained"
+                                size="small"
                                 sx={{
                                     bgcolor: "#c00",
                                     fontWeight: 700,
                                     textTransform: "none",
+                                    fontSize: { xs: "0.75rem", md: "0.875rem" },
+                                    px: { xs: 1.5, md: 2 },
                                     "&:hover": { bgcolor: "#900" },
                                 }}>
                                 Publish News

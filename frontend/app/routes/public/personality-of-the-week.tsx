@@ -77,7 +77,7 @@ export default function PersonalityOfTheWeek() {
                     borderBottom: "2px solid #111827",
                     pb: 1.5,
                 }}>
-                <Typography variant="h4" sx={{ fontWeight: 900 }}>
+                <Typography variant="h4" sx={{ fontWeight: 900, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     {personalitySettings?.title || "Personality of the Week"}
                 </Typography>
 
@@ -130,7 +130,7 @@ export default function PersonalityOfTheWeek() {
                                 />
                                 <Typography
                                     variant="h5"
-                                    sx={{ fontWeight: 900, lineHeight: 1.2 }}>
+                                    sx={{ fontWeight: 900, lineHeight: 1.2, fontSize: { xs: "1rem", md: "1.5rem" } }}>
                                     {featured.title}
                                 </Typography>
                                 <Typography
@@ -198,7 +198,7 @@ function PersonalityCard({ item }: { item: PersonalityType }) {
                 <Box sx={{ p: 1.5 }}>
                     <Typography
                         variant="h6"
-                        sx={{ fontWeight: 800, lineHeight: 1.3 }}>
+                        sx={{ fontWeight: 800, lineHeight: 1.3, fontSize: { xs: "0.85rem", md: "1.25rem" } }}>
                         {item.title}
                     </Typography>
                     <Box sx={{ mt: 1 }}>

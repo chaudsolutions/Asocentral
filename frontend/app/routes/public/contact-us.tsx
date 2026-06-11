@@ -145,7 +145,7 @@ export default function ContactUs() {
                         fontWeight: 700,
                     }}
                 />
-                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     {publicSettings?.contactUs?.title || "Contact Us"}
                 </Typography>
                 <Typography color="text.secondary" sx={{ maxWidth: 800 }}>

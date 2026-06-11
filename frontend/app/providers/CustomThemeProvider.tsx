@@ -12,13 +12,20 @@ const CustomThemeProvider = ({ children }: { children: React.ReactNode }) => {
 
     const muiTheme = createTheme({
         typography: {
-            fontFamily: "Open Sans, sans-serif", // Default font for all non-heading elements
-            h1: headingFont,
-            h2: headingFont,
-            h3: headingFont,
-            h4: headingFont,
-            h5: headingFont,
-            h6: headingFont,
+            fontFamily: "Open Sans, sans-serif",
+            h1: { ...headingFont, "@media (max-width:600px)": { fontSize: "1.6rem" } },
+            h2: { ...headingFont, "@media (max-width:600px)": { fontSize: "1.4rem" } },
+            h3: { ...headingFont, "@media (max-width:600px)": { fontSize: "1.15rem" } },
+            h4: { ...headingFont, "@media (max-width:600px)": { fontSize: "1.1rem" } },
+            h5: { ...headingFont, "@media (max-width:600px)": { fontSize: "0.95rem" } },
+            h6: { ...headingFont, "@media (max-width:600px)": { fontSize: "0.85rem" } },
+            body1: { "@media (max-width:600px)": { fontSize: "0.875rem" } },
+            body2: { "@media (max-width:600px)": { fontSize: "0.78rem" } },
+            subtitle1: { "@media (max-width:600px)": { fontSize: "0.875rem" } },
+            subtitle2: { "@media (max-width:600px)": { fontSize: "0.78rem" } },
+            caption: { "@media (max-width:600px)": { fontSize: "0.68rem" } },
+            overline: { "@media (max-width:600px)": { fontSize: "0.68rem" } },
+            button: { "@media (max-width:600px)": { fontSize: "0.78rem" } },
         },
         palette: {
             primary: {

@@ -15,7 +15,7 @@ const TopMarquee = () => {
             sx={{
                 color: "#111827",
                 fontWeight: 700,
-                fontSize: "0.9rem",
+                fontSize: { xs: "0.7rem", md: "0.9rem" },
             }}>
             {text}
             <Box

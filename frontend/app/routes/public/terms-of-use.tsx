@@ -92,10 +92,10 @@ export default function TermsOfUse() {
             <Paper
                 elevation={0}
                 sx={{ p: { xs: 2, md: 3 }, border: "1px solid #e5e7eb" }}>
-                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     Terms of Use
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" sx={{ fontSize: { xs: "0.85rem", md: "1rem" } }}>
                     Effective date: May 9, 2026. These terms define the rules
                     and responsibilities for using the platform.
                 </Typography>
@@ -106,11 +106,11 @@ export default function TermsOfUse() {
                     key={section.title}
                     elevation={0}
                     sx={{ p: { xs: 2, md: 2.5 }, border: "1px solid #e5e7eb" }}>
-                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 800, mb: 1, fontSize: { xs: "0.85rem", md: "1.25rem" } }}>
                         {section.title}
                     </Typography>
                     <Typography
-                        sx={{ lineHeight: 1.85, color: "text.secondary" }}>
+                        sx={{ lineHeight: 1.85, color: "text.secondary", fontSize: { xs: "0.85rem", md: "1rem" } }}>
                         {section.body}
                     </Typography>
                 </Paper>

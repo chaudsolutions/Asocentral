@@ -35,6 +35,7 @@ const NewsDisplay = ({ newsData, isNewsDataLoading }: NewsDisplayProps) => {
                     borderBottom: "3px solid #222",
                     display: "inline-block",
                     mb: 3,
+                    fontSize: { xs: "1rem", md: "1.5rem" },
                 }}>
                 Latest Updates
             </Typography>

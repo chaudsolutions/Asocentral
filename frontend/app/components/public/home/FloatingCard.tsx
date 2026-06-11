@@ -10,6 +10,7 @@ const FloatingCard = () => {
     const { newsData = [], isNewsDataLoading } = useNewsData();
     const { publicSettings } = usePublicSettings();
     const appName = publicSettings?.general?.websiteName || "";
+    const youtubeUrl = publicSettings?.general?.socialLinks?.youtube || "";
     const [index, setIndex] = useState(0);
     const [show, setShow] = useState(true);
 
@@ -137,7 +138,7 @@ const FloatingCard = () => {
                                 <Typography
                                     variant="body2"
                                     sx={{
-                                        fontSize: "1rem",
+                                        fontSize: { xs: "0.8rem", md: "1rem" },
                                         fontWeight: 600,
                                         color: "common.white",
                                         fontFamily: "Arial Narrow, sans-serif",
@@ -158,16 +159,24 @@ const FloatingCard = () => {
 
             {/* Action Button */}
             <Box
-                component="button"
+                component={youtubeUrl ? "a" : "button"}
+                href={youtubeUrl || undefined}
+                target={youtubeUrl ? "_blank" : undefined}
+                rel={youtubeUrl ? "noopener noreferrer" : undefined}
+                disabled={!youtubeUrl || undefined}
                 sx={{
                     bgcolor: "#c00",
                     color: "white",
                     border: "none",
                     py: 1.5,
                     fontWeight: 900,
-                    cursor: "pointer",
+                    cursor: youtubeUrl ? "pointer" : "default",
                     textTransform: "uppercase",
-                    "&:hover": { bgcolor: "#a00" },
+                    textDecoration: "none",
+                    textAlign: "center",
+                    display: "block",
+                    fontSize: { xs: "0.75rem", md: "0.875rem" },
+                    "&:hover": { bgcolor: youtubeUrl ? "#a00" : "#c00" },
                 }}>
                 Watch {appName} TV
             </Box>

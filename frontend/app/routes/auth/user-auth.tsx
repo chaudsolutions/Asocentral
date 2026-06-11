@@ -119,7 +119,7 @@ export default function UserAuth() {
                             <Typography
                                 variant="h6"
                                 color="text.secondary"
-                                sx={{ maxWidth: 620 }}>
+                                sx={{ maxWidth: 620, fontSize: { xs: "0.85rem", md: "1.25rem" } }}>
                                 Sign in to submit stories for editorial review,
                                 track publishing status, and keep your
                                 journalist profile verified.
@@ -164,6 +164,7 @@ export default function UserAuth() {
                                         mt: 1,
                                         fontWeight: 700,
                                         color: "common.white",
+                                        fontSize: { xs: "0.85rem", md: "1.25rem" },
                                     }}>
                                     Journalist Portal
                                 </Typography>

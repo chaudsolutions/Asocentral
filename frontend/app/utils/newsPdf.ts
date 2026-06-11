@@ -1,0 +1,224 @@
+import jsPDF from "jspdf";
+import type { NewsDataType } from "~/types/news";
+
+const PAGE_W = 210;
+const PAGE_H = 297;
+const MARGIN = 15;
+const CONTENT_W = PAGE_W - MARGIN * 2;
+
+async function fetchImageBase64(
+    url: string,
+): Promise<{ data: string; format: "JPEG" | "PNG" } | null> {
+    try {
+        const res = await fetch(url);
+        const blob = await res.blob();
+        const format: "JPEG" | "PNG" =
+            blob.type === "image/png" ? "PNG" : "JPEG";
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+                resolve({ data: reader.result as string, format });
+            reader.onerror = () => resolve(null);
+            reader.readAsDataURL(blob);
+        });
+    } catch {
+        return null;
+    }
+}
+
+export async function generateNewsPdf(
+    news: NewsDataType,
+    appName: string,
+    websiteUrl?: string,
+): Promise<void> {
+    const doc = new jsPDF("p", "mm", "a4");
+    let y = 0;
+    let pageNum = 1;
+
+    const addPageFooter = () => {
+        doc.setFontSize(7.5);
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+            `${appName.toUpperCase()} | ${websiteUrl || ""}  •  Page ${pageNum}`,
+            PAGE_W / 2,
+            PAGE_H - 6,
+            { align: "center" },
+        );
+    };
+
+    const ensureSpace = (needed: number) => {
+        if (y + needed > PAGE_H - 20) {
+            addPageFooter();
+            doc.addPage();
+            pageNum += 1;
+            // Slim header band on continuation pages
+            doc.setFillColor(0, 51, 102);
+            doc.rect(0, 0, PAGE_W, 10, "F");
+            doc.setFontSize(8.5);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(255, 255, 255);
+            doc.text(appName.toUpperCase(), MARGIN, 7);
+            y = 18;
+        }
+    };
+
+    // ── HEADER BAND ────────────────────────────────────────────────────────
+    doc.setFillColor(0, 51, 102);
+    doc.rect(0, 0, PAGE_W, 22, "F");
+
+    doc.setFontSize(18);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(255, 255, 255);
+    doc.text(appName.toUpperCase(), MARGIN, 15);
+
+    // Red "NEWS REPORT" badge
+    doc.setFillColor(204, 0, 0);
+    doc.rect(PAGE_W - 50, 5, 35, 12, "F");
+    doc.setFontSize(8);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(255, 255, 255);
+    doc.text("NEWS REPORT", PAGE_W - 32.5, 12.5, { align: "center" });
+
+    y = 32;
+
+    // ── CATEGORIES ─────────────────────────────────────────────────────────
+    if (news.category?.length) {
+        let cx = MARGIN;
+        doc.setFontSize(7.5);
+        doc.setFont("helvetica", "bold");
+        for (const cat of news.category) {
+            const tw = doc.getTextWidth(cat.toUpperCase()) + 6;
+            doc.setFillColor(0, 51, 102);
+            doc.roundedRect(cx, y, tw, 5.5, 1, 1, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.text(cat.toUpperCase(), cx + 3, y + 3.8);
+            cx += tw + 3;
+        }
+        y += 12;
+    }
+
+    // ── TITLE ──────────────────────────────────────────────────────────────
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(26, 26, 26);
+    const titleLines = doc.splitTextToSize(news.title, CONTENT_W);
+    doc.text(titleLines, MARGIN, y);
+    y += (titleLines as string[]).length * 8 + 3;
+
+    // Red short underline accent
+    doc.setDrawColor(204, 0, 0);
+    doc.setLineWidth(1);
+    doc.line(MARGIN, y, MARGIN + 45, y);
+    y += 7;
+
+    // ── DESCRIPTION ────────────────────────────────────────────────────────
+    if (news.description) {
+        doc.setFontSize(10.5);
+        doc.setFont("helvetica", "italic");
+        doc.setTextColor(80, 80, 80);
+        const descLines = doc.splitTextToSize(news.description, CONTENT_W);
+        doc.text(descLines, MARGIN, y);
+        y += (descLines as string[]).length * 5.5 + 5;
+    }
+
+    // ── META INFO ──────────────────────────────────────────────────────────
+    doc.setFontSize(8.5);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(130, 130, 130);
+    if (news.pubDate) {
+        const pubDate = new Date(news.pubDate).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+        doc.text(`Published: ${pubDate}`, MARGIN, y);
+        y += 5;
+    }
+    doc.text(`Views: ${news.views ?? 0}  •  Shares: ${news.shares ?? 0}`, MARGIN, y);
+    y += 9;
+
+    // Thin divider
+    doc.setDrawColor(220, 220, 220);
+    doc.setLineWidth(0.3);
+    doc.line(MARGIN, y, PAGE_W - MARGIN, y);
+    y += 7;
+
+    // ── COVER IMAGE ────────────────────────────────────────────────────────
+    if (news.image_url) {
+        ensureSpace(75);
+        const coverImg = await fetchImageBase64(news.image_url);
+        if (coverImg) {
+            doc.addImage(coverImg.data, coverImg.format, MARGIN, y, CONTENT_W, 70);
+            y += 73;
+        }
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.3);
+        doc.line(MARGIN, y, PAGE_W - MARGIN, y);
+        y += 8;
+    }
+
+    // ── CONTENT BLOCKS ─────────────────────────────────────────────────────
+    for (const block of news.content ?? []) {
+        // Block section title
+        if (block.title) {
+            ensureSpace(15);
+            doc.setFillColor(204, 0, 0);
+            doc.rect(MARGIN, y - 4.5, 3, 10, "F");
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 51, 102);
+            const btLines = doc.splitTextToSize(block.title, CONTENT_W - 7);
+            doc.text(btLines, MARGIN + 6, y);
+            y += (btLines as string[]).length * 6 + 5;
+        }
+
+        // Block image
+        if (block.image_url) {
+            ensureSpace(65);
+            const bImg = await fetchImageBase64(block.image_url);
+            if (bImg) {
+                doc.addImage(bImg.data, bImg.format, MARGIN, y, CONTENT_W, 60);
+                y += 64;
+            }
+        }
+
+        // Block body text — preserve paragraphs
+        if (block.description) {
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(44, 44, 44);
+            const paragraphs = block.description
+                .split("\n")
+                .map((p) => p.trim())
+                .filter(Boolean);
+            for (const para of paragraphs) {
+                const lines = doc.splitTextToSize(para, CONTENT_W);
+                ensureSpace((lines as string[]).length * 5 + 2);
+                doc.text(lines, MARGIN, y);
+                y += (lines as string[]).length * 5 + 4;
+            }
+            y += 2;
+        }
+
+        // Block separator
+        doc.setDrawColor(240, 240, 240);
+        doc.setLineWidth(0.2);
+        doc.line(MARGIN, y, PAGE_W - MARGIN, y);
+        y += 8;
+    }
+
+    addPageFooter();
+
+    const safeTitle = news.title
+        .substring(0, 50)
+        .replace(/[^a-z0-9\s]/gi, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .toLowerCase();
+
+    doc.save(`${safeTitle}.pdf`);
+}

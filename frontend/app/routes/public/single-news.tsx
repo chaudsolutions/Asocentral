@@ -1,5 +1,5 @@
 import { useParams } from "react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -23,13 +23,13 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import MessageIcon from "@mui/icons-material/Message";
 import DeleteIcon from "@mui/icons-material/Delete";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas-pro";
+import { generateNewsPdf } from "~/utils/newsPdf";
 
 import {
     useAdminData,
     useSingleNewsData,
     useUserData,
+    usePublicSettings,
 } from "~/hooks/useCaching";
 import FormTextArea from "~/components/form-fields/FormTextArea";
 import FormTextField from "~/components/form-fields/FormTextField";
@@ -128,10 +128,10 @@ export default function SingleNews() {
     const { adminToken, userToken } = useAuthContext();
     const { adminData } = useAdminData();
     const { userData } = useUserData();
+    const { publicSettings } = usePublicSettings();
     const { singleNewsData, isSingleNewsDataLoading } = useSingleNewsData(
         articleId || "",
     );
-    const articleRef = useRef<HTMLDivElement>(null);
     const [isExporting, setIsExporting] = useState(false);
     const [comments, setComments] = useState<NewsCommentType[]>([]);
     const [isCommenting, setIsCommenting] = useState(false);
@@ -237,22 +237,13 @@ export default function SingleNews() {
     };
 
     const handleDownloadPdf = async () => {
-        if (!articleRef.current || !singleNewsData) return;
+        if (!singleNewsData) return;
         setIsExporting(true);
         try {
             await updateNewsMetrics(singleNewsData._id, "downloads");
-            const canvas = await html2canvas(articleRef.current, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-            });
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "mm", "a4");
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`${singleNewsData.title.substring(0, 50)}.pdf`);
+            const appName = publicSettings?.general?.websiteName || "News";
+            const websiteUrl = publicSettings?.general?.websiteUrl || "";
+            await generateNewsPdf(singleNewsData, appName, websiteUrl);
         } catch (err) {
             console.error("PDF Export failed", err);
         } finally {
@@ -335,50 +326,54 @@ export default function SingleNews() {
                 <Container maxWidth="lg">
                     <Stack
                         direction="row"
-                        spacing={2}
+                        spacing={{ xs: 0.5, md: 2 }}
                         sx={{
-                            py: 2,
+                            py: { xs: 1, md: 2 },
                             justifyContent: "space-between",
                             alignItems: "center",
                             flexWrap: "wrap",
                         }}>
-                        <Stack direction="row" spacing={1}>
+                        <Stack direction="row" spacing={{ xs: 0, md: 0.5 }}>
                             <Tooltip title="Share on Facebook">
                                 <IconButton
+                                    size="small"
                                     onClick={() => handleShare("facebook")}
                                     sx={{ color: "#1877f2" }}>
-                                    <FacebookIcon />
+                                    <FacebookIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Share on Twitter">
                                 <IconButton
+                                    size="small"
                                     onClick={() => handleShare("twitter")}
                                     sx={{ color: "#1da1f2" }}>
-                                    <TwitterIcon />
+                                    <TwitterIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Share on LinkedIn">
                                 <IconButton
+                                    size="small"
                                     onClick={() => handleShare("linkedin")}
                                     sx={{ color: "#0077b5" }}>
-                                    <LinkedInIcon />
+                                    <LinkedInIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="More Share Options">
-                                <IconButton onClick={() => handleShare()}>
-                                    <ShareIcon />
+                                <IconButton size="small" onClick={() => handleShare()}>
+                                    <ShareIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
                         </Stack>
 
-                        <Stack direction="row" spacing={2}>
+                        <Stack direction="row" spacing={{ xs: 0.5, md: 2 }}>
                             <Button
+                                size="small"
                                 variant="outlined"
                                 startIcon={
                                     isExporting ? (
-                                        <CircularProgress size={20} />
+                                        <CircularProgress size={16} />
                                     ) : (
-                                        <PictureAsPdfIcon />
+                                        <PictureAsPdfIcon fontSize="small" />
                                     )
                                 }
                                 onClick={handleDownloadPdf}
@@ -386,12 +381,14 @@ export default function SingleNews() {
                                 sx={{
                                     borderColor: "#003366",
                                     color: "#003366",
+                                    fontSize: { xs: "0.7rem", md: "0.875rem" },
+                                    px: { xs: 1, md: 2 },
                                     "&:hover": {
                                         borderColor: "#002244",
                                         bgcolor: "rgba(0, 51, 102, 0.05)",
                                     },
                                 }}>
-                                Save as PDF
+                                <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>Save as </Box>PDF
                             </Button>
                             <Tooltip
                                 title={
@@ -400,12 +397,13 @@ export default function SingleNews() {
                                         : "Bookmark Article"
                                 }>
                                 <IconButton
+                                    size="small"
                                     onClick={handleBookmark}
                                     sx={{ color: "#003366" }}>
                                     {isBookmarked ? (
-                                        <BookmarkIcon />
+                                        <BookmarkIcon fontSize="small" />
                                     ) : (
-                                        <BookmarkBorderIcon />
+                                        <BookmarkBorderIcon fontSize="small" />
                                     )}
                                 </IconButton>
                             </Tooltip>
@@ -415,7 +413,7 @@ export default function SingleNews() {
             </Box>
 
             <Container maxWidth="lg" sx={{ py: { xs: 3, md: 6 } }}>
-                <Box ref={articleRef}>
+                <Box>
                     {/* Article Header */}
                     <Stack spacing={3} sx={{ mb: 4 }}>
                         {/* Categories */}
@@ -460,7 +458,7 @@ export default function SingleNews() {
                             sx={{
                                 color: "#4a4a4a",
                                 fontWeight: 400,
-                                fontSize: "1rem",
+                                fontSize: { xs: "0.85rem", md: "1rem" },
                             }}>
                             {singleNewsData.description}
                         </Typography>
@@ -553,7 +551,7 @@ export default function SingleNews() {
                                         variant="h3"
                                         sx={{
                                             fontWeight: 700,
-                                            fontSize: "1.4rem",
+                                            fontSize: { xs: "1rem", md: "1.4rem" },
                                             mb: 2,
                                             color: "#003366",
                                             borderLeft: "4px solid #c00",
@@ -600,6 +598,7 @@ export default function SingleNews() {
                                     fontWeight: 700,
                                     mb: 2,
                                     color: "#003366",
+                                    fontSize: { xs: "1rem", md: "1.5rem" },
                                 }}>
                                 Watch Related Video
                             </Typography>
@@ -629,7 +628,7 @@ export default function SingleNews() {
                         <MessageIcon sx={{ color: "#003366" }} />
                         <Typography
                             variant="h4"
-                            sx={{ fontWeight: 700, color: "#1a1a1a" }}>
+                            sx={{ fontWeight: 700, color: "#1a1a1a", fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                             Reader Comments
                         </Typography>
                         <Chip

@@ -59,10 +59,10 @@ export default function FAQs() {
             <Paper
                 elevation={0}
                 sx={{ p: { xs: 2, md: 3 }, border: "1px solid #e5e7eb" }}>
-                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     {faqs?.name || "FAQs"}
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" sx={{ fontSize: { xs: "0.85rem", md: "1rem" } }}>
                     {faqs?.summary ||
                         "Find quick answers to common platform questions."}
                 </Typography>

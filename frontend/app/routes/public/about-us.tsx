@@ -71,7 +71,7 @@ export default function AboutUs() {
                     border: "1px solid #e5e7eb",
                     bgcolor: "#fff",
                 }}>
-                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 900, mb: 1, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     {settings?.aboutUs?.title || "About Us"}
                 </Typography>
                 <Typography sx={{ lineHeight: 1.8, color: "text.secondary" }}>
@@ -111,7 +111,7 @@ export default function AboutUs() {
                             {section.title && (
                                 <Typography
                                     variant="h6"
-                                    sx={{ fontWeight: 800, mb: 1 }}>
+                                    sx={{ fontWeight: 800, mb: 1, fontSize: { xs: "0.85rem", md: "1.25rem" } }}>
                                     {section.title}
                                 </Typography>
                             )}

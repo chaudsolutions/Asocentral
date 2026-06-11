@@ -84,7 +84,7 @@ export default function PersonalityDetail() {
                         color: "#1e3a8a",
                     }}
                 />
-                <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.6 }}>
+                <Typography variant="h4" sx={{ fontWeight: 900, mb: 0.6, fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
                     {personality.title}
                 </Typography>
             </Box>
@@ -114,6 +114,7 @@ export default function PersonalityDetail() {
                     sx={{
                         lineHeight: 1.9,
                         fontSize: { xs: "1rem", md: "1.05rem" },
+                        whiteSpace: "pre-line",
                     }}>
                     {personality.description}
                 </Typography>

@@ -19,7 +19,7 @@ const MainLayoutFooter = () => {
     const footerLinkStyle = {
         textDecoration: "none",
         color: "#bbb",
-        fontSize: "0.85rem",
+        fontSize: { xs: "0.75rem", md: "0.85rem" },
         display: "block",
         marginBottom: "8px",
         "&:hover": { color: "#fff", textDecoration: "underline" },
@@ -29,7 +29,7 @@ const MainLayoutFooter = () => {
         color: "#fff",
         fontWeight: 900,
         textTransform: "uppercase",
-        fontSize: "0.9rem",
+        fontSize: { xs: "0.75rem", md: "0.9rem" },
         letterSpacing: "1px",
         marginBottom: "20px",
         fontFamily: "Arial Narrow, sans-serif",

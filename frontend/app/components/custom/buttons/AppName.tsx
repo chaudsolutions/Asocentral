@@ -49,7 +49,7 @@ const AppName = () => {
                         variant="h6"
                         sx={{
                             fontWeight: 700,
-                            fontSize: "1.2rem",
+                            fontSize: { md: "1.2rem", xs: ".8rem" },
                         }}>
                         {publicSettings?.general?.websiteName || "N/A"}
                     </Typography>

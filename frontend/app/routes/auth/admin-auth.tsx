@@ -105,6 +105,7 @@ export default function AdminAuth() {
                                 mt: 1,
                                 fontWeight: 700,
                                 color: "common.white",
+                                fontSize: { xs: "0.85rem", md: "1.25rem" },
                             }}>
                             Admin Portal
                         </Typography>

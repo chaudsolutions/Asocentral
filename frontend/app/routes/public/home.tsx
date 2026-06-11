@@ -175,7 +175,7 @@ function HomeLeftRail({ newsData }: { newsData: NewsDataType[] }) {
                             variant="h6"
                             sx={{
                                 fontWeight: 800,
-                                fontSize: "1.05rem",
+                                fontSize: { xs: "0.85rem", md: "1.05rem" },
                                 lineHeight: 1.25,
                                 mb: 0.5,
                             }}>
