@@ -47,7 +47,7 @@ const MainLayoutHeader = () => {
         textDecoration: "none",
         color: isActive ? "#c00" : "#222",
         fontWeight: 800,
-        fontSize: isMobile ? "0.72rem" : "0.85rem",
+        fontSize: isMobile ? "0.65rem" : "0.85rem",
         textTransform: "uppercase" as const,
         fontFamily: "Arial Narrow, sans-serif",
         borderBottom: isActive ? "3px solid #c00" : "3px solid transparent",
@@ -79,8 +79,9 @@ const MainLayoutHeader = () => {
                         <Box sx={{ ml: "auto", display: "flex", gap: 2 }}>
                             <IconButton
                                 onClick={() => setIsSearchOpen(true)}
+                                size="small"
                                 sx={{ color: "white" }}>
-                                <SearchIcon />
+                                <SearchIcon fontSize="small" />
                             </IconButton>
 
                             <Button
@@ -92,8 +93,8 @@ const MainLayoutHeader = () => {
                                     bgcolor: "#c00",
                                     fontWeight: 700,
                                     textTransform: "none",
-                                    fontSize: { xs: "0.75rem", md: "0.875rem" },
-                                    px: { xs: 1.5, md: 2 },
+                                    p: { xs: 1, md: 2 },
+                                    fontSize: { xs: "0.6rem", md: "0.875rem" },
                                     "&:hover": { bgcolor: "#900" },
                                 }}>
                                 Publish News
@@ -108,7 +109,11 @@ const MainLayoutHeader = () => {
                 <Container maxWidth="xl">
                     <Box
                         component="nav"
-                        sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                        }}>
                         {isNewsCategoriesLoading ? (
                             <Skeleton width={200} height={30} />
                         ) : (
@@ -137,7 +142,10 @@ const MainLayoutHeader = () => {
                                                 color: "#222",
                                                 fontWeight: 800,
                                                 pb: 1.7,
-                                                fontSize: "0.85rem",
+                                                fontSize: {
+                                                    xs: "0.65rem",
+                                                    md: "0.85rem",
+                                                },
                                                 fontFamily:
                                                     "Arial Narrow, sans-serif",
                                                 "&:hover": {
@@ -161,7 +169,7 @@ const MainLayoutHeader = () => {
                                                     // On Mobile (xs), show everything from index 3 onwards in Menu
                                                     // On Desktop (md), show everything from index 7 onwards in Menu
                                                     const isHiddenOnMobile =
-                                                        index >= 3;
+                                                        index >= 2;
                                                     const isHiddenOnDesktop =
                                                         index >= 7;
 
@@ -186,8 +194,10 @@ const MainLayoutHeader = () => {
                                                                 textTransform:
                                                                     "uppercase",
                                                                 fontWeight: 700,
-                                                                fontSize:
-                                                                    "0.8rem",
+                                                                fontSize: {
+                                                                    xs: "0.65rem",
+                                                                    md: "0.85rem",
+                                                                },
                                                             }}>
                                                             {category.name}
                                                         </MenuItem>
