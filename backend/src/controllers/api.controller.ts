@@ -318,4 +318,44 @@ export const apiController = {
             });
         }
     },
+
+    proxyImage: async (req: Request, res: Response): Promise<void> => {
+        const { url } = req.query;
+
+        if (!url || typeof url !== "string") {
+            res.status(400).json({ message: "url query param required" });
+            return;
+        }
+
+        // Only allow http/https URLs to prevent SSRF against internal services
+        let parsed: URL;
+        try {
+            parsed = new URL(url);
+        } catch {
+            res.status(400).json({ message: "Invalid URL" });
+            return;
+        }
+        if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+            res.status(400).json({ message: "Only http/https URLs allowed" });
+            return;
+        }
+
+        try {
+            const response = await axios.get(url, {
+                responseType: "arraybuffer",
+                timeout: 15_000,
+                headers: { "User-Agent": "Mozilla/5.0" },
+            });
+
+            const contentType =
+                (response.headers["content-type"] as string) || "image/jpeg";
+
+            res.set("Content-Type", contentType);
+            res.set("Cache-Control", "public, max-age=86400");
+            res.set("Access-Control-Allow-Origin", "*");
+            res.send(Buffer.from(response.data));
+        } catch {
+            res.status(502).json({ message: "Failed to fetch image" });
+        }
+    },
 };

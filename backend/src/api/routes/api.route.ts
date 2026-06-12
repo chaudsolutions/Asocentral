@@ -28,5 +28,6 @@ apiRoute.get(
 );
 apiRoute.post("/contact", staticController.contactUs);
 apiRoute.get("/settings", appSettingsController.getPublicSettings);
+apiRoute.get("/proxy-image", apiController.proxyImage);
 
 export default apiRoute;

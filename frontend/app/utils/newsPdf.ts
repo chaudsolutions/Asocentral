@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import type { NewsDataType } from "~/types/news";
+import { serVer } from "~/utils/constants";
 
 const PAGE_W = 210;
 const PAGE_H = 297;
@@ -35,29 +36,28 @@ async function loadImageViaElement(
 async function fetchImageBase64(
     url: string,
 ): Promise<{ data: string; format: "JPEG" | "PNG" } | null> {
-    // Strategy 1: Image element → canvas (leverages browser CORS image cache)
-    const fromElement = await loadImageViaElement(url);
-    if (fromElement) return fromElement;
-
-    // Strategy 2: fetch with cache-bust to force fresh CORS headers from CDN
+    // Strategy 1: backend proxy — server fetches the image, no CORS issues
     try {
-        const sep = url.includes("?") ? "&" : "?";
-        const bustUrl = `${url}${sep}_pdf=1`;
-        const res = await fetch(bustUrl, { mode: "cors", cache: "no-cache" });
-        if (!res.ok) return null;
-        const blob = await res.blob();
-        const format: "JPEG" | "PNG" =
-            blob.type === "image/png" ? "PNG" : "JPEG";
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-                resolve({ data: reader.result as string, format });
-            reader.onerror = () => resolve(null);
-            reader.readAsDataURL(blob);
-        });
+        const proxyUrl = `${serVer}/app/proxy-image?url=${encodeURIComponent(url)}`;
+        const res = await fetch(proxyUrl);
+        if (res.ok) {
+            const blob = await res.blob();
+            const format: "JPEG" | "PNG" =
+                blob.type === "image/png" ? "PNG" : "JPEG";
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () =>
+                    resolve({ data: reader.result as string, format });
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(blob);
+            });
+        }
     } catch {
-        return null;
+        // proxy unavailable — fall through
     }
+
+    // Strategy 2: direct Image element → canvas (works if CDN sends CORS headers)
+    return loadImageViaElement(url);
 }
 
 export async function generateNewsPdf(
