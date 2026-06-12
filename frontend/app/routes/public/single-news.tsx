@@ -541,7 +541,6 @@ export default function SingleNews() {
                                 component="img"
                                 src={singleNewsData.image_url}
                                 alt={singleNewsData.title}
-                                crossOrigin="anonymous"
                                 sx={{
                                     width: "100%",
                                     height: "auto",
@@ -576,7 +575,6 @@ export default function SingleNews() {
                                         component="img"
                                         src={block.image_url}
                                         alt={block.title || "Article image"}
-                                        crossOrigin="anonymous"
                                         sx={{
                                             width: "100%",
                                             borderRadius: 1,

@@ -1,6 +1,5 @@
 import jsPDF from "jspdf";
 import type { NewsDataType } from "~/types/news";
-import { serVer } from "~/utils/constants";
 
 const PAGE_W = 210;
 const PAGE_H = 297;
@@ -36,10 +35,13 @@ async function loadImageViaElement(
 async function fetchImageBase64(
     url: string,
 ): Promise<{ data: string; format: "JPEG" | "PNG" } | null> {
-    // Strategy 1: backend proxy — server fetches the image, no CORS issues
+    // S3 must send Access-Control-Allow-Origin for this origin.
+    // Without that bucket CORS rule, browsers cannot legally read image pixels.
     try {
-        const proxyUrl = `${serVer}/app/proxy-image?url=${encodeURIComponent(url)}`;
-        const res = await fetch(proxyUrl);
+        const res = await fetch(url, {
+            mode: "cors",
+            cache: "reload",
+        });
         if (res.ok) {
             const blob = await res.blob();
             const format: "JPEG" | "PNG" =
@@ -53,10 +55,10 @@ async function fetchImageBase64(
             });
         }
     } catch {
-        // proxy unavailable — fall through
+        // Direct fetch can fail until the bucket CORS policy is configured.
     }
 
-    // Strategy 2: direct Image element → canvas (works if CDN sends CORS headers)
+    // Fallback: Image element -> canvas. This also requires S3 CORS headers.
     return loadImageViaElement(url);
 }
 
