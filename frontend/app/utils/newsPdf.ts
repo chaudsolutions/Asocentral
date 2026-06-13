@@ -5,6 +5,7 @@ const PAGE_W = 210;
 const PAGE_H = 297;
 const MARGIN = 15;
 const CONTENT_W = PAGE_W - MARGIN * 2;
+const FOOTER_SPACE = 20;
 
 async function loadImageViaElement(
     url: string,
@@ -84,7 +85,7 @@ export async function generateNewsPdf(
     };
 
     const ensureSpace = (needed: number) => {
-        if (y + needed > PAGE_H - 20) {
+        if (y + needed > PAGE_H - FOOTER_SPACE) {
             addPageFooter();
             doc.addPage();
             pageNum += 1;
@@ -97,6 +98,45 @@ export async function generateNewsPdf(
             doc.text(appName.toUpperCase(), MARGIN, 7);
             y = 18;
         }
+    };
+
+    const getContainedImageSize = (
+        imageData: string,
+        maxWidth: number,
+        maxHeight: number,
+    ) => {
+        const imageProps = doc.getImageProperties(imageData);
+        const aspectRatio = imageProps.width / imageProps.height;
+        let width = maxWidth;
+        let height = width / aspectRatio;
+
+        if (height > maxHeight) {
+            height = maxHeight;
+            width = height * aspectRatio;
+        }
+
+        return {
+            width,
+            height,
+            x: MARGIN + (maxWidth - width) / 2,
+        };
+    };
+
+    const addContainedImage = (
+        image: { data: string; format: "JPEG" | "PNG" },
+        maxHeight: number,
+    ) => {
+        const size = getContainedImageSize(image.data, CONTENT_W, maxHeight);
+        ensureSpace(size.height + 4);
+        doc.addImage(
+            image.data,
+            image.format,
+            size.x,
+            y,
+            size.width,
+            size.height,
+        );
+        y += size.height + 4;
     };
 
     // ── HEADER BAND ────────────────────────────────────────────────────────
@@ -185,11 +225,9 @@ export async function generateNewsPdf(
 
     // ── COVER IMAGE ────────────────────────────────────────────────────────
     if (news.image_url) {
-        ensureSpace(75);
         const coverImg = await fetchImageBase64(news.image_url);
         if (coverImg) {
-            doc.addImage(coverImg.data, coverImg.format, MARGIN, y, CONTENT_W, 70);
-            y += 73;
+            addContainedImage(coverImg, 120);
         }
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.3);
@@ -214,11 +252,9 @@ export async function generateNewsPdf(
 
         // Block image
         if (block.image_url) {
-            ensureSpace(65);
             const bImg = await fetchImageBase64(block.image_url);
             if (bImg) {
-                doc.addImage(bImg.data, bImg.format, MARGIN, y, CONTENT_W, 60);
-                y += 64;
+                addContainedImage(bImg, 105);
             }
         }
 
