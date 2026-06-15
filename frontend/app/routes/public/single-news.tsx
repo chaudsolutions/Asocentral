@@ -335,12 +335,18 @@ export default function SingleNews() {
                             alignItems: "center",
                             flexWrap: "wrap",
                         }}>
-                        <Stack direction="row" spacing={{ xs: 0, md: 0.5 }} sx={{ alignItems: "center" }}>
+                        <Stack
+                            direction="row"
+                            spacing={{ xs: 0, md: 0.5 }}
+                            sx={{ alignItems: "center" }}>
                             <Tooltip title="Go back">
                                 <IconButton
                                     size="small"
                                     onClick={() => navigate(-1)}
-                                    sx={{ color: "#333", mr: { xs: 0.5, md: 1 } }}>
+                                    sx={{
+                                        color: "#333",
+                                        mr: { xs: 0.5, md: 1 },
+                                    }}>
                                     <ArrowBackIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -369,7 +375,9 @@ export default function SingleNews() {
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="More Share Options">
-                                <IconButton size="small" onClick={() => handleShare()}>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => handleShare()}>
                                     <ShareIcon fontSize="small" />
                                 </IconButton>
                             </Tooltip>
@@ -398,7 +406,14 @@ export default function SingleNews() {
                                         bgcolor: "rgba(0, 51, 102, 0.05)",
                                     },
                                 }}>
-                                <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>Save as </Box>PDF
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        display: { xs: "none", sm: "inline" },
+                                    }}>
+                                    Save as{" "}
+                                </Box>
+                                PDF
                             </Button>
                             <Tooltip
                                 title={
@@ -545,7 +560,7 @@ export default function SingleNews() {
                                     width: "100%",
                                     height: "auto",
                                     objectFit: "contain",
-                                    maxHeight: 500,
+                                    maxHeight: 400,
                                     display: "block",
                                 }}
                             />
@@ -561,7 +576,10 @@ export default function SingleNews() {
                                         variant="h3"
                                         sx={{
                                             fontWeight: 700,
-                                            fontSize: { xs: "1rem", md: "1.4rem" },
+                                            fontSize: {
+                                                xs: "1rem",
+                                                md: "1.4rem",
+                                            },
                                             mb: 2,
                                             color: "#003366",
                                             borderLeft: "4px solid #c00",
@@ -579,7 +597,7 @@ export default function SingleNews() {
                                             width: "100%",
                                             borderRadius: 1,
                                             my: 3,
-                                            objectFit: "cover",
+                                            objectFit: "contain",
                                             maxHeight: 500,
                                         }}
                                     />
@@ -638,7 +656,11 @@ export default function SingleNews() {
                         <MessageIcon sx={{ color: "#003366" }} />
                         <Typography
                             variant="h4"
-                            sx={{ fontWeight: 700, color: "#1a1a1a", fontSize: { xs: "1.2rem", md: "1.75rem" } }}>
+                            sx={{
+                                fontWeight: 700,
+                                color: "#1a1a1a",
+                                fontSize: { xs: "1.2rem", md: "1.75rem" },
+                            }}>
                             Reader Comments
                         </Typography>
                         <Chip
