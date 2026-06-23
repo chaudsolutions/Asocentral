@@ -19,6 +19,15 @@ const s3Client = new S3Client({
     },
 });
 
+type S3Command = PutObjectCommand | DeleteObjectCommand;
+
+const sendS3Command = async (command: S3Command): Promise<unknown> => {
+    const client = s3Client as unknown as {
+        send: (command: S3Command) => Promise<unknown>;
+    };
+    return client.send(command);
+};
+
 const guessExtension = (mimetype: string): string => {
     if (mimetype === "image/jpeg") return ".jpg";
     if (mimetype === "image/png") return ".png";
@@ -44,7 +53,7 @@ export const uploadToS3 = async (params: {
 
     const key = `${folder}/${Date.now()}-${crypto.randomBytes(8).toString("hex")}${ext}`;
 
-    await s3Client.send(
+    await sendS3Command(
         new PutObjectCommand({
             Bucket: AWS_BUCKET_NAME,
             Key: key,
@@ -76,7 +85,7 @@ export const deleteFromS3ByUrl = async (fileUrl: string): Promise<boolean> => {
     const key = getS3KeyFromUrl(fileUrl);
     if (!key) return false;
 
-    await s3Client.send(
+    await sendS3Command(
         new DeleteObjectCommand({
             Bucket: AWS_BUCKET_NAME,
             Key: key,

@@ -1,22 +1,35 @@
 import mongoose from "mongoose";
 import { DB_URI } from "./constants";
 
+type LegacyIndex = {
+    name?: string;
+};
+
+type LegacyNewsCollection = {
+    indexes: () => Promise<LegacyIndex[]>;
+    dropIndex: (indexName: string) => Promise<unknown>;
+};
+
 //connect to DB
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(DB_URI, {
+        const mongoOptions = {
             serverSelectionTimeoutMS: 10000, // Timeout after 10 seconds
             socketTimeoutMS: 45000, // Close sockets after 45s inactivity
-        });
+        } as unknown as mongoose.ConnectOptions;
+
+        const conn = await mongoose.connect(DB_URI, mongoOptions);
 
         console.log(`MongoDB Connected: ${conn.connection.host}`);
 
         // Ensure old TTL index does not keep deleting news records.
         try {
-            const newsCollection = conn.connection.collection("news");
+            const newsCollection = conn.connection.collection(
+                "news",
+            ) as unknown as LegacyNewsCollection;
             const indexes = await newsCollection.indexes();
             const hasFetchedAtTtl = indexes.some(
-                (index) => index.name === "fetched_at_1",
+                (index: LegacyIndex) => index.name === "fetched_at_1",
             );
             if (hasFetchedAtTtl) {
                 await newsCollection.dropIndex("fetched_at_1");
